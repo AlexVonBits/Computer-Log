@@ -7,85 +7,101 @@
         mc:Ignorable="d"
         Title="ComputerLog" Height="700" Width="900">
     <Grid>
-        <!-- Log In Section -->
-        <TextBlock HorizontalAlignment="Left" Margin="30,20,0,0" TextWrapping="Wrap" Text="LOG IN NEW ITEM" FontWeight="Bold" FontSize="14" VerticalAlignment="Top"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         
-        <!-- UPC Search -->
-        <TextBlock HorizontalAlignment="Left" Margin="30,55,0,0" TextWrapping="Wrap" Text="Search UPC:*" VerticalAlignment="Top"/>
-        <TextBox x:Name="UPCSearchBox" HorizontalAlignment="Left" Margin="150,52,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="24" TextChanged="UPCSearchBox_TextChanged"/>
+        <!-- Header with Profile and Sign Out -->
+        <DockPanel Grid.Row="0" Margin="10">
+            <Button x:Name="ProfileButton" Content="Profile" Click="ProfileButton_Click" 
+                    DockPanel.Dock="Left" Padding="10,5" Margin="0,0,10,0"/>
+            <Button x:Name="SignOutButton" Content="Sign Out" Click="SignOut_Click" 
+                    DockPanel.Dock="Right" Padding="10,5"/>
+        </DockPanel>
         
-        <!-- UPC Results List -->
-        <TextBlock HorizontalAlignment="Left" Margin="30,85,0,0" TextWrapping="Wrap" Text="Matching UPCs:" VerticalAlignment="Top"/>
-        <ListBox x:Name="UPCListBox" SelectionChanged="UPCListBox_SelectionChanged" HorizontalAlignment="Left" Margin="150,82,0,0" VerticalAlignment="Top" Width="180" Height="80"/>
-        
-        <!-- Add New UPC Button -->
-        <Button x:Name="AddNewUPCButton" Content="+ Add New UPC" HorizontalAlignment="Left" Margin="340,82,0,0" VerticalAlignment="Top" Width="100" Height="24" Click="AddNewUPCButton_Click"/>
-        
-        <!-- Selected UPC Display -->
-        <TextBlock HorizontalAlignment="Left" Margin="360,55,0,0" TextWrapping="Wrap" Text="Selected UPC:" VerticalAlignment="Top"/>
-        <TextBlock x:Name="SelectedUPC" HorizontalAlignment="Left" Margin="450,55,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" FontWeight="Bold"/>
-        
-        <!-- New UPC Form (initially hidden) -->
-        <Border x:Name="NewUPCPanel" BorderBrush="Gray" BorderThickness="1" Margin="30,115,30,0" Padding="10" VerticalAlignment="Top" Height="55" Visibility="Collapsed">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="New UPC:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <TextBox x:Name="NewUPCBox" Width="120" Height="24" Margin="0,0,20,0"/>
-                <TextBlock Text="Make:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <TextBox x:Name="NewUPCMakeBox" Width="100" Height="24" Margin="0,0,20,0"/>
-                <TextBlock Text="Type:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <TextBox x:Name="NewUPCTypeBox" Width="100" Height="24" Margin="0,0,20,0"/>
-                <Button x:Name="SaveNewUPCButton" Content="Save UPC" Width="80" Height="24" Click="SaveNewUPCButton_Click"/>
-                <Button x:Name="CancelNewUPCButton" Content="Cancel" Width="60" Height="24" Margin="10,0,0,0" Click="CancelNewUPCButton_Click"/>
-            </StackPanel>
-        </Border>
-        
-        <!-- Serial Number Input -->
-        <TextBlock HorizontalAlignment="Left" Margin="30,175,0,0" TextWrapping="Wrap" Text="Serial Number:*" VerticalAlignment="Top"/>
-        <TextBox x:Name="LogInSerialNumber" HorizontalAlignment="Left" Margin="150,172,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="24"/>
-        
-        <Button x:Name="AddSerialButton" Content="Add Serial" HorizontalAlignment="Left" Margin="340,170,0,0" VerticalAlignment="Top" Width="90" Height="28" Click="AddSerialButton_Click"/>
-        
-        <!-- Serial Numbers List -->
-        <TextBlock HorizontalAlignment="Left" Margin="30,215,0,0" TextWrapping="Wrap" Text="Serial Numbers to Log In:" VerticalAlignment="Top"/>
-        <ListBox x:Name="SerialNumbersListBox" HorizontalAlignment="Left" Margin="150,212,0,0" VerticalAlignment="Top" Width="280" Height="100"/>
-        
-        <Button x:Name="RemoveSerialButton" Content="Remove" HorizontalAlignment="Left" Margin="440,260,0,0" VerticalAlignment="Top" Width="80" Height="24" Click="RemoveSerialButton_Click"/>
-        
-        <!-- Log In Button -->
-        <Button x:Name="LogInSerial" Content="Log In All Serials" HorizontalAlignment="Left" Margin="150,320,0,0" VerticalAlignment="Top" Width="130" Height="28" Click="LogInSerial_Click"/>
-        
-        <!-- Divider -->
-        <Rectangle HorizontalAlignment="Left" Height="2" Margin="30,365,0,0" VerticalAlignment="Top" Width="820" Fill="Gray"/>
-        
-        <!-- Search Section -->
-        <TextBlock HorizontalAlignment="Left" Margin="30,380,0,0" TextWrapping="Wrap" Text="SEARCH / LOG OUT" FontWeight="Bold" FontSize="14" VerticalAlignment="Top"/>
-        
-        <TextBox x:Name="SerialGetInput" HorizontalAlignment="Left" Margin="150,415,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="24"/>
-        <TextBlock HorizontalAlignment="Left" Margin="30,418,0,0" TextWrapping="Wrap" Text="Serial #:" VerticalAlignment="Top"/>
-        
-        <TextBlock x:Name="UPCGetInput" HorizontalAlignment="Left" Margin="280,418,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Width="120"/>
-        <TextBlock HorizontalAlignment="Left" Margin="310,380,0,0" TextWrapping="Wrap" Text="OR" VerticalAlignment="Top"/>
-        
-        <TextBox x:Name="UPCSearchInput" HorizontalAlignment="Left" Margin="360,415,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="24"/>
-        <TextBlock HorizontalAlignment="Left" Margin="310,418,0,0" TextWrapping="Wrap" Text="UPC:" VerticalAlignment="Top"/>
-        
-        <Button x:Name="Search" Content="Search" HorizontalAlignment="Left" Margin="500,413,0,0" VerticalAlignment="Top" Width="100" Height="28" Click="Search_Click"/>
-        
-        <TextBlock x:Name="UPCBox" HorizontalAlignment="Left" Margin="30,460,0,0" TextWrapping="Wrap" Text="UPC:" VerticalAlignment="Top" Height="18"/>
-        <TextBlock x:Name="SerialTextBox" HorizontalAlignment="Left" Margin="30,485,0,0" TextWrapping="Wrap" Text="Serial #:" VerticalAlignment="Top"/>
-        
-        <ListBox x:Name="ResultsListBox" SelectionChanged="ResultsListBox_SelectionChanged" Margin="30,520,30,100"/>
-        
-        <!-- Log Out Section -->
-        <TextBlock HorizontalAlignment="Left" Margin="30,560,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18"/>
-        
-        <ComboBox x:Name="LogOutReason" HorizontalAlignment="Left" Margin="150,640,0,0" VerticalAlignment="Top" Width="150"/>
-        
-        <TextBlock HorizontalAlignment="Left" Margin="30,643,0,0" TextWrapping="Wrap" Text="Log Out Reason:" VerticalAlignment="Top"/>
-        
-        <Button x:Name="LogOutSerial" Content="Log Out Serial #" HorizontalAlignment="Left" Margin="310,638,0,0" VerticalAlignment="Top" Width="130" Height="28"/>
-        
-        <CheckBox x:Name="OGPCheck" Content="This is an online pick " HorizontalAlignment="Left" Margin="500,643,0,0" VerticalAlignment="Top" Height="24" Width="210"/>
+        <!-- Main Content -->
+        <Grid Grid.Row="1">
+            <!-- Log In Section -->
+            <TextBlock HorizontalAlignment="Left" Margin="30,20,0,0" TextWrapping="Wrap" Text="LOG IN NEW ITEM" FontWeight="Bold" FontSize="14" VerticalAlignment="Top"/>
+            
+            <!-- UPC Search -->
+            <TextBlock HorizontalAlignment="Left" Margin="30,55,0,0" TextWrapping="Wrap" Text="Search UPC:*" VerticalAlignment="Top"/>
+            <TextBox x:Name="UPCSearchBox" HorizontalAlignment="Left" Margin="150,52,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="24" TextChanged="UPCSearchBox_TextChanged"/>
+            
+            <!-- UPC Results List -->
+            <TextBlock HorizontalAlignment="Left" Margin="30,85,0,0" TextWrapping="Wrap" Text="Matching UPCs:" VerticalAlignment="Top"/>
+            <ListBox x:Name="UPCListBox" SelectionChanged="UPCListBox_SelectionChanged" HorizontalAlignment="Left" Margin="150,82,0,0" VerticalAlignment="Top" Width="180" Height="80"/>
+            
+            <!-- Add New UPC Button -->
+            <Button x:Name="AddNewUPCButton" Content="+ Add New UPC" HorizontalAlignment="Left" Margin="340,82,0,0" VerticalAlignment="Top" Width="100" Height="24" Click="AddNewUPCButton_Click"/>
+            
+            <!-- Selected UPC Display -->
+            <TextBlock HorizontalAlignment="Left" Margin="360,55,0,0" TextWrapping="Wrap" Text="Selected UPC:" VerticalAlignment="Top"/>
+            <TextBlock x:Name="SelectedUPC" HorizontalAlignment="Left" Margin="450,55,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" FontWeight="Bold"/>
+            
+            <!-- New UPC Form (initially hidden) -->
+            <Border x:Name="NewUPCPanel" BorderBrush="Gray" BorderThickness="1" Margin="30,115,30,0" Padding="10" VerticalAlignment="Top" Height="55" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="New UPC:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBox x:Name="NewUPCBox" Width="120" Height="24" Margin="0,0,20,0"/>
+                    <TextBlock Text="Make:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBox x:Name="NewUPCMakeBox" Width="100" Height="24" Margin="0,0,20,0"/>
+                    <TextBlock Text="Type:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBox x:Name="NewUPCTypeBox" Width="100" Height="24" Margin="0,0,20,0"/>
+                    <Button x:Name="SaveNewUPCButton" Content="Save UPC" Width="80" Height="24" Click="SaveNewUPCButton_Click"/>
+                    <Button x:Name="CancelNewUPCButton" Content="Cancel" Width="60" Height="24" Margin="10,0,0,0" Click="CancelNewUPCButton_Click"/>
+                </StackPanel>
+            </Border>
+            
+            <!-- Serial Number Input -->
+            <TextBlock HorizontalAlignment="Left" Margin="30,175,0,0" TextWrapping="Wrap" Text="Serial Number:*" VerticalAlignment="Top"/>
+            <TextBox x:Name="LogInSerialNumber" HorizontalAlignment="Left" Margin="150,172,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="24"/>
+            
+            <Button x:Name="AddSerialButton" Content="Add Serial" HorizontalAlignment="Left" Margin="340,170,0,0" VerticalAlignment="Top" Width="90" Height="28" Click="AddSerialButton_Click"/>
+            
+            <!-- Serial Numbers List -->
+            <TextBlock HorizontalAlignment="Left" Margin="30,215,0,0" TextWrapping="Wrap" Text="Serial Numbers to Log In:" VerticalAlignment="Top"/>
+            <ListBox x:Name="SerialNumbersListBox" HorizontalAlignment="Left" Margin="150,212,0,0" VerticalAlignment="Top" Width="280" Height="100"/>
+            
+            <Button x:Name="RemoveSerialButton" Content="Remove" HorizontalAlignment="Left" Margin="440,260,0,0" VerticalAlignment="Top" Width="80" Height="24" Click="RemoveSerialButton_Click"/>
+            
+            <!-- Log In Button -->
+            <Button x:Name="LogInSerial" Content="Log In All Serials" HorizontalAlignment="Left" Margin="150,320,0,0" VerticalAlignment="Top" Width="130" Height="28" Click="LogInSerial_Click"/>
+            
+            <!-- Divider -->
+            <Rectangle HorizontalAlignment="Left" Height="2" Margin="30,365,0,0" VerticalAlignment="Top" Width="820" Fill="Gray"/>
+            
+            <!-- Search Section -->
+            <TextBlock HorizontalAlignment="Left" Margin="30,380,0,0" TextWrapping="Wrap" Text="SEARCH / LOG OUT" FontWeight="Bold" FontSize="14" VerticalAlignment="Top"/>
+            
+            <TextBox x:Name="SerialGetInput" HorizontalAlignment="Left" Margin="150,415,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="24"/>
+            <TextBlock HorizontalAlignment="Left" Margin="30,418,0,0" TextWrapping="Wrap" Text="Serial #:" VerticalAlignment="Top"/>
+            
+            <TextBlock x:Name="UPCGetInput" HorizontalAlignment="Left" Margin="280,418,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Width="120"/>
+            <TextBlock HorizontalAlignment="Left" Margin="310,380,0,0" TextWrapping="Wrap" Text="OR" VerticalAlignment="Top"/>
+            
+            <TextBox x:Name="UPCSearchInput" HorizontalAlignment="Left" Margin="360,415,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="24"/>
+            <TextBlock HorizontalAlignment="Left" Margin="310,418,0,0" TextWrapping="Wrap" Text="UPC:" VerticalAlignment="Top"/>
+            
+            <Button x:Name="Search" Content="Search" HorizontalAlignment="Left" Margin="500,413,0,0" VerticalAlignment="Top" Width="100" Height="28" Click="Search_Click"/>
+            
+            <TextBlock x:Name="UPCBox" HorizontalAlignment="Left" Margin="30,460,0,0" TextWrapping="Wrap" Text="UPC:" VerticalAlignment="Top" Height="18"/>
+            <TextBlock x:Name="SerialTextBox" HorizontalAlignment="Left" Margin="30,485,0,0" TextWrapping="Wrap" Text="Serial #:" VerticalAlignment="Top"/>
+            
+            <ListBox x:Name="ResultsListBox" SelectionChanged="ResultsListBox_SelectionChanged" Margin="30,520,30,100"/>
+            
+            <!-- Log Out Section -->
+            <TextBlock HorizontalAlignment="Left" Margin="30,560,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18"/>
+            
+            <ComboBox x:Name="LogOutReason" HorizontalAlignment="Left" Margin="150,640,0,0" VerticalAlignment="Top" Width="150"/>
+            
+            <TextBlock HorizontalAlignment="Left" Margin="30,643,0,0" TextWrapping="Wrap" Text="Log Out Reason:" VerticalAlignment="Top"/>
+            
+            <Button x:Name="LogOutSerial" Content="Log Out Serial #" HorizontalAlignment="Left" Margin="310,638,0,0" VerticalAlignment="Top" Width="130" Height="28"/>
+            
+            <CheckBox x:Name="OGPCheck" Content="This is an online pick " HorizontalAlignment="Left" Margin="500,643,0,0" VerticalAlignment="Top" Height="24" Width="210"/>
 
+        </Grid>
     </Grid>
 </Window>

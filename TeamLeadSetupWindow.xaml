@@ -7,7 +7,21 @@
         mc:Ignorable="d"
         Title="TeamLeadSetupWindow" Height="450" Width="800">
     <Grid>
-        <StackPanel HorizontalAlignment="Center" Orientation="Vertical" VerticalAlignment="Center" Height="297">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header with Profile and Sign Out -->
+        <DockPanel Grid.Row="0" Margin="10">
+            <Button x:Name="ProfileButton" Content="Profile" Click="ProfileButton_Click" 
+                    DockPanel.Dock="Left" Padding="10,5" Margin="0,0,10,0"/>
+            <Button x:Name="SignOutButton" Content="Sign Out" Click="SignOut_Click" 
+                    DockPanel.Dock="Right" Padding="10,5"/>
+        </DockPanel>
+        
+        <!-- Main Content -->
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" Orientation="Vertical" VerticalAlignment="Center" Height="297">
             <TextBlock x:Name="Title" TextWrapping="Wrap" Text="New Team Lead Setup" FontSize="24"/>
             <TextBlock x:Name="UserIdGuide" TextWrapping="Wrap" Text="Walmart User ID:"/>
             <TextBox x:Name="UserNameIdTeamLeadBox" TextWrapping="Wrap" Width="120"/>

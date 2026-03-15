@@ -34,6 +34,10 @@ namespace Entertainment
             Loaded += ComputerLog_Loaded;
             // Save on window close
             Closing += ComputerLog_Closing;
+            
+            // Wire up header buttons
+            ProfileButton.Click += ProfileButton_Click;
+            SignOutButton.Click += SignOut_Click;
         }
 
         private void ComputerLog_Loaded(object sender, RoutedEventArgs e)
@@ -44,6 +48,24 @@ namespace Entertainment
         private void ComputerLog_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
             App.SaveAll();
+        }
+
+        private void SignOut_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+            App.CurrentUser = null;
+            var login = new LoginPage();
+            login.Show();
+        }
+
+        private void ProfileButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (App.CurrentUser != null)
+            {
+                var profileWindow = new ProfileWindow(App.CurrentUser);
+                profileWindow.Owner = this;
+                profileWindow.ShowDialog();
+            }
         }
 
         private void UPCSearchBox_TextChanged(object sender, TextChangedEventArgs e)

@@ -18,6 +18,9 @@ namespace Entertainment
             
             // Save on window close
             Closing += ProfileWindow_Closing;
+            
+            // Wire up header button
+            SignOutButton.Click += SignOut_Click;
         }
 
         private void ProfileWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
@@ -212,6 +215,14 @@ namespace Entertainment
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void SignOut_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+            App.CurrentUser = null;
+            var login = new LoginPage();
+            login.Show();
         }
     }
 }

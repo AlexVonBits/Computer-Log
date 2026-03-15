@@ -29,6 +29,10 @@ namespace Entertainment
             Resources["StatusToColorConverter"] = new StatusToColorConverter();
             Resources["NullToVisibilityConverter"] = new NullToVisibilityConverter();
             
+            // Wire up header buttons
+            ProfileButton.Click += ProfileButton_Click;
+            SignOutButton.Click += SignOut_Click;
+            
             UserDisplayText.Text = $"Logged in as: {userName}";
             UpdateUI();
             
@@ -234,6 +238,24 @@ namespace Entertainment
             RFIDIssueButton.IsEnabled = false;
             WorkOnItButton.IsEnabled = false;
             SkipButton.IsEnabled = false;
+        }
+
+        private void SignOut_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+            App.CurrentUser = null;
+            var login = new LoginPage();
+            login.Show();
+        }
+
+        private void ProfileButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (App.CurrentUser != null)
+            {
+                var profileWindow = new ProfileWindow(App.CurrentUser);
+                profileWindow.Owner = this;
+                profileWindow.ShowDialog();
+            }
         }
     }
 

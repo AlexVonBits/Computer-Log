@@ -89,7 +89,51 @@
             <TextBlock x:Name="UPCBox" HorizontalAlignment="Left" Margin="30,460,0,0" TextWrapping="Wrap" Text="UPC:" VerticalAlignment="Top" Height="18"/>
             <TextBlock x:Name="SerialTextBox" HorizontalAlignment="Left" Margin="30,485,0,0" TextWrapping="Wrap" Text="Serial #:" VerticalAlignment="Top"/>
             
-            <ListBox x:Name="ResultsListBox" SelectionChanged="ResultsListBox_SelectionChanged" Margin="30,520,30,100"/>
+            <ListBox x:Name="ResultsListBox" SelectionChanged="ResultsListBox_SelectionChanged" Margin="30,520,30,100">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="0,2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Serial Number:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SerialNumber}"/>
+                                
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="UPC:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding UPC[0]}"/>
+                                
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Status:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Status}"/>
+                                
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Created By:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding CreatedBy}"/>
+                                
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Created At:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding CreatedAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"/>
+                                
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Sold By:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding SoldBy}"/>
+                                
+                                <TextBlock Grid.Row="6" Grid.Column="0" Text="Sold At:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding SoldAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"/>
+                                
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
             
             <!-- Log Out Section -->
             <TextBlock HorizontalAlignment="Left" Margin="30,560,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18"/>

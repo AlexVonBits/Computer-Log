@@ -260,7 +260,7 @@ namespace Entertainment
 
         private void LogOutSerial_Click(object sender, RoutedEventArgs e)
         {
-            if (ResultsListBox.SelectedItem is not InventoryItem selectedItem)
+            if (ResultsListView.SelectedItem is not InventoryItem selectedItem)
             {
                 MessageBox.Show("Please select an item from the search results first.", "No Item Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -298,7 +298,7 @@ namespace Entertainment
             // Clear the form
             SerialTextBox.Text = "Serial #:";
             UPCBox.Text = "UPC:";
-            ResultsListBox.ItemsSource = null;
+            ResultsListView.ItemsSource = null;
             LogOutReason.SelectedIndex = -1;
             
             App.SaveAll();
@@ -327,7 +327,7 @@ namespace Entertainment
                 return;
             }
 
-            ResultsListBox.ItemsSource = matches;
+            ResultsListView.ItemsSource = matches;
             
             App.SaveAll();
         }
@@ -346,13 +346,23 @@ namespace Entertainment
 
         private void ShowItem(InventoryItem item)
         {
-            SerialTextBox.Text = item.SerialNumber;
-            UPCBox.Text = item.UPC != null ? string.Join(", ", item.UPC) : string.Empty;
+            SerialTextBox.Text = $"Serial #: {item.SerialNumber}";
+            UPCBox.Text = $"UPC: {(item.UPC != null ? string.Join(", ", item.UPC) : string.Empty)}";
+            
+            // Show additional details as a message when item is selected
+            string createdAtStr = item.CreatedAt.HasValue ? item.CreatedAt.Value.ToString("g") : "N/A";
+            string soldAtStr = item.SoldAt.HasValue ? item.SoldAt.Value.ToString("g") : "N/A";
+            
+            string details = $"Make: {item.Make ?? "N/A"} | Type: {item.Type ?? "N/A"} | Status: {item.Status}\n" +
+                           $"CreatedBy: {item.CreatedBy ?? "N/A"} | CreatedAt: {createdAtStr}\n" +
+                           $"SoldBy: {item.SoldBy ?? "N/A"} | SoldAt: {soldAtStr}";
+            
+            MessageBox.Show(details, "Item Details", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void ResultsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ResultsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ResultsListBox.SelectedItem is InventoryItem selectedItem)
+            if (ResultsListView.SelectedItem is InventoryItem selectedItem)
             {
                 ShowItem(selectedItem);
             }

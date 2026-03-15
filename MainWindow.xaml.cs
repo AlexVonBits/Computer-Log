@@ -299,7 +299,7 @@ namespace Entertainment
                 MessageBox.Show("Please enter a serial number or UPC to search.", "Input Required", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            var items = Inventory.InventoryStore.Load().InventoryItems;
+            var items = Entertainment.Inventory.InventoryStore.Load().InventoryItems;
 
             var matches = items.Where(item =>
                 Matches(serialInput, item.SerialNumber) ||

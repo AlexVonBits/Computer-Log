@@ -68,6 +68,11 @@ namespace Entertainment
             }
         }
 
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
         private void UPCSearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             string searchText = UPCSearchBox.Text?.Trim() ?? string.Empty;
@@ -260,7 +265,7 @@ namespace Entertainment
 
         private void LogOutSerial_Click(object sender, RoutedEventArgs e)
         {
-            if (ResultsListView.SelectedItem is not InventoryItem selectedItem)
+            if (ResultsListBox.SelectedItem is not InventoryItem selectedItem)
             {
                 MessageBox.Show("Please select an item from the search results first.", "No Item Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -298,7 +303,7 @@ namespace Entertainment
             // Clear the form
             SerialTextBox.Text = "Serial #:";
             UPCBox.Text = "UPC:";
-            ResultsListView.ItemsSource = null;
+            ResultsListBox.ItemsSource = null;
             LogOutReason.SelectedIndex = -1;
             
             App.SaveAll();
@@ -314,7 +319,7 @@ namespace Entertainment
                 MessageBox.Show("Please enter a serial number or UPC to search.", "Input Required", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            var items = Inventory.InventoryStore.Load().InventoryItems;
+            var items = Entertainment.Inventory.InventoryStore.Load().InventoryItems;
 
             var matches = items.Where(item =>
                 Matches(serialInput, item.SerialNumber) ||
@@ -327,7 +332,7 @@ namespace Entertainment
                 return;
             }
 
-            ResultsListView.ItemsSource = matches;
+            ResultsListBox.ItemsSource = matches;
             
             App.SaveAll();
         }
@@ -360,9 +365,9 @@ namespace Entertainment
             MessageBox.Show(details, "Item Details", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void ResultsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ResultsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ResultsListView.SelectedItem is InventoryItem selectedItem)
+            if (ResultsListBox.SelectedItem is InventoryItem selectedItem)
             {
                 ShowItem(selectedItem);
             }

@@ -224,5 +224,10 @@ namespace Entertainment
             var login = new LoginPage();
             login.Show();
         }
+
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }

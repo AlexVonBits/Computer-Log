@@ -12,12 +12,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <!-- Header with Profile and Sign Out -->
+        <!-- Header -->
         <DockPanel Grid.Row="0" Margin="10">
-            <Button x:Name="ProfileButton" Content="Profile" Click="ProfileButton_Click" 
-                    DockPanel.Dock="Left" Padding="10,5" Margin="0,0,10,0"/>
-            <Button x:Name="SignOutButton" Content="Sign Out" Click="SignOut_Click" 
-                    DockPanel.Dock="Right" Padding="10,5"/>
+            <TextBlock x:Name="HeaderTitle" Text="New Team Lead Setup" FontSize="16" FontWeight="Bold" 
+                       VerticalAlignment="Center" DockPanel.Dock="Left"/>
         </DockPanel>
         
         <!-- Main Content -->

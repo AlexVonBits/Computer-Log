@@ -30,10 +30,6 @@ namespace Entertainment
             Loaded += TeamLeadSetupWindow_Loaded;
             // Save on window close
             Closing += TeamLeadSetupWindow_Closing;
-            
-            // Wire up header buttons
-            ProfileButton.Click += ProfileButton_Click;
-            SignOutButton.Click += SignOut_Click;
         }
 
         private void TeamLeadSetupWindow_Loaded(object sender, RoutedEventArgs e)
@@ -45,25 +41,6 @@ namespace Entertainment
         {
             App.SaveAll();
         }
-
-        private void SignOut_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-            App.CurrentUser = null;
-            var login = new LoginPage();
-            login.Show();
-        }
-
-        private void ProfileButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (App.CurrentUser != null)
-            {
-                var profileWindow = new ProfileWindow(App.CurrentUser);
-                profileWindow.Owner = this;
-                profileWindow.ShowDialog();
-            }
-        }
-
 
         private void TeamLeadSetupSubmit_Click(object sender, RoutedEventArgs e)
         {
@@ -95,8 +72,14 @@ namespace Entertainment
 
             App.Store.Save();
             App.SaveAll();
+            
+            // Close this window and open MainWindow
             this.DialogResult = true;
             this.Close();
+            
+            // Open MainWindow
+            var mainWindow = new MainWindow();
+            mainWindow.Show();
         }
     }
 }

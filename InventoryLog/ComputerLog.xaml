@@ -12,8 +12,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <!-- Header with Profile and Sign Out -->
+        <!-- Header with Back, Profile and Sign Out -->
         <DockPanel Grid.Row="0" Margin="10">
+            <Button x:Name="BackButton" Content="Back" Click="BackButton_Click" 
+                    DockPanel.Dock="Left" Padding="10,5" Margin="0,0,10,0"/>
             <Button x:Name="ProfileButton" Content="Profile" Click="ProfileButton_Click" 
                     DockPanel.Dock="Left" Padding="10,5" Margin="0,0,10,0"/>
             <Button x:Name="SignOutButton" Content="Sign Out" Click="SignOut_Click" 

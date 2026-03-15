@@ -257,6 +257,11 @@ namespace Entertainment
                 profileWindow.ShowDialog();
             }
         }
+
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 
     // ViewModel for displaying inventory items

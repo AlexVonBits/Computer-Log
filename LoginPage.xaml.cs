@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Controls;
 using Entertainment.Security;
 using Entertainment.Users;
 
@@ -15,7 +16,7 @@ namespace Entertainment
         private void SignIn_Click(object sender, RoutedEventArgs e)
         {
             string username = UsernameBox.Text.Trim().ToUpperInvariant();
-            string password = PasswordBox.Text.ToUpperInvariant();
+            string password = PasswordBox.Password.ToUpperInvariant();
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
@@ -50,9 +51,9 @@ namespace Entertainment
 
         private void OpenMainWindow()
         {
-            this.Close();
             var mainWindow = new MainWindow();
             mainWindow.Show();
+            this.Close();
         }
     }
 }

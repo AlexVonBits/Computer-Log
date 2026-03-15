@@ -5,14 +5,52 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Entertainment"
         mc:Ignorable="d"
-        Title="LoginPage" Height="450" Width="800">
+        Title="LoginPage" Height="450" Width="800"
+        MinHeight="400" MinWidth="500"
+        WindowStartupLocation="CenterScreen">
     <Grid>
-        <Image Margin="190,37,190,217" Source="/Images/Walmart-Logo-2008-present.jpg" Stretch="Fill"/>
-        <PasswordBox x:Name="Password" HorizontalAlignment="Center" Margin="0,301,0,0" VerticalAlignment="Top" Width="120"/>
-        <TextBox x:Name="UsernameBox" HorizontalAlignment="Center" Margin="0,248,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-        <TextBlock x:Name="UserID" HorizontalAlignment="Left" Margin="263,249,0,0" TextWrapping="Wrap" Text="User Name:" VerticalAlignment="Top"/>
-        <TextBlock x:Name="PasswordText" HorizontalAlignment="Left" Margin="272,302,0,0" TextWrapping="Wrap" Text="Password:" VerticalAlignment="Top"/>
-        <Button x:Name="SignIn" Content="Sign In" HorizontalAlignment="Center" Margin="0,347,0,0" VerticalAlignment="Top" Width="72"/>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Logo - centered in upper area -->
+        <Image Grid.Row="0" Grid.Column="1" 
+               Source="/Images/Walmart-Logo-2008-present.jpg" 
+               Stretch="Uniform" 
+               MaxHeight="150" 
+               Margin="0,30,0,20"
+               VerticalAlignment="Center"/>
+        
+        <!-- Username row -->
+        <TextBlock x:Name="UserID" Grid.Row="1" Grid.Column="1" 
+                   TextWrapping="Wrap" Text="User Name:" 
+                   HorizontalAlignment="Right" Margin="0,0,10,5"
+                   VerticalAlignment="Center"/>
+        <TextBox x:Name="UsernameBox" Grid.Row="1" Grid.Column="2" 
+                 TextWrapping="Wrap" Width="200" 
+                 HorizontalAlignment="Left" Margin="0,0,0,5"/>
+        
+        <!-- Password row -->
+        <TextBlock x:Name="PasswordText" Grid.Row="2" Grid.Column="1" 
+                   TextWrapping="Wrap" Text="Password:" 
+                   HorizontalAlignment="Right" Margin="0,0,10,20"
+                   VerticalAlignment="Center"/>
+        <PasswordBox x:Name="PasswordBox" Grid.Row="2" Grid.Column="2" 
+                     Width="200" 
+                     HorizontalAlignment="Left" Margin="0,0,0,20"/>
+        
+        <!-- Sign In button -->
+        <Button x:Name="SignIn" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
+                Content="Sign In" Width="120" Height="35"
+                HorizontalAlignment="Center" Margin="0,0,0,30"/>
     </Grid>
 </Window>

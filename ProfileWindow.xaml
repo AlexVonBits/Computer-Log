@@ -18,10 +18,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Header with Back and Sign Out -->
+        <!-- Header with Sign Out -->
         <DockPanel Grid.Row="0" Margin="0,0,0,15">
-            <Button x:Name="BackButton" Content="Back" Click="BackButton_Click" 
-                    DockPanel.Dock="Left" Padding="10,5" Margin="0,0,10,0"/>
             <Button x:Name="SignOutButton" Content="Sign Out" Click="SignOut_Click" 
                     DockPanel.Dock="Right" Padding="10,5"/>
         </DockPanel>
@@ -120,8 +118,5 @@
         <!-- Create New TeamLead Button (TeamLead Only) -->
         <Button x:Name="CreateTeamLeadButton" Grid.Row="4" Content="Create New TeamLead" 
                 Visibility="Collapsed" Click="CreateTeamLeadButton_Click" Margin="0,0,0,15" Width="150" HorizontalAlignment="Left"/>
-
-        <!-- Close Button -->
-        <Button Grid.Row="7" Content="Close" Width="100" HorizontalAlignment="Right" Click="CloseButton_Click"/>
     </Grid>
 </Window>

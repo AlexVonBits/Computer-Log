@@ -28,16 +28,13 @@ namespace Entertainment
                 "Other"
             };
 
-            LogOutSerial.Click += LogOutSerial_Click;
-            
             // Save on window open
             Loaded += ComputerLog_Loaded;
             // Save on window close
             Closing += ComputerLog_Closing;
             
-            // Wire up header buttons
-            ProfileButton.Click += ProfileButton_Click;
-            SignOutButton.Click += SignOut_Click;
+            // Note: Most button click handlers are already wired up in XAML via Click attribute
+            // Only wire up additional handlers here if needed
         }
 
         private void ComputerLog_Loaded(object sender, RoutedEventArgs e)
@@ -66,11 +63,6 @@ namespace Entertainment
                 profileWindow.Owner = this;
                 profileWindow.ShowDialog();
             }
-        }
-
-        private void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
         }
 
         private void UPCSearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -378,6 +370,10 @@ namespace Entertainment
             // Show the new UPC panel
             NewUPCPanel.Visibility = Visibility.Visible;
             NewUPCBox.Text = UPCSearchBox.Text; // Pre-fill with search text
+            
+            // Force layout update to ensure the panel is rendered before focusing
+            UpdateLayout();
+            
             NewUPCBox.Focus();
             
             // Select all text in the UPC box for easy replacement
@@ -387,10 +383,9 @@ namespace Entertainment
         private void SaveNewUPCButton_Click(object sender, RoutedEventArgs e)
         {
             string newUPC = NewUPCBox.Text?.Trim() ?? string.Empty;
-            string make = NewUPCMakeBox.Text?.Trim() ?? string.Empty;
-            string type = NewUPCTypeBox.Text?.Trim() ?? string.Empty;
 
-            if (string.IsNullOrEmpty(newUPC))
+            // Validate that there's actually input - more robust check
+            if (string.IsNullOrWhiteSpace(newUPC))
             {
                 MessageBox.Show("UPC is required.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 NewUPCBox.Focus();
@@ -399,9 +394,10 @@ namespace Entertainment
 
             var store = InventoryStore.Load();
 
-            // Check if UPC already exists in inventory
+            // Check if UPC already exists in inventory - use Matches function for consistency
+            // This finds existing UPCs by full match or last 4 digits
             bool upcExists = store.InventoryItems
-                .Any(item => item.UPC?.Any(u => u.Equals(newUPC, StringComparison.OrdinalIgnoreCase)) == true);
+                .Any(item => item.UPC?.Any(u => Matches(newUPC, u)) == true);
 
             if (upcExists)
             {
@@ -410,7 +406,7 @@ namespace Entertainment
             }
 
             // Store the new UPC info for later use when logging in serials
-            _newUPCs[newUPC] = (string.IsNullOrEmpty(make) ? null : make, string.IsNullOrEmpty(type) ? null : type);
+            _newUPCs[newUPC] = (string.IsNullOrEmpty(NewUPCMakeBox.Text?.Trim()) ? null : NewUPCMakeBox.Text?.Trim(), string.IsNullOrEmpty(NewUPCTypeBox.Text?.Trim()) ? null : NewUPCTypeBox.Text?.Trim());
 
             // Hide the panel and clear fields
             NewUPCPanel.Visibility = Visibility.Collapsed;

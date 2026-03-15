@@ -212,22 +212,12 @@ namespace Entertainment
             }
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
         private void SignOut_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
             App.CurrentUser = null;
             var login = new LoginPage();
             login.Show();
-        }
-
-        private void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
         }
     }
 }

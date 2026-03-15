@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using Entertainment.Security;
 using Entertainment.Users;
 
+
 namespace Entertainment
 {
     /// <summary>
@@ -24,7 +25,23 @@ namespace Entertainment
         {
             InitializeComponent();
             _store = store;
+            
+            // Save on window open
+            Loaded += TeamLeadSetupWindow_Loaded;
+            // Save on window close
+            Closing += TeamLeadSetupWindow_Closing;
         }
+
+        private void TeamLeadSetupWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            App.SaveAll();
+        }
+
+        private void TeamLeadSetupWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            App.SaveAll();
+        }
+
 
         private void TeamLeadSetupSubmit_Click(object sender, RoutedEventArgs e)
         {
@@ -32,6 +49,7 @@ namespace Entertainment
             string password = PasswordTeamLeadBox.Text;
             string firstName = FirstNameTeamLeadBox.Text;
             string lastName = LastNameTeamLeadBox.Text;
+
 
             username = username.ToUpperInvariant();
             password = password.ToUpperInvariant();
@@ -48,11 +66,14 @@ namespace Entertainment
             teamLead.FirstName = firstName;
             teamLead.LastName = lastName;
 
+
             teamLead.Initials = $"{firstName[0]}{lastName[0]}".ToUpperInvariant();
 
             teamLead.PasswordHash = PasswordSecurity.HashPassword(password);
 
             App.Store.Save();
+            App.SaveAll();
+            this.DialogResult = true;
             this.Close();
         }
     }

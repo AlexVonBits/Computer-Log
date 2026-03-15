@@ -10,47 +10,59 @@
         WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
         
         <!-- Logo - centered in upper area -->
-        <Image Grid.Row="0" Grid.Column="1" 
+        <Image Grid.Row="0" 
                Source="/Images/Walmart-Logo-2008-present.jpg" 
                Stretch="Uniform" 
                MaxHeight="150" 
                Margin="0,30,0,20"
-               VerticalAlignment="Center"/>
+               HorizontalAlignment="Center"/>
         
-        <!-- Username row -->
-        <TextBlock x:Name="UserID" Grid.Row="1" Grid.Column="1" 
-                   TextWrapping="Wrap" Text="User Name:" 
-                   HorizontalAlignment="Right" Margin="0,0,10,5"
-                   VerticalAlignment="Center"/>
-        <TextBox x:Name="UsernameBox" Grid.Row="1" Grid.Column="2" 
-                 TextWrapping="Wrap" Width="200" 
-                 HorizontalAlignment="Left" Margin="0,0,0,5"/>
-        
-        <!-- Password row -->
-        <TextBlock x:Name="PasswordText" Grid.Row="2" Grid.Column="1" 
-                   TextWrapping="Wrap" Text="Password:" 
-                   HorizontalAlignment="Right" Margin="0,0,10,20"
-                   VerticalAlignment="Center"/>
-        <PasswordBox x:Name="PasswordBox" Grid.Row="2" Grid.Column="2" 
-                     Width="200" 
-                     HorizontalAlignment="Left" Margin="0,0,0,20"/>
-        
-        <!-- Sign In button -->
-        <Button x:Name="SignIn" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
-                Content="Sign In" Width="120" Height="35"
-                HorizontalAlignment="Center" Margin="0,0,0,30"/>
+        <!-- Login Form Container - centered horizontally -->
+        <Border Grid.Row="1" Grid.RowSpan="3" 
+                Background="#252525" 
+                CornerRadius="8" 
+                Padding="30,25"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+            <StackPanel>
+                <!-- Username row -->
+                <TextBlock x:Name="UserID" 
+                           TextWrapping="Wrap" Text="User Name:" 
+                           Foreground="White" FontSize="14"
+                           Margin="0,0,0,8"
+                           HorizontalAlignment="Left"/>
+                <TextBox x:Name="UsernameBox" 
+                         TextWrapping="Wrap" Width="250" 
+                         Margin="0,0,0,20"
+                         Padding="10,8"
+                         FontSize="14"/>
+                
+                <!-- Password row -->
+                <TextBlock x:Name="PasswordText" 
+                           TextWrapping="Wrap" Text="Password:" 
+                           Foreground="White" FontSize="14"
+                           Margin="0,0,0,8"
+                           HorizontalAlignment="Left"/>
+                <PasswordBox x:Name="PasswordBox" 
+                             Width="250" 
+                             Margin="0,0,0,25"
+                             Padding="10,8"
+                             FontSize="14"/>
+                
+                <!-- Sign In button -->
+                <Button x:Name="SignIn" 
+                        Content="Sign In" Width="120" Height="35"
+                        HorizontalAlignment="Center"
+                        FontSize="14" FontWeight="SemiBold"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>

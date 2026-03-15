@@ -7,7 +7,9 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Entertainment.Inventory;
+using QRCoder;
 
 namespace Entertainment
 {
@@ -16,12 +18,14 @@ namespace Entertainment
         private InventoryStore _inventoryStore;
         private List<InventoryItemViewModel> _currentItems;
         private string _currentUser;
+        private string _sessionId;
 
         public InventoryVerification(string userName = "Unknown")
         {
             InitializeComponent();
             
             _currentUser = userName;
+            _sessionId = Guid.NewGuid().ToString("N")[..8].ToUpper();
             _inventoryStore = InventoryStore.Load();
             _currentItems = new List<InventoryItemViewModel>();
             
@@ -134,6 +138,64 @@ namespace Entertainment
             }
             
             UpdateUI();
+            
+            // Generate QR code with UPC of the item(s) being verified
+            GenerateUPCQRCode(_currentItems);
+        }
+
+        private void GenerateUPCQRCode(List<InventoryItemViewModel> items)
+        {
+            if (items.Count == 0)
+            {
+                SessionQRCode.Source = null;
+                SessionInfoText.Text = "No item selected";
+                return;
+            }
+            
+            // Get all UPCs from the items
+            var allUPCs = items
+                .SelectMany(i => i.UPCList)
+                .Distinct()
+                .ToList();
+            
+            if (allUPCs.Count == 0)
+            {
+                SessionQRCode.Source = null;
+                SessionInfoText.Text = "No UPC";
+                return;
+            }
+            
+            // QR code content is just the UPC(s) - comma separated if multiple
+            string qrContent = string.Join(",", allUPCs);
+            
+            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+            {
+                using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.M))
+                {
+                    using (QRCode qrCode = new QRCode(qrCodeData))
+                    {
+                        using (BitmapImage qrBitmap = new BitmapImage())
+                        {
+                            var bitmap = qrCode.GetGraphic(20);
+                            using (var memory = new System.IO.MemoryStream())
+                            {
+                                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                                memory.Position = 0;
+                                qrBitmap.BeginInit();
+                                qrBitmap.StreamSource = memory;
+                                qrBitmap.CacheOption = BitmapCacheOption.OnLoad;
+                                qrBitmap.EndInit();
+                                qrBitmap.Freeze();
+                                SessionQRCode.Source = qrBitmap;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Display the UPC(s) in the text
+            string upcDisplay = allUPCs.Count == 1 ? allUPCs[0] : $"{allUPCs[0]} (+{allUPCs.Count - 1} more)";
+            SessionInfoText.Text = upcDisplay;
         }
 
         private void UpdateUI()
@@ -278,6 +340,8 @@ namespace Entertainment
         public string? LastVerifiedBy => _item.LastVerifiedBy;
         
         public string UPCDisplay => _item.UPC.Count > 0 ? string.Join(", ", _item.UPC) : "None";
+        
+        public List<string> UPCList => _item.UPC.ToList();
         
         public string LastVerifiedDisplay
         {

@@ -139,7 +139,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
-        <!-- Header with Profile and Sign Out -->
+        <!-- Header with Profile, Sign Out, and QR Code -->
         <DockPanel Grid.Row="0" Margin="0,0,0,20">
             <Button x:Name="ProfileButton" Content="Profile" Click="ProfileButton_Click" 
                     DockPanel.Dock="Left" Padding="10,5" Margin="0,0,10,0"/>
@@ -147,6 +147,19 @@
                     DockPanel.Dock="Right" Padding="10,5"/>
             <TextBlock x:Name="UserDisplayText" FontSize="14" Foreground="#888" 
                        VerticalAlignment="Center" DockPanel.Dock="Left"/>
+            
+            <!-- QR Code Section - right side of header -->
+            <Border DockPanel.Dock="Right" Background="#252525" CornerRadius="6" 
+                    Padding="10" Margin="20,0,0,0" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <Image x:Name="SessionQRCode" Width="60" Height="60" 
+                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Scan to Verify" Foreground="#AAA" FontSize="10"/>
+                        <TextBlock x:Name="SessionInfoText" Foreground="#666" FontSize="9"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
         </DockPanel>
         
         <!-- Barcode Input Section -->

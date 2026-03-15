@@ -305,6 +305,7 @@ namespace Entertainment
 
         private void ResultsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // Prevent duplicate MessageBox displays by checking if this is a valid selection change
             if (ResultsListBox.SelectedItem is InventoryItem selectedItem)
             {
                 ShowItem(selectedItem);
@@ -435,10 +436,10 @@ namespace Entertainment
 
             var store = InventoryStore.Load();
 
-            // Check if UPC already exists in inventory - use Matches function for consistency
-            // This finds existing UPCs by full match or last 4 digits
+            // Check if UPC already exists in inventory - use exact match for validation
+            // This ensures new UPCs aren't rejected due to partial digit matching
             bool upcExists = store.InventoryItems
-                .Any(item => item.UPC?.Any(u => Matches(newUPC, u)) == true);
+                .Any(item => item.UPC?.Any(u => string.Equals(newUPC, u?.Trim(), StringComparison.OrdinalIgnoreCase)) == true);
 
             if (upcExists)
             {

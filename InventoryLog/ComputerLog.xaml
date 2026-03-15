@@ -1,0 +1,22 @@
+﻿<Window x:Class="Entertainment.ComputerLog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Entertainment"
+        mc:Ignorable="d"
+        Title="ComputerLog" Height="450" Width="800">
+    <Grid>
+        <TextBox x:Name="SerialGetInput" HorizontalAlignment="Center" Margin="0,96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="18"/>
+        <TextBlock x:Name="UPCGetInput" HorizontalAlignment="Center" Margin="0,40,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Width="120"/>
+        <Button x:Name="Search" Content="Search" HorizontalAlignment="Center" Margin="0,144,0,0" VerticalAlignment="Top" Width="120" Height="28" Click="Search_Click"/>
+        <TextBlock x:Name="UPCBox" HorizontalAlignment="Left" Margin="278,40,0,0" TextWrapping="Wrap" Text="UPC:" VerticalAlignment="Top" Height="18"/>
+        <TextBlock x:Name="SerialTextBox" HorizontalAlignment="Left" Margin="278,96,0,0" TextWrapping="Wrap" Text="Serial #:" VerticalAlignment="Top"/>
+        <ListBox x:Name="ResultsListBox" SelectionChanged="ResultsListBox_SelectionChanged" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="185,200,185,126"/>
+        <Button x:Name="LogOutSerial" Content="Log Out Serial #" HorizontalAlignment="Center" Margin="0,384,0,0" VerticalAlignment="Top" Width="120" Height="28"/>
+        <CheckBox x:Name="OGPCheck" Content="This is an online pick " HorizontalAlignment="Left" Margin="340,360,0,0" VerticalAlignment="Top" Height="24" Width="210"/>
+        <TextBlock HorizontalAlignment="Center" Margin="0,70,0,0" TextWrapping="Wrap" Text="OR" VerticalAlignment="Top"/>
+        <ComboBox x:Name="LogOutReason" HorizontalAlignment="Center" Margin="0,328,0,0" VerticalAlignment="Top" Width="120"/>
+
+    </Grid>
+</Window>

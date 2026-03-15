@@ -1,0 +1,24 @@
+﻿<Window x:Class="Entertainment.TeamLeadSetupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Entertainment"
+        mc:Ignorable="d"
+        Title="TeamLeadSetupWindow" Height="450" Width="800">
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" Orientation="Vertical" VerticalAlignment="Center" Height="297">
+            <TextBlock x:Name="Title" TextWrapping="Wrap" Text="New Team Lead Setup" FontSize="24"/>
+            <TextBlock x:Name="UserIdGuide" TextWrapping="Wrap" Text="Walmart User ID:"/>
+            <TextBox x:Name="UserNameIdTeamLeadBox" TextWrapping="Wrap" Width="120"/>
+            <TextBlock x:Name="PasswordGuide" TextWrapping="Wrap" Text="Walmart Password:"/>
+            <TextBox x:Name="PasswordTeamLeadBox" TextWrapping="Wrap" Width="120"/>
+            <TextBlock x:Name="Firstnameguide" TextWrapping="Wrap" Text="First Name:"/>
+            <TextBox x:Name="FirstNameTeamLeadBox" TextWrapping="Wrap" Width="120"/>
+            <TextBlock x:Name="Lastnameguide" TextWrapping="Wrap" Text="Last Name:"/>
+            <TextBox x:Name="LastNameTeamLeadBox" TextWrapping="Wrap" Width="120"/>
+            <Button x:Name="TeamLeadSetupSubmit" Content="Submit" Width="148" Height="43" Click="TeamLeadSetupSubmit_Click" Margin="0,10,0,0"/>
+        </StackPanel>
+
+    </Grid>
+</Window>

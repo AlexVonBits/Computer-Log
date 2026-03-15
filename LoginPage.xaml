@@ -1,0 +1,18 @@
+﻿<Window x:Class="Entertainment.LoginPage"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Entertainment"
+        mc:Ignorable="d"
+        Title="LoginPage" Height="450" Width="800">
+    <Grid>
+        <Image Margin="190,37,190,217" Source="/Images/Walmart-Logo-2008-present.jpg" Stretch="Fill"/>
+        <PasswordBox x:Name="Password" HorizontalAlignment="Center" Margin="0,301,0,0" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="UsernameBox" HorizontalAlignment="Center" Margin="0,248,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBlock x:Name="UserID" HorizontalAlignment="Left" Margin="263,249,0,0" TextWrapping="Wrap" Text="User Name:" VerticalAlignment="Top"/>
+        <TextBlock x:Name="PasswordText" HorizontalAlignment="Left" Margin="272,302,0,0" TextWrapping="Wrap" Text="Password:" VerticalAlignment="Top"/>
+        <Button x:Name="SignIn" Content="Sign In" HorizontalAlignment="Center" Margin="0,347,0,0" VerticalAlignment="Top" Width="72"/>
+
+    </Grid>
+</Window>

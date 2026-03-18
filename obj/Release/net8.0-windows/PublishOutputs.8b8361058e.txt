@@ -1,0 +1,5 @@
+/home/workspace/Computer-Log/publish-release/Entertainment
+/home/workspace/Computer-Log/publish-release/Entertainment.dll
+/home/workspace/Computer-Log/publish-release/Entertainment.deps.json
+/home/workspace/Computer-Log/publish-release/Entertainment.runtimeconfig.json
+/home/workspace/Computer-Log/publish-release/Entertainment.pdb

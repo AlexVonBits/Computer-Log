@@ -8,6 +8,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using Entertainment.Inventory;
 using QRCoder;
 
@@ -19,6 +20,11 @@ namespace Entertainment
         private List<InventoryItemViewModel> _currentItems;
         private string _currentUser;
         private string _sessionId;
+        
+        // QR Slideshow functionality
+        private List<string> _allUPCs = new();
+        private int _currentQRIndex = 0;
+        private DispatcherTimer? _autoAdvanceTimer;
 
         public InventoryVerification(string userName = "Unknown")
         {
@@ -38,6 +44,10 @@ namespace Entertainment
             SignOutButton.Click += SignOut_Click;
             
             UserDisplayText.Text = $"Logged in as: {userName}";
+            
+            // Load all UPCs for QR slideshow
+            LoadAllUPCsForSlideshow();
+            
             UpdateUI();
             
             BarcodeInputTextBox.Focus();
@@ -55,6 +65,12 @@ namespace Entertainment
 
         private void InventoryVerification_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
+            // Stop auto-advance timer if running
+            if (_autoAdvanceTimer != null)
+            {
+                _autoAdvanceTimer.Stop();
+                _autoAdvanceTimer = null;
+            }
             App.SaveAll();
         }
 
@@ -315,6 +331,136 @@ namespace Entertainment
                 var profileWindow = new ProfileWindow(App.CurrentUser);
                 profileWindow.Owner = this;
                 profileWindow.ShowDialog();
+            }
+        }
+
+        private void LoadAllUPCsForSlideshow()
+        {
+            // Get all unique UPCs from inventory
+            _allUPCs = _inventoryStore.InventoryItems
+                .SelectMany(i => i.UPC ?? new List<string>())
+                .Distinct()
+                .OrderBy(u => u)
+                .ToList();
+            
+            // Show first QR code if available
+            if (_allUPCs.Count > 0)
+            {
+                _currentQRIndex = 0;
+                GenerateQRCodeForUPC(_allUPCs[_currentQRIndex]);
+                UpdateQRCounter();
+            }
+            else
+            {
+                SessionQRCode.Source = null;
+                SessionInfoText.Text = "No UPCs in inventory";
+                QRCounterText.Text = "";
+                PrevQRButton.IsEnabled = false;
+                NextQRButton.IsEnabled = false;
+            }
+        }
+
+        private void GenerateQRCodeForUPC(string upc)
+        {
+            if (string.IsNullOrEmpty(upc))
+            {
+                SessionQRCode.Source = null;
+                SessionInfoText.Text = "No UPC";
+                return;
+            }
+            
+            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+            {
+                using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(upc, QRCodeGenerator.ECCLevel.M))
+                {
+                    using (QRCode qrCode = new QRCode(qrCodeData))
+                    {
+                        BitmapImage qrBitmap = new BitmapImage();
+                        var bitmap = qrCode.GetGraphic(20);
+                        using (var memory = new System.IO.MemoryStream())
+                        {
+                            bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                            memory.Position = 0;
+                            qrBitmap.BeginInit();
+                            qrBitmap.StreamSource = memory;
+                            qrBitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            qrBitmap.EndInit();
+                            qrBitmap.Freeze();
+                            SessionQRCode.Source = qrBitmap;
+                        }
+                    }
+                }
+            }
+            
+            SessionInfoText.Text = upc;
+        }
+
+        private void UpdateQRCounter()
+        {
+            if (_allUPCs.Count > 0)
+            {
+                QRCounterText.Text = $"{_currentQRIndex + 1} / {_allUPCs.Count}";
+                PrevQRButton.IsEnabled = _currentQRIndex > 0;
+                NextQRButton.IsEnabled = _currentQRIndex < _allUPCs.Count - 1;
+            }
+            else
+            {
+                QRCounterText.Text = "";
+                PrevQRButton.IsEnabled = false;
+                NextQRButton.IsEnabled = false;
+            }
+        }
+
+        private void PrevQR_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentQRIndex > 0)
+            {
+                _currentQRIndex--;
+                GenerateQRCodeForUPC(_allUPCs[_currentQRIndex]);
+                UpdateQRCounter();
+            }
+        }
+
+        private void NextQR_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentQRIndex < _allUPCs.Count - 1)
+            {
+                _currentQRIndex++;
+                GenerateQRCodeForUPC(_allUPCs[_currentQRIndex]);
+                UpdateQRCounter();
+            }
+        }
+
+        private void AutoAdvanceCheckBox_Changed(object sender, RoutedEventArgs e)
+        {
+            if (AutoAdvanceCheckBox.IsChecked == true)
+            {
+                // Start auto-advance timer (5 seconds)
+                _autoAdvanceTimer = new DispatcherTimer
+                {
+                    Interval = TimeSpan.FromSeconds(5)
+                };
+                _autoAdvanceTimer.Tick += AutoAdvanceTimer_Tick;
+                _autoAdvanceTimer.Start();
+            }
+            else
+            {
+                // Stop auto-advance timer
+                if (_autoAdvanceTimer != null)
+                {
+                    _autoAdvanceTimer.Stop();
+                    _autoAdvanceTimer = null;
+                }
+            }
+        }
+
+        private void AutoAdvanceTimer_Tick(object? sender, EventArgs e)
+        {
+            if (_allUPCs.Count > 0)
+            {
+                _currentQRIndex = (_currentQRIndex + 1) % _allUPCs.Count;
+                GenerateQRCodeForUPC(_allUPCs[_currentQRIndex]);
+                UpdateQRCounter();
             }
         }
     }

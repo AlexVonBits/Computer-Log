@@ -92,7 +92,8 @@ namespace Entertainment
 
         private void Inventory_Click(object sender, RoutedEventArgs e)
         {
-            var inventoryWindow = new InventoryVerification();
+            string userName = App.CurrentUser?.FirstName ?? "Unknown";
+            var inventoryWindow = new InventoryVerification(userName);
             inventoryWindow.Owner = this;
             inventoryWindow.ShowDialog();
         }
@@ -137,7 +138,22 @@ namespace Entertainment
             {
                 _selectedUPC = selectedUPC;
                 SelectedUPC.Text = selectedUPC;
+                
+                // Load all serial numbers for the selected UPC
+                LoadSerialsForUPC(selectedUPC);
             }
+        }
+
+        private void LoadSerialsForUPC(string upc)
+        {
+            var store = InventoryStore.Load();
+            var serials = store.InventoryItems
+                .Where(i => i.UPC?.Contains(upc) == true)
+                .Select(i => i.SerialNumber)
+                .OrderBy(s => s)
+                .ToList();
+            
+            SerialNumbersListBox.ItemsSource = serials;
         }
 
         private void AddSerialButton_Click(object sender, RoutedEventArgs e)

@@ -1,0 +1,5 @@
+/home/workspace/Computer-Log/bin/Release/net8.0-windows/publish/Entertainment
+/home/workspace/Computer-Log/bin/Release/net8.0-windows/publish/Entertainment.dll
+/home/workspace/Computer-Log/bin/Release/net8.0-windows/publish/Entertainment.deps.json
+/home/workspace/Computer-Log/bin/Release/net8.0-windows/publish/Entertainment.runtimeconfig.json
+/home/workspace/Computer-Log/bin/Release/net8.0-windows/publish/Entertainment.pdb

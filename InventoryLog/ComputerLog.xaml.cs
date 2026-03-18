@@ -28,6 +28,13 @@ namespace Entertainment
                 "Other"
             };
 
+            // Populate Status dropdown for Log In
+            StatusComboBox.ItemsSource = Entertainment.Inventory.InventoryStatus.AllStatuses;
+            StatusComboBox.SelectedIndex = 0; // Default to "In Stock"
+
+            // Populate Make/Type dropdown from existing inventory
+            PopulateMakeTypeComboBox();
+
             // Save on window open
             Loaded += ComputerLog_Loaded;
             // Save on window close
@@ -186,6 +193,21 @@ namespace Entertainment
                 return;
             }
 
+            // Get Make/Type from dropdown
+            string? selectedMakeType = MakeTypeComboBox.SelectedItem as string;
+            string? make = null;
+            string? type = null;
+            if (!string.IsNullOrEmpty(selectedMakeType))
+            {
+                // Parse the Make/Type string (format: "Make Type")
+                var parts = selectedMakeType.Split(' ', 2);
+                make = parts[0];
+                type = parts.Length > 1 ? parts[1] : null;
+            }
+
+            // Get Status from dropdown
+            string status = StatusComboBox.SelectedItem as string ?? "In Stock";
+
             var store = InventoryStore.Load();
             int successCount = 0;
             List<string> failedSerials = new();
@@ -197,11 +219,11 @@ namespace Entertainment
                 {
                     SerialNumber = serialNumber.ToUpperInvariant(),
                     UPC = new List<string> { _selectedUPC },
-                    Make = GetMakeFromUPC(_selectedUPC, store),
-                    Type = GetTypeFromUPC(_selectedUPC, store),
+                    Make = make ?? GetMakeFromUPC(_selectedUPC, store),
+                    Type = type ?? GetTypeFromUPC(_selectedUPC, store),
                     CreatedBy = App.CurrentUser.Initials,
                     CreatedAt = DateTime.Now,
-                    Status = "Available"
+                    Status = status
                 };
 
                 store.InventoryItems.Add(newItem);
@@ -444,6 +466,23 @@ namespace Entertainment
             NewUPCTypeBox.Clear();
             
             App.SaveAll();
+        }
+
+        private void PopulateMakeTypeComboBox()
+        {
+            var store = InventoryStore.Load();
+            var makeTypes = store.InventoryItems
+                .Where(i => !string.IsNullOrEmpty(i.Make) || !string.IsNullOrEmpty(i.Type))
+                .Select(i => $"{i.Make ?? ""} {i.Type ?? ""}".Trim())
+                .Where(s => !string.IsNullOrEmpty(s))
+                .Distinct()
+                .OrderBy(s => s)
+                .ToList();
+
+            // Add an empty option at the top
+            makeTypes.Insert(0, "");
+
+            MakeTypeComboBox.ItemsSource = makeTypes;
         }
     }
 }

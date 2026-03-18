@@ -58,11 +58,18 @@
             <TextBlock HorizontalAlignment="Left" Margin="30,175,0,0" TextWrapping="Wrap" Text="Serial Number:*" VerticalAlignment="Top"/>
             <TextBox x:Name="LogInSerialNumber" HorizontalAlignment="Left" Margin="150,172,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="24"/>
             
-            <Button x:Name="AddSerialButton" Content="Add Serial" HorizontalAlignment="Left" Margin="340,170,0,0" VerticalAlignment="Top" Width="90" Height="28" Click="AddSerialButton_Click"/>
+            <!-- Make/Type and Status Dropdowns -->
+            <TextBlock HorizontalAlignment="Left" Margin="340,175,0,0" TextWrapping="Wrap" Text="Make/Type:" VerticalAlignment="Top"/>
+            <ComboBox x:Name="MakeTypeComboBox" HorizontalAlignment="Left" Margin="420,172,0,0" VerticalAlignment="Top" Width="140" Height="24"/>
+            
+            <TextBlock HorizontalAlignment="Left" Margin="570,175,0,0" TextWrapping="Wrap" Text="Status:" VerticalAlignment="Top"/>
+            <ComboBox x:Name="StatusComboBox" HorizontalAlignment="Left" Margin="620,172,0,0" VerticalAlignment="Top" Width="120" Height="24"/>
+            
+            <Button x:Name="AddSerialButton" Content="Add Serial" HorizontalAlignment="Left" Margin="150,205,0,0" VerticalAlignment="Top" Width="90" Height="28" Click="AddSerialButton_Click"/>
             
             <!-- Serial Numbers List -->
-            <TextBlock HorizontalAlignment="Left" Margin="30,215,0,0" TextWrapping="Wrap" Text="Serial Numbers to Log In:" VerticalAlignment="Top"/>
-            <ListBox x:Name="SerialNumbersListBox" HorizontalAlignment="Left" Margin="150,212,0,0" VerticalAlignment="Top" Width="280" Height="100"/>
+            <TextBlock HorizontalAlignment="Left" Margin="30,250,0,0" TextWrapping="Wrap" Text="Serial Numbers to Log In:" VerticalAlignment="Top"/>
+            <ListBox x:Name="SerialNumbersListBox" HorizontalAlignment="Left" Margin="150,247,0,0" VerticalAlignment="Top" Width="280" Height="100"/>
             
             <Button x:Name="RemoveSerialButton" Content="Remove" HorizontalAlignment="Left" Margin="440,260,0,0" VerticalAlignment="Top" Width="80" Height="24" Click="RemoveSerialButton_Click"/>
             
@@ -142,7 +149,7 @@
             
             <TextBlock HorizontalAlignment="Left" Margin="30,643,0,0" TextWrapping="Wrap" Text="Log Out Reason:" VerticalAlignment="Top"/>
             
-            <Button x:Name="LogOutSerial" Content="Log Out Serial #" HorizontalAlignment="Left" Margin="310,638,0,0" VerticalAlignment="Top" Width="130" Height="28"/>
+            <Button x:Name="LogOutSerial" Content="Log Out Serial #" HorizontalAlignment="Left" Margin="310,638,0,0" VerticalAlignment="Top" Width="130" Height="28" Click="LogOutSerial_Click"/>
             
             <CheckBox x:Name="OGPCheck" Content="This is an online pick " HorizontalAlignment="Left" Margin="500,643,0,0" VerticalAlignment="Top" Height="24" Width="210"/>
 

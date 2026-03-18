@@ -39,6 +39,7 @@ namespace Entertainment
 
         private void ComputerLog_Loaded(object sender, RoutedEventArgs e)
         {
+            WindowState = WindowState.Maximized;
             App.SaveAll();
         }
 

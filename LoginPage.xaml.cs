@@ -11,6 +11,12 @@ namespace Entertainment
         {
             InitializeComponent();
             SignIn.Click += SignIn_Click;
+            Loaded += LoginPage_Loaded;
+        }
+
+        private void LoginPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Maximized;
         }
 
         private void SignIn_Click(object sender, RoutedEventArgs e)

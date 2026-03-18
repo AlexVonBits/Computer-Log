@@ -34,6 +34,7 @@ namespace Entertainment
 
         private void TeamLeadSetupWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            WindowState = WindowState.Maximized;
             App.SaveAll();
         }
 

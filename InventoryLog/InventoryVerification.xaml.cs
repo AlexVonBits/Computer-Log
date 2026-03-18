@@ -60,6 +60,7 @@ namespace Entertainment
 
         private void InventoryVerification_Loaded(object sender, RoutedEventArgs e)
         {
+            WindowState = WindowState.Maximized;
             App.SaveAll();
         }
 

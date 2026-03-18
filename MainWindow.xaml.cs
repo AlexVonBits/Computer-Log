@@ -50,6 +50,8 @@ namespace Entertainment
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            WindowState = WindowState.Maximized;
+            
             // Set welcome message
             if (App.CurrentUser != null)
             {

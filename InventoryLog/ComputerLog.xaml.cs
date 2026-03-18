@@ -316,7 +316,16 @@ namespace Entertainment
             var matches = items.Where(item =>
                 Matches(serialInput, item.SerialNumber) ||
                 (item.UPC != null && item.UPC.Any(upc => Matches(upcInput, upc)))
-                ).ToList();
+                ).OrderBy(item => item.Status switch {
+                    "In Stock" => 1,
+                    "Available" => 1,
+                    "Display" => 2,
+                    "In Claims" => 3,
+                    "Claimed Out" => 4,
+                    "Sold" => 5,
+                    "Missing" => 6,
+                    _ => 7
+                }).ToList();
 
             if (matches.Count == 0)
             {

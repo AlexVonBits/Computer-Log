@@ -174,20 +174,18 @@ namespace Entertainment
                 {
                     using (QRCode qrCode = new QRCode(qrCodeData))
                     {
-                        using (BitmapImage qrBitmap = new BitmapImage())
+                        BitmapImage qrBitmap = new BitmapImage();
+                        var bitmap = qrCode.GetGraphic(20);
+                        using (var memory = new System.IO.MemoryStream())
                         {
-                            var bitmap = qrCode.GetGraphic(20);
-                            using (var memory = new System.IO.MemoryStream())
-                            {
-                                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
-                                memory.Position = 0;
-                                qrBitmap.BeginInit();
-                                qrBitmap.StreamSource = memory;
-                                qrBitmap.CacheOption = BitmapCacheOption.OnLoad;
-                                qrBitmap.EndInit();
-                                qrBitmap.Freeze();
-                                SessionQRCode.Source = qrBitmap;
-                            }
+                            bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                            memory.Position = 0;
+                            qrBitmap.BeginInit();
+                            qrBitmap.StreamSource = memory;
+                            qrBitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            qrBitmap.EndInit();
+                            qrBitmap.Freeze();
+                            SessionQRCode.Source = qrBitmap;
                         }
                     }
                 }

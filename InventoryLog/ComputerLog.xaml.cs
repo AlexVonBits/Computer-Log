@@ -15,6 +15,7 @@ namespace Entertainment
         private List<string> _serialNumbersToLogIn = new();
         private string? _selectedUPC;
         private Dictionary<string, (string? Make, string? Type)> _newUPCs = new();
+        private InventoryItem? _selectedInventoryItem;
 
         public ComputerLog()
         {
@@ -31,6 +32,10 @@ namespace Entertainment
             // Populate Status dropdown for Log In
             StatusComboBox.ItemsSource = Entertainment.Inventory.InventoryStatus.AllStatuses;
             StatusComboBox.SelectedIndex = 0; // Default to "In Stock"
+
+            // Populate Update Status dropdown with all statuses
+            UpdateStatusComboBox.ItemsSource = Entertainment.Inventory.InventoryStatus.AllStatuses;
+            UpdateStatusComboBox.SelectedIndex = 0;
 
             // Populate Make/Type dropdown from existing inventory
             PopulateMakeTypeComboBox();
@@ -392,6 +397,13 @@ namespace Entertainment
             // Prevent duplicate MessageBox displays by checking if this is a valid selection change
             if (ResultsListBox.SelectedItem is InventoryItem selectedItem)
             {
+                // Update the selected serial display for the new status section
+                _selectedInventoryItem = selectedItem;
+                SelectedSerialDisplay.Text = selectedItem.SerialNumber;
+                
+                // Set the current status in the dropdown
+                UpdateStatusComboBox.SelectedItem = selectedItem.Status;
+                
                 ShowItem(selectedItem);
             }
         }
@@ -483,6 +495,73 @@ namespace Entertainment
             makeTypes.Insert(0, "");
 
             MakeTypeComboBox.ItemsSource = makeTypes;
+        }
+
+        private void UpdateStatusButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Check if an item is selected
+            if (_selectedInventoryItem == null)
+            {
+                MessageBox.Show("Please select an item from the search results first.", "No Item Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Check if user is logged in
+            if (App.CurrentUser == null)
+            {
+                MessageBox.Show("No user is logged in.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // Get the new status from the dropdown
+            string? newStatus = UpdateStatusComboBox.SelectedItem as string;
+            if (string.IsNullOrEmpty(newStatus))
+            {
+                MessageBox.Show("Please select a new status.", "Status Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Get the current item from the store to ensure we have the latest
+            var store = InventoryStore.Load();
+            var itemIndex = store.InventoryItems.FindIndex(i => i.Id == _selectedInventoryItem.Id);
+            if (itemIndex < 0)
+            {
+                MessageBox.Show("Item not found in inventory.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var itemToUpdate = store.InventoryItems[itemIndex];
+
+            // Handle Sold status specifically
+            if (newStatus == InventoryStatus.Sold)
+            {
+                // Check if online pick checkbox is checked
+                if (OnlinePickCheckBox.IsChecked == true)
+                {
+                    itemToUpdate.SoldBy = "OGP";
+                }
+                else
+                {
+                    itemToUpdate.SoldBy = App.CurrentUser.Initials;
+                }
+                itemToUpdate.SoldAt = DateTime.Now;
+            }
+
+            // Update the status
+            itemToUpdate.Status = newStatus;
+
+            // Save the inventory
+            store.Save();
+
+            // Clear the online pick checkbox for next use
+            OnlinePickCheckBox.IsChecked = false;
+
+            MessageBox.Show($"Status updated successfully for serial number {itemToUpdate.SerialNumber}.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            // Refresh the results list
+            ResultsListBox.Items.Refresh();
+            
+            App.SaveAll();
         }
     }
 }

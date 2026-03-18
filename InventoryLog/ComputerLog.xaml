@@ -73,14 +73,28 @@
             
             <Button x:Name="RemoveSerialButton" Content="Remove" HorizontalAlignment="Left" Margin="440,260,0,0" VerticalAlignment="Top" Width="80" Height="24" Click="RemoveSerialButton_Click"/>
             
-            <!-- Log In Button -->
-            <Button x:Name="LogInSerial" Content="Log In All Serials" HorizontalAlignment="Left" Margin="150,320,0,0" VerticalAlignment="Top" Width="130" Height="28" Click="LogInSerial_Click"/>
+            <!-- New Section: Selected Serial Status Update -->
+            <TextBlock HorizontalAlignment="Left" Margin="30,360,0,0" TextWrapping="Wrap" Text="UPDATE SERIAL STATUS" FontWeight="Bold" FontSize="14" VerticalAlignment="Top"/>
+            
+            <!-- Selected Serial Display -->
+            <TextBlock HorizontalAlignment="Left" Margin="30,395,0,0" TextWrapping="Wrap" Text="Selected Serial:" VerticalAlignment="Top"/>
+            <TextBlock x:Name="SelectedSerialDisplay" HorizontalAlignment="Left" Margin="150,395,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="280" FontWeight="Bold"/>
+            
+            <!-- Status Dropdown -->
+            <TextBlock HorizontalAlignment="Left" Margin="30,430,0,0" TextWrapping="Wrap" Text="New Status:" VerticalAlignment="Top"/>
+            <ComboBox x:Name="UpdateStatusComboBox" HorizontalAlignment="Left" Margin="150,427,0,0" VerticalAlignment="Top" Width="150" Height="24"/>
+            
+            <!-- Online Pick Checkbox -->
+            <CheckBox x:Name="OnlinePickCheckBox" Content="This is an online pick" HorizontalAlignment="Left" Margin="310,430,0,0" VerticalAlignment="Top" Height="24" Width="180"/>
+            
+            <!-- Update Status Button -->
+            <Button x:Name="UpdateStatusButton" Content="Update Status" HorizontalAlignment="Left" Margin="500,426,0,0" VerticalAlignment="Top" Width="120" Height="28" Click="UpdateStatusButton_Click"/>
             
             <!-- Divider -->
-            <Rectangle HorizontalAlignment="Left" Height="2" Margin="30,365,0,0" VerticalAlignment="Top" Width="820" Fill="Gray"/>
+            <Rectangle HorizontalAlignment="Left" Height="2" Margin="30,470,0,0" VerticalAlignment="Top" Width="820" Fill="Gray"/>
             
             <!-- Search Section -->
-            <TextBlock HorizontalAlignment="Left" Margin="30,380,0,0" TextWrapping="Wrap" Text="SEARCH / LOG OUT" FontWeight="Bold" FontSize="14" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="30,485,0,0" TextWrapping="Wrap" Text="SEARCH / LOG OUT" FontWeight="Bold" FontSize="14" VerticalAlignment="Top"/>
             
             <TextBox x:Name="SerialGetInput" HorizontalAlignment="Left" Margin="150,415,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="24"/>
             <TextBlock HorizontalAlignment="Left" Margin="30,418,0,0" TextWrapping="Wrap" Text="Serial #:" VerticalAlignment="Top"/>

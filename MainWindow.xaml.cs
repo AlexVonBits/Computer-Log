@@ -27,6 +27,18 @@ namespace Entertainment
                 "Other"
             };
 
+            // Initialize Make dropdown for new UPC
+            NewUPCMakeBox.ItemsSource = new[]
+            {
+                "Lenovo",
+                "HP",
+                "Asus",
+                "Samsung",
+                "Apple",
+                "MSI",
+                "CyberPower"
+            };
+
             // Save on window open
             Loaded += MainWindow_Loaded;
             // Save on window close
@@ -447,14 +459,35 @@ namespace Entertainment
                 return;
             }
 
-            // Store the new UPC info for later use when logging in serials
-            _newUPCs[newUPC] = (string.IsNullOrEmpty(NewUPCMakeBox.Text?.Trim()) ? null : NewUPCMakeBox.Text?.Trim(), string.IsNullOrEmpty(NewUPCTypeBox.Text?.Trim()) ? null : NewUPCTypeBox.Text?.Trim());
+            // Get Make value - handle ComboBox properly
+            string? makeValue = null;
+            if (NewUPCMakeBox.SelectedItem != null)
+            {
+                makeValue = NewUPCMakeBox.SelectedItem.ToString();
+            }
+            else if (!string.IsNullOrEmpty(NewUPCMakeBox.Text))
+            {
+                makeValue = NewUPCMakeBox.Text.Trim();
+            }
 
-            // Hide the panel and clear fields
+            // Get Type value
+            string? typeValue = NewUPCTypeBox.Text?.Trim();
+            if (string.IsNullOrEmpty(typeValue))
+            {
+                typeValue = null;
+            }
+
+            // Store the new UPC info for later use when logging in serials
+            _newUPCs[newUPC] = (makeValue, typeValue);
+
+            // Hide the panel first to prevent any UI validation
             NewUPCPanel.Visibility = Visibility.Collapsed;
-            NewUPCBox.Clear();
-            NewUPCMakeBox.Clear();
-            NewUPCTypeBox.Clear();
+            
+            // Clear fields AFTER hiding the panel
+            NewUPCBox.Text = string.Empty;
+            NewUPCMakeBox.SelectedIndex = -1;
+            NewUPCMakeBox.Text = string.Empty;
+            NewUPCTypeBox.Text = string.Empty;
 
             // Select the new UPC
             _selectedUPC = newUPC;
@@ -472,9 +505,10 @@ namespace Entertainment
         {
             // Hide the panel and clear fields
             NewUPCPanel.Visibility = Visibility.Collapsed;
-            NewUPCBox.Clear();
-            NewUPCMakeBox.Clear();
-            NewUPCTypeBox.Clear();
+            NewUPCBox.Text = string.Empty;
+            NewUPCMakeBox.SelectedIndex = -1;
+            NewUPCMakeBox.Text = string.Empty;
+            NewUPCTypeBox.Text = string.Empty;
             
             App.SaveAll();
         }

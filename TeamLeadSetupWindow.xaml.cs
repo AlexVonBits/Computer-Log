@@ -73,13 +73,9 @@ namespace Entertainment
             App.Store.Save();
             App.SaveAll();
             
-            // Close this window and open MainWindow
+            // Close this window and return DialogResult to indicate success
             this.DialogResult = true;
             this.Close();
-            
-            // Open MainWindow
-            var mainWindow = new MainWindow();
-            mainWindow.Show();
         }
     }
 }

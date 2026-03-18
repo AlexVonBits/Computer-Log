@@ -34,7 +34,19 @@ namespace Entertainment
             if (Store.TeamLeadNeedsSetup())
             {
                 var setup = new TeamLeadSetupWindow(Store);
-                setup.ShowDialog();
+                if (setup.ShowDialog() == true)
+                {
+                    // TeamLead setup successful - show MainWindow
+                    var mainWindow = new MainWindow();
+                    mainWindow.Show();
+                    return;
+                }
+                else
+                {
+                    // Setup was cancelled - exit the app
+                    Shutdown();
+                    return;
+                }
             }
             
             // Show login and keep it open until logged in

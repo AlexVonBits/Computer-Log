@@ -30,14 +30,14 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 
-                <!-- LOG IN Section -->
-                <GroupBox Grid.Row="0" Header="LOG IN NEW ITEM" Margin="0,0,0,20">
+                <!-- UNIFIED INVENTORY Section -->
+                <GroupBox Grid.Row="0" Header="INVENTORY" Margin="0,0,0,20">
                     <Grid Margin="10">
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -49,7 +49,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         
-                        <!-- UPC Search -->
+                        <!-- Search/Input Row -->
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="Search UPC:*" VerticalAlignment="Center" Margin="0,5"/>
                         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
                             <TextBox x:Name="UPCSearchBox" Width="180" Height="24" TextChanged="UPCSearchBox_TextChanged" Margin="0,5"/>
@@ -58,7 +58,7 @@
                         
                         <!-- UPC Results List -->
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Matching UPCs:" VerticalAlignment="Center" Margin="0,5"/>
-                        <ListBox x:Name="UPCListBox" Grid.Row="1" Grid.Column="1" Width="280" Height="80" SelectionChanged="UPCListBox_SelectionChanged" HorizontalAlignment="Left" Margin="0,5"/>
+                        <ListBox x:Name="UPCListBox" Grid.Row="1" Grid.Column="1" Width="350" Height="80" SelectionChanged="UPCListBox_SelectionChanged" HorizontalAlignment="Left" Margin="0,5"/>
                         
                         <!-- Selected UPC Display -->
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Selected UPC:" VerticalAlignment="Center" Margin="0,5"/>
@@ -70,7 +70,7 @@
                                 <TextBlock Text="New UPC:" VerticalAlignment="Center" Margin="0,0,10,0"/>
                                 <TextBox x:Name="NewUPCBox" Width="120" Height="24" Margin="0,0,20,0"/>
                                 <TextBlock Text="Make:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                <TextBox x:Name="NewUPCMakeBox" Width="100" Height="24" Margin="0,0,20,0"/>
+                                <ComboBox x:Name="NewUPCMakeBox" Width="100" Height="24" Margin="0,0,20,0" IsEditable="True"/>
                                 <TextBlock Text="Type:" VerticalAlignment="Center" Margin="0,0,10,0"/>
                                 <TextBox x:Name="NewUPCTypeBox" Width="100" Height="24" Margin="0,0,20,0"/>
                                 <Button x:Name="SaveNewUPCButton" Content="Save UPC" Width="80" Height="24" Click="SaveNewUPCButton_Click" Margin="0,0,5,0"/>
@@ -78,70 +78,58 @@
                             </StackPanel>
                         </Border>
                         
-                        <!-- Serial Number Input -->
+                        <!-- Serial Number Input for Login -->
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Serial Number:*" VerticalAlignment="Center" Margin="0,15,0,0"/>
                         <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" Margin="0,15,0,0">
                             <TextBox x:Name="LogInSerialNumber" Width="180" Height="24"/>
                             <Button x:Name="AddSerialButton" Content="Add Serial" Margin="10,0,0,0" Click="AddSerialButton_Click" Padding="10,2"/>
+                            <Button x:Name="RemoveSerialButton" Content="Remove" Margin="10,0,0,0" Click="RemoveSerialButton_Click" Padding="10,2"/>
+                            <Button x:Name="LogInSerial" Content="Log In All Serials" Margin="10,0,0,0" Click="LogInSerial_Click" Padding="15,5"/>
                         </StackPanel>
-                    </Grid>
-                </GroupBox>
-                
-                <!-- Serial Numbers to Log In -->
-                <GroupBox Grid.Row="1" Header="Serial Numbers to Log In" Margin="0,0,0,20">
-                    <Grid Margin="10">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <ListBox x:Name="SerialNumbersListBox" Grid.Row="0" Width="400" Height="100" HorizontalAlignment="Left" Margin="0,5"/>
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5,0,0">
-                            <Button x:Name="RemoveSerialButton" Content="Remove" Click="RemoveSerialButton_Click" Padding="10,2" Margin="0,0,10,0"/>
-                            <Button x:Name="LogInSerial" Content="Log In All Serials" Click="LogInSerial_Click" Padding="15,5"/>
-                        </StackPanel>
-                    </Grid>
-                </GroupBox>
-                
-                <!-- SEARCH / LOG OUT Section -->
-                <GroupBox Grid.Row="2" Header="SEARCH / LOG OUT" Margin="0,0,0,20">
-                    <Grid Margin="10">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
                         
-                        <!-- Search Inputs -->
-                        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
-                            <TextBlock Text="Serial #:" VerticalAlignment="Center"/>
-                        </StackPanel>
-                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
-                            <TextBox x:Name="SerialGetInput" Width="150" Height="24" Margin="0,0,20,0"/>
-                            <TextBlock Text="OR" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                        <!-- Serials to Log In -->
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Serials to Log In:" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                        <ListBox x:Name="SerialNumbersListBox" Grid.Row="5" Grid.Column="1" Width="400" Height="60" HorizontalAlignment="Left" Margin="0,5"/>
+                        
+                        <!-- Search by Serial or UPC -->
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Search:" VerticalAlignment="Center" Margin="0,15,0,0"/>
+                        <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" Margin="0,15,0,0">
+                            <TextBox x:Name="SerialGetInput" Width="150" Height="24" Margin="0,0,10,0"/>
+                            <TextBlock Text="OR" VerticalAlignment="Center" Margin="0,0,10,0"/>
                             <TextBlock Text="UPC:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                            <TextBox x:Name="UPCSearchInput" Width="150" Height="24" Margin="0,0,20,0"/>
+                            <TextBox x:Name="UPCSearchInput" Width="150" Height="24" Margin="0,0,10,0"/>
                             <Button x:Name="Search" Content="Search" Click="Search_Click" Padding="15,5"/>
                         </StackPanel>
+                    </Grid>
+                </GroupBox>
+                
+                <!-- Search Results Section -->
+                <GroupBox Grid.Row="1" Header="Search Results" Margin="0,0,0,20">
+                    <Grid Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
                         
                         <!-- Results Display -->
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="UPC:" VerticalAlignment="Center" Margin="0,10,0,0"/>
-                        <TextBlock x:Name="UPCBox" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="0,10,0,0"/>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,5">
+                            <TextBlock Text="UPC:" VerticalAlignment="Center" Width="60"/>
+                            <TextBlock x:Name="UPCBox" VerticalAlignment="Center"/>
+                        </StackPanel>
                         
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Serial #:" VerticalAlignment="Center" Margin="0,5,0,0"/>
-                        <TextBlock x:Name="SerialTextBox" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Margin="0,5,0,0"/>
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5">
+                            <TextBlock Text="Serial #:" VerticalAlignment="Center" Width="60"/>
+                            <TextBlock x:Name="SerialTextBox" VerticalAlignment="Center"/>
+                        </StackPanel>
                         
                         <!-- Results List -->
-                        <ListBox x:Name="ResultsListBox" Grid.Row="3" Grid.ColumnSpan="2" Height="150" Margin="0,10,0,0" SelectionChanged="ResultsListBox_SelectionChanged"/>
+                        <ListBox x:Name="ResultsListBox" Grid.Row="2" Height="120" Margin="0,10,0,0" SelectionChanged="ResultsListBox_SelectionChanged"/>
                     </Grid>
                 </GroupBox>
                 
                 <!-- Log Out Section -->
-                <GroupBox Grid.Row="3" Header="LOG OUT SELECTED ITEM" Margin="0,0,0,20">
+                <GroupBox Grid.Row="2" Header="Log Out Item" Margin="0,0,0,20">
                     <Grid Margin="10">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -168,7 +156,7 @@
                 </GroupBox>
                 
                 <!-- Inventory Verification Button -->
-                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button x:Name="Inventory" Content="Inventory Verification" Click="Inventory_Click" Padding="20,10"/>
                 </StackPanel>
             </Grid>

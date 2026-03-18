@@ -15,17 +15,10 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Header with Sign Out -->
-        <DockPanel Grid.Row="0" Margin="0,0,0,15">
-            <Button x:Name="SignOutButton" Content="Sign Out" Click="SignOut_Click" 
-                    DockPanel.Dock="Right" Padding="10,5"/>
-        </DockPanel>
-
         <!-- User Info Section -->
-        <GroupBox Grid.Row="1" Header="User Information" Margin="0,0,0,15">
+        <GroupBox Grid.Row="0" Header="User Information" Margin="0,0,0,15">
             <StackPanel Margin="10">
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                     <TextBlock Text="Username: " FontWeight="Bold" Width="100"/>
@@ -47,7 +40,7 @@
         </GroupBox>
 
         <!-- Password Change Section -->
-        <GroupBox Grid.Row="2" Header="Change Password" Margin="0,0,0,15">
+        <GroupBox Grid.Row="1" Header="Change Password" Margin="0,0,0,15">
             <StackPanel Margin="10">
                 <TextBlock Text="Old Password:" Margin="0,0,0,3"/>
                 <PasswordBox x:Name="OldPasswordBox" Margin="0,0,0,10"/>
@@ -65,7 +58,7 @@
         </GroupBox>
 
         <!-- User Management Section (TeamLead Only) -->
-        <GroupBox x:Name="UserManagementSection" Grid.Row="3" Header="User Management" Margin="0,0,0,15" Visibility="Collapsed">
+        <GroupBox x:Name="UserManagementSection" Grid.Row="2" Header="User Management" Margin="0,0,0,15" Visibility="Collapsed">
             <Grid Margin="10">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -116,7 +109,7 @@
         </GroupBox>
 
         <!-- Create New TeamLead Button (TeamLead Only) -->
-        <Button x:Name="CreateTeamLeadButton" Grid.Row="4" Content="Create New TeamLead" 
+        <Button x:Name="CreateTeamLeadButton" Grid.Row="3" Content="Create New TeamLead" 
                 Visibility="Collapsed" Click="CreateTeamLeadButton_Click" Margin="0,0,0,15" Width="150" HorizontalAlignment="Left"/>
     </Grid>
 </Window>

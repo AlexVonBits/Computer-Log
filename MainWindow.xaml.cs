@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using Entertainment.Inventory;
 using Entertainment.Users;
 
@@ -10,23 +12,15 @@ namespace Entertainment
 {
     public partial class MainWindow : Window
     {
-        private List<string> _serialNumbersToLogIn = new();
         private string? _selectedUPC;
+        private string? _selectedUPCMake;
         private Dictionary<string, (string? Make, string? Type)> _newUPCs = new();
+        private List<InventoryItem> _currentSerials = new();
 
         public MainWindow()
         {
             InitializeComponent();
             
-            // Initialize Log Out Reason dropdown
-            LogOutReason.ItemsSource = new[]
-            {
-                "Sold",
-                "In Claims",
-                "Deleted",
-                "Other"
-            };
-
             // Initialize Make dropdown for new UPC
             NewUPCMakeBox.ItemsSource = new[]
             {
@@ -39,13 +33,36 @@ namespace Entertainment
                 "CyberPower"
             };
 
+            // Initialize Status dropdown for new serial
+            NewSerialStatusBox.ItemsSource = InventoryStatus.AllStatuses;
+            NewSerialStatusBox.SelectedIndex = 0;
+
+            // Initialize Device Type dropdown for new serial
+            InitializeDeviceTypes();
+
             // Save on window open
             Loaded += MainWindow_Loaded;
             // Save on window close
             Closing += MainWindow_Closing;
-            
-            // Note: Button click handlers are already wired up in XAML via Click attribute
-            // No need to wire them up again here
+        }
+
+        private void InitializeDeviceTypes()
+        {
+            // Common device types - can be customized
+            var deviceTypes = new[]
+            {
+                "Laptop",
+                "Desktop",
+                "Monitor",
+                "Tablet",
+                "All-in-One",
+                "Server",
+                "Workstation",
+                "Gaming PC",
+                "Chromebook",
+                "Other"
+            };
+            NewSerialDeviceTypeBox.ItemsSource = deviceTypes;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -57,12 +74,12 @@ namespace Entertainment
             {
                 WelcomeText.Text = $"Welcome, {App.CurrentUser.FirstName}!";
                 
-                // Show Delete panel only for TeamLeads and Admins
-                if (App.CurrentUser.IsTeamLead || App.CurrentUser.IsAdmin)
-                {
-                    DeletePanel.Visibility = Visibility.Visible;
-                }
+                // Update created by text for new serial
+                NewSerialCreatedBy.Text = $"Created by: {App.CurrentUser.Initials} | {DateTime.Now:MM/dd/yyyy HH:mm}";
             }
+            
+            // Load all UPCs initially
+            LoadAllUPCs();
             
             App.SaveAll();
         }
@@ -74,7 +91,6 @@ namespace Entertainment
 
         private void SignOut_Click(object sender, RoutedEventArgs e)
         {
-            // Close this window and show login
             this.Close();
             
             App.CurrentUser = null;
@@ -92,27 +108,42 @@ namespace Entertainment
             }
         }
 
-        private void Inventory_Click(object sender, RoutedEventArgs e)
+        private void LoadAllUPCs()
         {
-            string userName = App.CurrentUser?.FirstName ?? "Unknown";
-            var inventoryWindow = new InventoryVerification(userName);
-            inventoryWindow.Owner = this;
-            inventoryWindow.ShowDialog();
+            var store = InventoryStore.Load();
+            
+            // Get all unique UPCs from existing inventory
+            var existingUPCs = store.InventoryItems
+                .SelectMany(item => item.UPC ?? new List<string>())
+                .Where(upc => !string.IsNullOrWhiteSpace(upc))
+                .Distinct()
+                .OrderBy(upc => upc)
+                .ToList();
+
+            // Also include any newly created UPCs
+            var allUPCs = existingUPCs
+                .Union(_newUPCs.Keys)
+                .Distinct()
+                .OrderBy(upc => upc)
+                .ToList();
+
+            UPCListBox.ItemsSource = allUPCs;
         }
 
         private void UPCSearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             string searchText = UPCSearchBox.Text?.Trim() ?? string.Empty;
             
+            var store = InventoryStore.Load();
+            
             if (string.IsNullOrEmpty(searchText))
             {
-                UPCListBox.ItemsSource = null;
+                // Show all UPCs when search is empty
+                LoadAllUPCs();
                 return;
             }
 
-            var store = InventoryStore.Load();
-            
-            // Find all unique UPCs from existing inventory that match the search
+            // Find all unique UPCs that match the search
             var existingUPCs = store.InventoryItems
                 .SelectMany(item => item.UPC ?? new List<string>())
                 .Where(upc => Matches(searchText, upc))
@@ -141,300 +172,176 @@ namespace Entertainment
                 _selectedUPC = selectedUPC;
                 SelectedUPC.Text = selectedUPC;
                 
+                // Get the make for this UPC
+                _selectedUPCMake = GetMakeFromUPC(selectedUPC);
+                SelectedUPCMake.Text = string.IsNullOrEmpty(_selectedUPCMake) ? "" : $"({_selectedUPCMake})";
+                
                 // Load all serial numbers for the selected UPC
                 LoadSerialsForUPC(selectedUPC);
+                
+                // Clear serial search when UPC changes
+                SerialSearchBox.Clear();
             }
+        }
+
+        private void UPCListBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            // Double-click to edit or view details could be added here
         }
 
         private void LoadSerialsForUPC(string upc)
         {
             var store = InventoryStore.Load();
-            var serials = store.InventoryItems
+            _currentSerials = store.InventoryItems
                 .Where(i => i.UPC?.Contains(upc) == true)
-                .Select(i => i.SerialNumber)
-                .OrderBy(s => s)
+                .OrderBy(i => i.SerialNumber)
                 .ToList();
             
-            SerialNumbersListBox.ItemsSource = serials;
+            SerialNumbersGrid.ItemsSource = _currentSerials;
         }
 
-        private void AddSerialButton_Click(object sender, RoutedEventArgs e)
+        private void SerialSearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            string serialNumber = LogInSerialNumber.Text?.Trim() ?? string.Empty;
+            string searchText = SerialSearchBox.Text?.Trim() ?? string.Empty;
+            
+            if (string.IsNullOrEmpty(searchText) && _selectedUPC != null)
+            {
+                // Show all serials for selected UPC
+                LoadSerialsForUPC(_selectedUPC);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(_selectedUPC))
+            {
+                // Search across all serials if no UPC selected
+                var store = InventoryStore.Load();
+                var allSerials = store.InventoryItems
+                    .Where(i => Matches(searchText, i.SerialNumber))
+                    .OrderBy(i => i.SerialNumber)
+                    .ToList();
+                SerialNumbersGrid.ItemsSource = allSerials;
+                return;
+            }
+
+            // Filter current serials by search text
+            var filteredSerials = _currentSerials
+                .Where(i => Matches(searchText, i.SerialNumber))
+                .ToList();
+            SerialNumbersGrid.ItemsSource = filteredSerials;
+        }
+
+        private void AddNewSerialButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(_selectedUPC))
+            {
+                MessageBox.Show("Please select a UPC first.", "No UPC Selected", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Show the new serial panel
+            NewSerialPanel.Visibility = Visibility.Visible;
+            NewSerialBox.Text = string.Empty;
+            NewSerialDeviceTypeBox.SelectedIndex = -1;
+            NewSerialDeviceTypeBox.Text = string.Empty;
+            NewSerialStatusBox.SelectedIndex = 0;
+            
+            // Update created by info
+            if (App.CurrentUser != null)
+            {
+                NewSerialCreatedBy.Text = $"Created by: {App.CurrentUser.Initials} | {DateTime.Now:MM/dd/yyyy HH:mm}";
+            }
+            
+            NewSerialBox.Focus();
+        }
+
+        private void SaveNewSerialButton_Click(object sender, RoutedEventArgs e)
+        {
+            string serialNumber = NewSerialBox.Text?.Trim() ?? string.Empty;
             
             if (string.IsNullOrEmpty(serialNumber))
             {
-                MessageBox.Show("Serial Number is required.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                LogInSerialNumber.Focus();
+                MessageBox.Show("Serial Number is required.", "Validation Error", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                NewSerialBox.Focus();
                 return;
             }
 
-            // Check for duplicate in the list
-            if (_serialNumbersToLogIn.Any(s => s.Equals(serialNumber, StringComparison.OrdinalIgnoreCase)))
-            {
-                MessageBox.Show("This serial number is already in the list.", "Duplicate Serial", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            // Check for duplicate in inventory
-            var store = InventoryStore.Load();
-            if (store.SerialNumberExists(serialNumber))
-            {
-                MessageBox.Show("A item with this serial number already exists in inventory.", "Duplicate Serial Number", MessageBoxButton.OK, MessageBoxImage.Warning);
-                LogInSerialNumber.Focus();
-                return;
-            }
-
-            _serialNumbersToLogIn.Add(serialNumber.ToUpperInvariant());
-            SerialNumbersListBox.ItemsSource = null;
-            SerialNumbersListBox.ItemsSource = _serialNumbersToLogIn;
-            
-            LogInSerialNumber.Clear();
-            LogInSerialNumber.Focus();
-            
-            App.SaveAll();
-        }
-
-        private void RemoveSerialButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (SerialNumbersListBox.SelectedItem is string selectedSerial)
-            {
-                _serialNumbersToLogIn.Remove(selectedSerial);
-                SerialNumbersListBox.ItemsSource = null;
-                SerialNumbersListBox.ItemsSource = _serialNumbersToLogIn;
-                
-                App.SaveAll();
-            }
-            else
-            {
-                MessageBox.Show("Please select a serial number to remove.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-        }
-
-        private void LogInSerial_Click(object sender, RoutedEventArgs e)
-        {
-            // Validate required fields
             if (string.IsNullOrEmpty(_selectedUPC))
             {
-                MessageBox.Show("Please select a UPC from the matching list.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                UPCSearchBox.Focus();
-                return;
-            }
-
-            if (_serialNumbersToLogIn.Count == 0)
-            {
-                MessageBox.Show("Please add at least one serial number.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                LogInSerialNumber.Focus();
-                return;
-            }
-
-            if (App.CurrentUser == null)
-            {
-                MessageBox.Show("No user is logged in.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Please select a UPC first.", "No UPC Selected", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             var store = InventoryStore.Load();
-            int successCount = 0;
-            List<string> failedSerials = new();
 
-            // Create inventory entries for each serial number
-            foreach (string serialNumber in _serialNumbersToLogIn)
+            // Check for duplicate in inventory
+            if (store.SerialNumberExists(serialNumber))
             {
-                var newItem = new InventoryItem
-                {
-                    SerialNumber = serialNumber.ToUpperInvariant(),
-                    UPC = new List<string> { _selectedUPC },
-                    Make = GetMakeFromUPC(_selectedUPC, store),
-                    Type = GetTypeFromUPC(_selectedUPC, store),
-                    CreatedBy = App.CurrentUser.Initials,
-                    CreatedAt = DateTime.Now,
-                    Status = "Available"
-                };
-
-                store.InventoryItems.Add(newItem);
-                successCount++;
+                MessageBox.Show("A item with this serial number already exists in inventory.", 
+                    "Duplicate Serial Number", MessageBoxButton.OK, MessageBoxImage.Warning);
+                NewSerialBox.Focus();
+                return;
             }
 
+            // Get Device Type value
+            string? deviceType = null;
+            if (NewSerialDeviceTypeBox.SelectedItem != null)
+            {
+                deviceType = NewSerialDeviceTypeBox.SelectedItem.ToString();
+            }
+            else if (!string.IsNullOrEmpty(NewSerialDeviceTypeBox.Text))
+            {
+                deviceType = NewSerialDeviceTypeBox.Text.Trim();
+            }
+
+            // Get Status value
+            string? status = NewSerialStatusBox.SelectedItem as string;
+            if (string.IsNullOrEmpty(status))
+            {
+                status = InventoryStatus.InStock;
+            }
+
+            // Get current user initials
+            string? createdBy = App.CurrentUser?.Initials ?? "UNK";
+            DateTime createdOn = DateTime.Now;
+
+            // Create new inventory item
+            var newItem = new InventoryItem
+            {
+                SerialNumber = serialNumber.ToUpperInvariant(),
+                UPC = new List<string> { _selectedUPC },
+                Make = _selectedUPCMake ?? GetMakeFromUPC(_selectedUPC, store),
+                Type = deviceType,
+                CreatedBy = createdBy,
+                CreatedAt = createdOn,
+                Status = status
+            };
+
+            store.InventoryItems.Add(newItem);
             store.Save();
 
-            MessageBox.Show($"Successfully logged in {successCount} serial number(s) for UPC {_selectedUPC} by {App.CurrentUser.Initials}.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            // Hide the panel
+            NewSerialPanel.Visibility = Visibility.Collapsed;
 
-            // Clear the form
-            ClearLogInForm();
+            // Refresh the serial numbers list
+            LoadSerialsForUPC(_selectedUPC);
+
+            MessageBox.Show($"Serial number '{newItem.SerialNumber}' created successfully by {createdBy}.", 
+                "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             
             App.SaveAll();
         }
 
-        private string? GetMakeFromUPC(string upc, InventoryStore store)
+        private void CancelNewSerialButton_Click(object sender, RoutedEventArgs e)
         {
-            // First check if it's a newly created UPC
-            if (_newUPCs.TryGetValue(upc, out var newUpcInfo) && newUpcInfo.Make != null)
-            {
-                return newUpcInfo.Make;
-            }
-
-            // Otherwise check existing inventory
-            return store.InventoryItems
-                .FirstOrDefault(i => i.UPC?.Contains(upc) == true)?
-                .Make;
-        }
-
-        private string? GetTypeFromUPC(string upc, InventoryStore store)
-        {
-            // First check if it's a newly created UPC
-            if (_newUPCs.TryGetValue(upc, out var newUpcInfo) && newUpcInfo.Type != null)
-            {
-                return newUpcInfo.Type;
-            }
-
-            // Otherwise check existing inventory
-            return store.InventoryItems
-                .FirstOrDefault(i => i.UPC?.Contains(upc) == true)?
-                .Type;
-        }
-
-        private void ClearLogInForm()
-        {
-            UPCSearchBox.Clear();
-            SelectedUPC.Text = string.Empty;
-            _selectedUPC = null;
-            _serialNumbersToLogIn.Clear();
-            SerialNumbersListBox.ItemsSource = null;
-            LogInSerialNumber.Clear();
-            UPCListBox.ItemsSource = null;
-        }
-
-        private void Search_Click(object sender, RoutedEventArgs e)
-        {
-            string serialInput = (SerialGetInput.Text ?? string.Empty).Trim().ToUpperInvariant();
-            string upcInput = (UPCSearchInput.Text ?? string.Empty).Trim().ToUpperInvariant();
-
-            if (serialInput.Length == 0 && upcInput.Length == 0)
-            {
-                MessageBox.Show("Please enter a serial number or UPC to search.", "Input Required", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            var items = Entertainment.Inventory.InventoryStore.Load().InventoryItems;
-
-            var matches = items.Where(item =>
-                Matches(serialInput, item.SerialNumber) ||
-                (item.UPC != null && item.UPC.Any(upc => Matches(upcInput, upc)))
-                ).ToList();
-
-            if (matches.Count == 0)
-            {
-                MessageBox.Show("No matches found.", "Search Results", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
-            ResultsListBox.ItemsSource = matches;
-            
-            App.SaveAll();
-        }
-
-        private void ResultsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Prevent duplicate MessageBox displays by checking if this is a valid selection change
-            if (ResultsListBox.SelectedItem is InventoryItem selectedItem)
-            {
-                ShowItem(selectedItem);
-            }
-        }
-
-        private void ShowItem(InventoryItem item)
-        {
-            SerialTextBox.Text = item.SerialNumber;
-            UPCBox.Text = item.UPC != null ? string.Join(", ", item.UPC) : string.Empty;
-        }
-
-        private void LogOutSerial_Click(object sender, RoutedEventArgs e)
-        {
-            if (ResultsListBox.SelectedItem is not InventoryItem selectedItem)
-            {
-                MessageBox.Show("Please select an item from the search results first.", "No Item Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (App.CurrentUser == null)
-            {
-                MessageBox.Show("No user is logged in.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            string? reason = LogOutReason.SelectedItem as string;
-            if (string.IsNullOrEmpty(reason))
-            {
-                MessageBox.Show("Please select a reason for logging out.", "Reason Required", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            // Update the item with the current user's initials
-            selectedItem.SoldBy = App.CurrentUser.Initials;
-            selectedItem.SoldAt = DateTime.Now;
-            selectedItem.Status = reason;
-
-            // Save the inventory
-            var store = InventoryStore.Load();
-            var itemIndex = store.InventoryItems.FindIndex(i => i.Id == selectedItem.Id);
-            if (itemIndex >= 0)
-            {
-                store.InventoryItems[itemIndex] = selectedItem;
-                store.Save();
-            }
-
-            MessageBox.Show($"Serial number logged out successfully by {App.CurrentUser.Initials}.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            
-            // Clear the form
-            SerialTextBox.Text = "Serial #:";
-            UPCBox.Text = "UPC:";
-            ResultsListBox.ItemsSource = null;
-            LogOutReason.SelectedIndex = -1;
-            
-            App.SaveAll();
-        }
-
-        private void DeleteItem_Click(object sender, RoutedEventArgs e)
-        {
-            // Check if user is TeamLead or Admin
-            if (App.CurrentUser == null || (!App.CurrentUser.IsTeamLead && !App.CurrentUser.IsAdmin))
-            {
-                MessageBox.Show("You do not have permission to delete items. This action is restricted to TeamLeads and Admins.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (ResultsListBox.SelectedItem is not InventoryItem selectedItem)
-            {
-                MessageBox.Show("Please select an item from the search results to delete.", "No Item Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            // Confirm deletion
-            var result = MessageBox.Show(
-                $"Are you sure you want to permanently delete the item with serial number '{selectedItem.SerialNumber}'?\n\nThis action cannot be undone.",
-                "Confirm Delete",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-
-            if (result != MessageBoxResult.Yes)
-            {
-                return;
-            }
-
-            // Delete the item
-            var store = InventoryStore.Load();
-            store.InventoryItems.RemoveAll(i => i.Id == selectedItem.Id);
-            store.Save();
-
-            MessageBox.Show($"Item with serial number '{selectedItem.SerialNumber}' has been deleted by {App.CurrentUser.Initials}.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-
-            // Clear the form
-            SerialTextBox.Text = "Serial #:";
-            UPCBox.Text = "UPC:";
-            ResultsListBox.ItemsSource = null;
-            LogOutReason.SelectedIndex = -1;
-            
-            App.SaveAll();
+            // Hide the panel and clear fields
+            NewSerialPanel.Visibility = Visibility.Collapsed;
+            NewSerialBox.Text = string.Empty;
+            NewSerialDeviceTypeBox.SelectedIndex = -1;
+            NewSerialDeviceTypeBox.Text = string.Empty;
+            NewSerialStatusBox.SelectedIndex = 0;
         }
 
         private void AddNewUPCButton_Click(object sender, RoutedEventArgs e)
@@ -443,12 +350,10 @@ namespace Entertainment
             NewUPCPanel.Visibility = Visibility.Visible;
             NewUPCBox.Text = UPCSearchBox.Text; // Pre-fill with search text
             
-            // Force layout update to ensure the panel is rendered before focusing
+            // Force layout update
             UpdateLayout();
             
             NewUPCBox.Focus();
-            
-            // Select all text in the UPC box for easy replacement
             NewUPCBox.SelectAll();
         }
 
@@ -456,28 +361,28 @@ namespace Entertainment
         {
             string newUPC = NewUPCBox.Text?.Trim() ?? string.Empty;
 
-            // Validate that there's actually input - more robust check
             if (string.IsNullOrWhiteSpace(newUPC))
             {
-                MessageBox.Show("UPC is required.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("UPC is required.", "Validation Error", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 NewUPCBox.Focus();
                 return;
             }
 
             var store = InventoryStore.Load();
 
-            // Check if UPC already exists in inventory - use exact match for validation
-            // This ensures new UPCs aren't rejected due to partial digit matching
+            // Check if UPC already exists
             bool upcExists = store.InventoryItems
                 .Any(item => item.UPC?.Any(u => string.Equals(newUPC, u?.Trim(), StringComparison.OrdinalIgnoreCase)) == true);
 
             if (upcExists)
             {
-                MessageBox.Show("This UPC already exists in inventory. Please select it from the list.", "UPC Exists", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("This UPC already exists in inventory. Please select it from the list.", 
+                    "UPC Exists", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // Get Make value - handle ComboBox properly
+            // Get Make value
             string? makeValue = null;
             if (NewUPCMakeBox.SelectedItem != null)
             {
@@ -495,13 +400,13 @@ namespace Entertainment
                 typeValue = null;
             }
 
-            // Store the new UPC info for later use when logging in serials
+            // Store the new UPC info
             _newUPCs[newUPC] = (makeValue, typeValue);
 
-            // Hide the panel first to prevent any UI validation
+            // Hide the panel
             NewUPCPanel.Visibility = Visibility.Collapsed;
             
-            // Clear fields AFTER hiding the panel
+            // Clear fields
             NewUPCBox.Text = string.Empty;
             NewUPCMakeBox.SelectedIndex = -1;
             NewUPCMakeBox.Text = string.Empty;
@@ -509,26 +414,48 @@ namespace Entertainment
 
             // Select the new UPC
             _selectedUPC = newUPC;
+            _selectedUPCMake = makeValue;
             SelectedUPC.Text = newUPC;
+            SelectedUPCMake.Text = string.IsNullOrEmpty(makeValue) ? "" : $"({makeValue})";
 
-            // Refresh the UPC list to show the new UPC
+            // Refresh the UPC list
             UPCSearchBox_TextChanged(this, null);
 
-            MessageBox.Show($"New UPC '{newUPC}' created successfully. You can now log in serial numbers.", "UPC Created", MessageBoxButton.OK, MessageBoxImage.Information);
+            // Select the new UPC in the list
+            UPCListBox.SelectedItem = newUPC;
+
+            MessageBox.Show($"New UPC '{newUPC}' created successfully. You can now add serial numbers.", 
+                "UPC Created", MessageBoxButton.OK, MessageBoxImage.Information);
             
             App.SaveAll();
         }
 
         private void CancelNewUPCButton_Click(object sender, RoutedEventArgs e)
         {
-            // Hide the panel and clear fields
             NewUPCPanel.Visibility = Visibility.Collapsed;
             NewUPCBox.Text = string.Empty;
             NewUPCMakeBox.SelectedIndex = -1;
             NewUPCMakeBox.Text = string.Empty;
             NewUPCTypeBox.Text = string.Empty;
-            
-            App.SaveAll();
+        }
+
+        private string? GetMakeFromUPC(string upc)
+        {
+            return GetMakeFromUPC(upc, InventoryStore.Load());
+        }
+
+        private string? GetMakeFromUPC(string upc, InventoryStore store)
+        {
+            // First check if it's a newly created UPC
+            if (_newUPCs.TryGetValue(upc, out var newUpcInfo) && newUpcInfo.Make != null)
+            {
+                return newUpcInfo.Make;
+            }
+
+            // Otherwise check existing inventory
+            return store.InventoryItems
+                .FirstOrDefault(i => i.UPC?.Contains(upc) == true)?
+                .Make;
         }
 
         private static bool Matches(string input, string? fieldValue)
@@ -542,6 +469,28 @@ namespace Entertainment
                 return field.EndsWith(input);
 
             return field == input;
+        }
+    }
+
+    // Converter for inverse boolean to visibility
+    public class InverseBooleanToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is int intValue)
+            {
+                return intValue == 0 ? Visibility.Visible : Visibility.Collapsed;
+            }
+            if (value is bool boolValue)
+            {
+                return boolValue ? Visibility.Collapsed : Visibility.Visible;
+            }
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

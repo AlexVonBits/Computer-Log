@@ -24,184 +24,171 @@
         </DockPanel>
         
         <!-- Main Content Area -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <Grid Margin="20">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                
-                <!-- UNIFIED INVENTORY Section -->
-                <GroupBox Grid.Row="0" Header="INVENTORY" Margin="0,0,0,20">
-                    <Grid Margin="10">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <!-- TOP SECTION - UPC List -->
+            <GroupBox Grid.Row="0" Header="UPC LIST" Margin="0,0,0,10">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Search Bar -->
+                    <Grid Grid.Row="0" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        
-                        <!-- Search/Input Row -->
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Search UPC:*" VerticalAlignment="Center" Margin="0,5"/>
-                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
-                            <TextBox x:Name="UPCSearchBox" Width="180" Height="24" TextChanged="UPCSearchBox_TextChanged" Margin="0,5"/>
-                            <Button x:Name="AddNewUPCButton" Content="+ Add New UPC" Margin="10,5,0,0" Click="AddNewUPCButton_Click" Padding="5,2"/>
-                        </StackPanel>
-                        
-                        <!-- UPC Results List -->
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Matching UPCs:" VerticalAlignment="Center" Margin="0,5"/>
-                        <ListBox x:Name="UPCListBox" Grid.Row="1" Grid.Column="1" Width="350" Height="80" SelectionChanged="UPCListBox_SelectionChanged" HorizontalAlignment="Left" Margin="0,5"/>
-                        
-                        <!-- Selected UPC Display -->
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Selected UPC:" VerticalAlignment="Center" Margin="0,5"/>
-                        <TextBlock x:Name="SelectedUPC" Grid.Row="2" Grid.Column="1" FontWeight="Bold" VerticalAlignment="Center" Margin="0,5"/>
-                        
-                        <!-- New UPC Form (initially hidden) -->
-                        <Border x:Name="NewUPCPanel" Grid.Row="3" Grid.Column="1" BorderBrush="Gray" BorderThickness="1" Padding="10" Margin="0,10,0,0" Visibility="Collapsed" HorizontalAlignment="Left">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="New UPC:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                <TextBox x:Name="NewUPCBox" Width="120" Height="24" Margin="0,0,20,0"/>
-                                <TextBlock Text="Make:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                <ComboBox x:Name="NewUPCMakeBox" Width="100" Height="24" Margin="0,0,20,0" IsEditable="True"/>
-                                <TextBlock Text="Type:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                <TextBox x:Name="NewUPCTypeBox" Width="100" Height="24" Margin="0,0,20,0"/>
-                                <Button x:Name="SaveNewUPCButton" Content="Save UPC" Width="80" Height="24" Click="SaveNewUPCButton_Click" Margin="0,0,5,0"/>
-                                <Button x:Name="CancelNewUPCButton" Content="Cancel" Width="60" Height="24" Click="CancelNewUPCButton_Click"/>
+                        <TextBox x:Name="UPCSearchBox" Grid.Column="0" Height="28" 
+                                 TextChanged="UPCSearchBox_TextChanged" 
+                                 VerticalContentAlignment="Center" Padding="5,0"/>
+                        <TextBlock Grid.Column="0" Text="Search by last 4 digits or full UPC..." 
+                                   IsHitTestVisible="False" Foreground="Gray" 
+                                   VerticalAlignment="Center" Margin="7,0,0,0"
+                                   Visibility="{Binding Text.Length, ElementName=UPCSearchBox, Converter={StaticResource InverseBoolToVisConverter}}"/>
+                        <Button x:Name="AddNewUPCButton" Grid.Column="1" Content="+ Add New UPC" 
+                                Margin="10,0,0,0" Click="AddNewUPCButton_Click" Padding="15,5"/>
+                    </Grid>
+                    
+                    <!-- UPCs ListBox -->
+                    <ListBox x:Name="UPCListBox" Grid.Row="1" 
+                             SelectionChanged="UPCListBox_SelectionChanged"
+                             MouseDoubleClick="UPCListBox_MouseDoubleClick">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" FontSize="14" Padding="5,2"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    
+                    <!-- New UPC Panel (initially hidden) -->
+                    <Border x:Name="NewUPCPanel" Grid.Row="2" BorderBrush="Gray" BorderThickness="1" 
+                            Padding="15" Margin="0,10,0,0" Visibility="Collapsed">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="UPC:" VerticalAlignment="Center" Margin="0,0,10,5" FontWeight="Bold"/>
+                            <TextBox x:Name="NewUPCBox" Grid.Row="0" Grid.Column="1" Height="28" Width="200" 
+                                     HorizontalAlignment="Left" Margin="0,0,0,5"/>
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Make:" VerticalAlignment="Center" Margin="0,0,10,5" FontWeight="Bold"/>
+                            <ComboBox x:Name="NewUPCMakeBox" Grid.Row="1" Grid.Column="1" Height="28" Width="200" 
+                                      IsEditable="True" HorizontalAlignment="Left" Margin="0,0,0,5"/>
+                            
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Type:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+                                <ComboBox x:Name="NewUPCTypeBox" Height="28" Width="200" IsEditable="True"/>
+                                <Button x:Name="SaveNewUPCButton" Content="Save UPC" Width="80" Height="28" 
+                                        Click="SaveNewUPCButton_Click" Margin="15,0,5,0"/>
+                                <Button x:Name="CancelNewUPCButton" Content="Cancel" Width="70" Height="28" 
+                                        Click="CancelNewUPCButton_Click"/>
                             </StackPanel>
-                        </Border>
-                        
-                        <!-- Serial Number Input for Login - Simplified -->
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Serial Number:*" VerticalAlignment="Center" Margin="0,15,0,0"/>
-                        <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" Margin="0,15,0,0">
-                            <TextBox x:Name="LogInSerialNumber" Width="180" Height="24"/>
-                            <Button x:Name="AddSerialButton" Content="Add" Margin="10,0,0,0" Click="AddSerialButton_Click" Padding="15,5"/>
-                        </StackPanel>
-                        
-                        <!-- Serial Numbers - Shows all serials from selected UPC -->
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Serial Numbers:" VerticalAlignment="Center" Margin="0,10,0,0"/>
-                        <ListBox x:Name="SerialNumbersListBox" Grid.Row="5" Grid.Column="1" Width="400" Height="80" HorizontalAlignment="Left" Margin="0,5"/>
-                        
-                        <!-- Search by Serial or UPC -->
-                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Search:" VerticalAlignment="Center" Margin="0,15,0,0"/>
-                        <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" Margin="0,15,0,0">
-                            <TextBox x:Name="SerialGetInput" Width="150" Height="24" Margin="0,0,10,0"/>
-                            <TextBlock Text="OR" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                            <TextBlock Text="UPC:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                            <TextBox x:Name="UPCSearchInput" Width="150" Height="24" Margin="0,0,10,0"/>
-                            <Button x:Name="Search" Content="Search" Click="Search_Click" Padding="15,5"/>
-                        </StackPanel>
-                    </Grid>
-                </GroupBox>
-                
-                <!-- Search Results Section -->
-                <GroupBox Grid.Row="1" Header="Search Results" Margin="0,0,0,20">
-                    <Grid Margin="10">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        
-                        <!-- Results Display -->
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Text="UPC:" VerticalAlignment="Center" Width="60"/>
-                            <TextBlock x:Name="UPCBox" VerticalAlignment="Center"/>
-                        </StackPanel>
-                        
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5">
-                            <TextBlock Text="Serial #:" VerticalAlignment="Center" Width="60"/>
-                            <TextBlock x:Name="SerialTextBox" VerticalAlignment="Center"/>
-                        </StackPanel>
-                        
-                        <!-- Results List -->
-                        <ListBox x:Name="ResultsListBox" Grid.Row="2" Height="150" Margin="0,10,0,0" SelectionChanged="ResultsListBox_SelectionChanged">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Border BorderBrush="Gray" BorderThickness="1" Padding="8" Margin="0,2">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="100"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
-                                            
-                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Serial Number:" FontWeight="Bold"/>
-                                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SerialNumber}"/>
-                                            
-                                            <TextBlock Grid.Row="1" Grid.Column="0" Text="UPC:" FontWeight="Bold"/>
-                                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding UPC[0]}"/>
-                                            
-                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Status:" FontWeight="Bold"/>
-                                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Status}"/>
-                                            
-                                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Make:" FontWeight="Bold"/>
-                                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Make}"/>
-                                            
-                                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Type:" FontWeight="Bold"/>
-                                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Type}"/>
-                                            
-                                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Created By:" FontWeight="Bold"/>
-                                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding CreatedBy}"/>
-                                            
-                                            <TextBlock Grid.Row="6" Grid.Column="0" Text="Created At:" FontWeight="Bold"/>
-                                            <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding CreatedAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"/>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </Grid>
-                </GroupBox>
-                
-                <!-- Log Out Section -->
-                <GroupBox Grid.Row="2" Header="Log Out Item" Margin="0,0,0,20">
-                    <Grid Margin="10">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </GroupBox>
+            
+            <!-- BOTTOM SECTION - Serial Numbers -->
+            <GroupBox Grid.Row="1" Header="SERIAL NUMBERS" Margin="0,10,0,0">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Selected UPC Display -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="Selected UPC: " FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="SelectedUPC" FontWeight="Bold" VerticalAlignment="Center" Foreground="Blue"/>
+                        <TextBlock x:Name="SelectedUPCMake" Margin="20,0,0,0" VerticalAlignment="Center" Foreground="Gray"/>
+                    </StackPanel>
+                    
+                    <!-- Search Bar -->
+                    <Grid Grid.Row="1" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Log Out Reason:" VerticalAlignment="Center"/>
-                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
-                            <ComboBox x:Name="LogOutReason" Width="150" Margin="0,0,20,0"/>
-                            <Button x:Name="LogOutSerial" Content="Log Out Serial #" Click="LogOutSerial_Click" Padding="15,5" Margin="0,0,20,0"/>
-                            <CheckBox x:Name="OGPCheck" Content="This is an online pick" VerticalAlignment="Center"/>
-                        </StackPanel>
-                        
-                        <!-- DELETE Section - Only visible to TeamLeads and Admins -->
-                        <StackPanel x:Name="DeletePanel" Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,15,0,0" Visibility="Collapsed">
-                            <Button x:Name="DeleteItem" Content="DELETE ITEM" Click="DeleteItem_Click" Foreground="Red" FontWeight="Bold" Padding="15,5"/>
-                            <TextBlock Text="(TeamLead/Admin only)" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="Gray" FontStyle="Italic"/>
-                        </StackPanel>
+                        <TextBox x:Name="SerialSearchBox" Grid.Column="0" Height="28" 
+                                 TextChanged="SerialSearchBox_TextChanged" 
+                                 VerticalContentAlignment="Center" Padding="5,0"/>
+                        <TextBlock Grid.Column="0" Text="Search serial numbers..." 
+                                   IsHitTestVisible="False" Foreground="Gray" 
+                                   VerticalAlignment="Center" Margin="7,0,0,0"
+                                   Visibility="{Binding Text.Length, ElementName=SerialSearchBox, Converter={StaticResource InverseBoolToVisConverter}}"/>
+                        <Button x:Name="AddNewSerialButton" Grid.Column="1" Content="+ Add New Serial" 
+                                Margin="10,0,0,0" Click="AddNewSerialButton_Click" Padding="15,5"/>
                     </Grid>
-                </GroupBox>
-                
-                <!-- Inventory Verification Button -->
-                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button x:Name="Inventory" Content="Inventory Verification" Click="Inventory_Click" Padding="20,10"/>
-                </StackPanel>
-            </Grid>
-        </ScrollViewer>
+                    
+                    <!-- Serial Numbers DataGrid -->
+                    <DataGrid x:Name="SerialNumbersGrid" Grid.Row="2" 
+                              AutoGenerateColumns="False" IsReadOnly="True"
+                              SelectionMode="Single" SelectionUnit="FullRow"
+                              CanUserAddRows="False" CanUserDeleteRows="False"
+                              GridLinesVisibility="Horizontal"
+                              HeadersVisibility="Column"
+                              RowHeight="30">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Serial Number" Binding="{Binding SerialNumber}" Width="180"/>
+                            <DataGridTextColumn Header="Device Type" Binding="{Binding Type}" Width="150"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120"/>
+                            <DataGridTextColumn Header="Created By" Binding="{Binding CreatedBy}" Width="100"/>
+                            <DataGridTextColumn Header="Created On" Binding="{Binding CreatedAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}" Width="150"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    
+                    <!-- New Serial Panel (initially hidden) -->
+                    <Border x:Name="NewSerialPanel" Grid.Row="3" BorderBrush="Gray" BorderThickness="1" 
+                            Padding="15" Margin="0,10,0,0" Visibility="Collapsed">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Serial Number:" VerticalAlignment="Center" Margin="0,0,10,5" FontWeight="Bold"/>
+                            <TextBox x:Name="NewSerialBox" Grid.Row="0" Grid.Column="1" Height="28" Width="200" 
+                                     HorizontalAlignment="Left" Margin="0,0,0,5"/>
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Device Type:" VerticalAlignment="Center" Margin="0,0,10,5" FontWeight="Bold"/>
+                            <ComboBox x:Name="NewSerialDeviceTypeBox" Grid.Row="1" Grid.Column="1" Height="28" Width="200" 
+                                      IsEditable="True" HorizontalAlignment="Left" Margin="0,0,0,5"/>
+                            
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Status:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+                                <ComboBox x:Name="NewSerialStatusBox" Height="28" Width="150"/>
+                                <TextBlock x:Name="NewSerialCreatedBy" VerticalAlignment="Center" Margin="20,0,0,0" Foreground="Gray"/>
+                                <Button x:Name="SaveNewSerialButton" Content="Save Serial" Width="80" Height="28" 
+                                        Click="SaveNewSerialButton_Click" Margin="15,0,5,0"/>
+                                <Button x:Name="CancelNewSerialButton" Content="Cancel" Width="70" Height="28" 
+                                        Click="CancelNewSerialButton_Click"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </GroupBox>
+        </Grid>
         
         <!-- Status Bar -->
         <StatusBar Grid.Row="2">
@@ -210,4 +197,9 @@
             </StatusBarItem>
         </StatusBar>
     </Grid>
+    
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+        <local:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
+    </Window.Resources>
 </Window>

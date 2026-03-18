@@ -138,6 +138,7 @@ namespace Entertainment
             _serialNumbersToLogIn.Add(serialNumber.ToUpperInvariant());
             SerialNumbersListBox.ItemsSource = null;
             SerialNumbersListBox.ItemsSource = _serialNumbersToLogIn;
+            SerialNumbersListBox.Items.Refresh();
             
             LogInSerialNumber.Clear();
             LogInSerialNumber.Focus();
@@ -292,11 +293,8 @@ namespace Entertainment
 
             MessageBox.Show($"Serial number logged out successfully by {App.CurrentUser.Initials}.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             
-            // Clear the form
-            SerialTextBox.Text = "Serial #:";
-            UPCBox.Text = "UPC:";
-            ResultsListBox.ItemsSource = null;
-            LogOutReason.SelectedIndex = -1;
+            // Refresh the results list to show SoldBy and SoldAt
+            ResultsListBox.Items.Refresh();
             
             App.SaveAll();
         }

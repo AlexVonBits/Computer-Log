@@ -79,7 +79,7 @@
             <TextBlock HorizontalAlignment="Left" Margin="30,418,0,0" TextWrapping="Wrap" Text="Serial #:" VerticalAlignment="Top"/>
             
             <TextBlock x:Name="UPCGetInput" HorizontalAlignment="Left" Margin="280,418,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Width="120"/>
-            <TextBlock HorizontalAlignment="Left" Margin="310,380,0,0" TextWrapping="Wrap" Text="OR" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="310,380,0,0" TextWrapping="Wrap" Text="serial or UPC" VerticalAlignment="Top"/>
             
             <TextBox x:Name="UPCSearchInput" HorizontalAlignment="Left" Margin="360,415,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="24"/>
             <TextBlock HorizontalAlignment="Left" Margin="310,418,0,0" TextWrapping="Wrap" Text="UPC:" VerticalAlignment="Top"/>

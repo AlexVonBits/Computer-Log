@@ -6,6 +6,12 @@
         xmlns:local="clr-namespace:Entertainment"
         mc:Ignorable="d"
         Title="Computer Log" Height="800" Width="1000">
+    
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+        <local:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
+    </Window.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -197,9 +203,4 @@
             </StatusBarItem>
         </StatusBar>
     </Grid>
-    
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
-        <local:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
-    </Window.Resources>
 </Window>

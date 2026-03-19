@@ -60,16 +60,15 @@ namespace Entertainment
         {
             try
             {
-                // Create and show main window first
+                // Create main window
                 var mainWindow = new MainWindow();
                 
-                // Use Application.Current.MainWindow to ensure WPF knows about the main window
+                // Close login page first to prevent race conditions
+                this.Close();
+                
+                // Set and show main window after login is closed
                 Application.Current.MainWindow = mainWindow;
                 mainWindow.Show();
-                
-                // Close login page after main window is shown
-                // This prevents a race condition where the app might think there are no windows
-                this.Close();
             }
             catch (Exception ex)
             {

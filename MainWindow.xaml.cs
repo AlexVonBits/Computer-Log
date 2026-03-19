@@ -14,8 +14,9 @@ namespace Entertainment
     {
         private string? _selectedUPC;
         private string? _selectedUPCMake;
-        private Dictionary<string, (string? Make, string? Type)> _newUPCs = new();
+        private Dictionary<string, string?> _newUPCs = new();
         private List<InventoryItem> _currentSerials = new();
+        private InventoryItem? _selectedSerialItem;
 
         public MainWindow()
         {
@@ -33,12 +34,31 @@ namespace Entertainment
                 "CyberPower"
             };
 
+            // Initialize Edit Make dropdown
+            EditMakeComboBox.ItemsSource = new[]
+            {
+                "Lenovo",
+                "HP",
+                "Asus",
+                "Samsung",
+                "Apple",
+                "MSI",
+                "CyberPower"
+            };
+
             // Initialize Status dropdown for new serial
             NewSerialStatusBox.ItemsSource = InventoryStatus.AllStatuses;
             NewSerialStatusBox.SelectedIndex = 0;
 
+            // Initialize Change Status dropdown
+            ChangeStatusComboBox.ItemsSource = InventoryStatus.AllStatuses;
+            ChangeStatusComboBox.SelectedIndex = 0;
+
             // Initialize Device Type dropdown for new serial
             InitializeDeviceTypes();
+
+            // Subscribe to serial grid selection
+            SerialNumbersGrid.SelectionChanged += SerialNumbersGrid_SelectionChanged;
 
             // Save on window open
             Loaded += MainWindow_Loaded;
@@ -186,6 +206,11 @@ namespace Entertainment
                 
                 // Clear serial search when UPC changes
                 SerialSearchBox.Clear();
+                
+                // Hide edit panels when UPC changes
+                EditMakePanel.Visibility = Visibility.Collapsed;
+                ChangeStatusPanel.Visibility = Visibility.Collapsed;
+                _selectedSerialItem = null;
             }
         }
 
@@ -243,6 +268,10 @@ namespace Entertainment
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+
+            // Hide change status panel when adding new serial
+            ChangeStatusPanel.Visibility = Visibility.Collapsed;
+            _selectedSerialItem = null;
 
             // Show the new serial panel
             NewSerialPanel.Visibility = Visibility.Visible;
@@ -398,15 +427,8 @@ namespace Entertainment
                 makeValue = NewUPCMakeBox.Text.Trim();
             }
 
-            // Get Type value
-            string? typeValue = NewUPCTypeBox.Text?.Trim();
-            if (string.IsNullOrEmpty(typeValue))
-            {
-                typeValue = null;
-            }
-
-            // Store the new UPC info
-            _newUPCs[newUPC] = (makeValue, typeValue);
+            // Store the new UPC info (Make only - Type removed)
+            _newUPCs[newUPC] = makeValue;
 
             // Hide the panel
             NewUPCPanel.Visibility = Visibility.Collapsed;
@@ -415,7 +437,6 @@ namespace Entertainment
             NewUPCBox.Text = string.Empty;
             NewUPCMakeBox.SelectedIndex = -1;
             NewUPCMakeBox.Text = string.Empty;
-            NewUPCTypeBox.Text = string.Empty;
 
             // Select the new UPC
             _selectedUPC = newUPC;
@@ -441,7 +462,6 @@ namespace Entertainment
             NewUPCBox.Text = string.Empty;
             NewUPCMakeBox.SelectedIndex = -1;
             NewUPCMakeBox.Text = string.Empty;
-            NewUPCTypeBox.Text = string.Empty;
         }
 
         private string? GetMakeFromUPC(string upc)
@@ -452,9 +472,9 @@ namespace Entertainment
         private string? GetMakeFromUPC(string upc, InventoryStore store)
         {
             // First check if it's a newly created UPC
-            if (_newUPCs.TryGetValue(upc, out var newUpcInfo) && newUpcInfo.Make != null)
+            if (_newUPCs.TryGetValue(upc, out var makeValue) && makeValue != null)
             {
-                return newUpcInfo.Make;
+                return makeValue;
             }
 
             // Otherwise check existing inventory
@@ -474,6 +494,166 @@ namespace Entertainment
                 return field.EndsWith(input);
 
             return field == input;
+        }
+
+        private void SerialNumbersGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (SerialNumbersGrid.SelectedItem is InventoryItem selectedItem)
+            {
+                _selectedSerialItem = selectedItem;
+                // Show the change status panel when a serial is selected
+                // But only if we're not already adding a new serial
+                if (NewSerialPanel.Visibility != Visibility.Visible)
+                {
+                    ChangeStatusPanel.Visibility = Visibility.Visible;
+                    SelectedSerialText.Text = selectedItem.SerialNumber;
+                    ChangeStatusComboBox.SelectedItem = selectedItem.Status;
+                }
+            }
+        }
+
+        private void EditMakeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(_selectedUPC))
+            {
+                MessageBox.Show("Please select a UPC first.", "No UPC Selected", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Show the edit make panel
+            EditMakePanel.Visibility = Visibility.Visible;
+            
+            // Pre-fill with current make
+            if (!string.IsNullOrEmpty(_selectedUPCMake))
+            {
+                EditMakeComboBox.SelectedItem = _selectedUPCMake;
+                EditMakeComboBox.Text = _selectedUPCMake;
+            }
+            else
+            {
+                EditMakeComboBox.SelectedIndex = -1;
+                EditMakeComboBox.Text = string.Empty;
+            }
+            
+            EditMakeComboBox.Focus();
+        }
+
+        private void SaveMakeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(_selectedUPC))
+            {
+                MessageBox.Show("Please select a UPC first.", "No UPC Selected", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Get new make value
+            string? newMake = null;
+            if (EditMakeComboBox.SelectedItem != null)
+            {
+                newMake = EditMakeComboBox.SelectedItem.ToString();
+            }
+            else if (!string.IsNullOrEmpty(EditMakeComboBox.Text))
+            {
+                newMake = EditMakeComboBox.Text.Trim();
+            }
+
+            var store = InventoryStore.Load();
+
+            // Update make for all inventory items with this UPC
+            var itemsToUpdate = store.InventoryItems
+                .Where(i => i.UPC?.Contains(_selectedUPC) == true)
+                .ToList();
+
+            if (itemsToUpdate.Count > 0)
+            {
+                foreach (var item in itemsToUpdate)
+                {
+                    item.Make = newMake;
+                }
+                store.Save();
+
+                MessageBox.Show($"Make updated for {itemsToUpdate.Count} item(s) with UPC '{_selectedUPC}'.", 
+                    "Make Updated", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Refresh the serial numbers list to show updated make
+                if (_selectedUPC != null)
+                {
+                    LoadSerialsForUPC(_selectedUPC);
+                }
+            }
+            else
+            {
+                // Update in memory for newly created UPCs
+                _newUPCs[_selectedUPC] = newMake;
+            }
+
+            // Update the display
+            _selectedUPCMake = newMake;
+            SelectedUPCMake.Text = string.IsNullOrEmpty(newMake) ? "" : $"({newMake})";
+
+            // Hide the panel
+            EditMakePanel.Visibility = Visibility.Collapsed;
+            
+            App.SaveAll();
+        }
+
+        private void CancelMakeButton_Click(object sender, RoutedEventArgs e)
+        {
+            EditMakePanel.Visibility = Visibility.Collapsed;
+            EditMakeComboBox.SelectedIndex = -1;
+            EditMakeComboBox.Text = string.Empty;
+        }
+
+        private void UpdateStatusButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_selectedSerialItem == null)
+            {
+                MessageBox.Show("Please select a serial number first.", "No Serial Selected", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string? newStatus = ChangeStatusComboBox.SelectedItem as string;
+            if (string.IsNullOrEmpty(newStatus))
+            {
+                MessageBox.Show("Please select a status.", "Validation Error", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var store = InventoryStore.Load();
+            var item = store.InventoryItems.FirstOrDefault(i => i.Id == _selectedSerialItem.Id);
+            
+            if (item != null)
+            {
+                string oldStatus = item.Status;
+                item.Status = newStatus;
+                store.Save();
+
+                MessageBox.Show($"Status for '{item.SerialNumber}' changed from '{oldStatus}' to '{newStatus}'.", 
+                    "Status Updated", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Refresh the list
+                if (_selectedUPC != null)
+                {
+                    LoadSerialsForUPC(_selectedUPC);
+                }
+
+                // Hide the panel
+                ChangeStatusPanel.Visibility = Visibility.Collapsed;
+                _selectedSerialItem = null;
+                
+                App.SaveAll();
+            }
+        }
+
+        private void CancelStatusButton_Click(object sender, RoutedEventArgs e)
+        {
+            ChangeStatusPanel.Visibility = Visibility.Collapsed;
+            _selectedSerialItem = null;
+            SerialNumbersGrid.SelectedItem = null;
         }
     }
 

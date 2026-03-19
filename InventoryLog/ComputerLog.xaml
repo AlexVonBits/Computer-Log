@@ -39,6 +39,7 @@
             <!-- Selected UPC Display -->
             <TextBlock HorizontalAlignment="Left" Margin="360,55,0,0" TextWrapping="Wrap" Text="Selected UPC:" VerticalAlignment="Top"/>
             <TextBlock x:Name="SelectedUPC" HorizontalAlignment="Left" Margin="450,55,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" FontWeight="Bold"/>
+            <TextBlock x:Name="SelectedUPCInfo" HorizontalAlignment="Left" Margin="450,75,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Foreground="Gray" FontSize="11"/>
             
             <!-- New UPC Form (initially hidden) -->
             <Border x:Name="NewUPCPanel" BorderBrush="Gray" BorderThickness="1" Margin="30,115,30,0" Padding="10" VerticalAlignment="Top" Height="55" Visibility="Collapsed">
@@ -59,11 +60,10 @@
             <TextBox x:Name="LogInSerialNumber" HorizontalAlignment="Left" Margin="150,172,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="24"/>
             
             <!-- Make/Type and Status Dropdowns -->
-            <TextBlock HorizontalAlignment="Left" Margin="340,175,0,0" TextWrapping="Wrap" Text="Make/Type:" VerticalAlignment="Top"/>
-            <ComboBox x:Name="MakeTypeComboBox" HorizontalAlignment="Left" Margin="420,172,0,0" VerticalAlignment="Top" Width="140" Height="24"/>
+            <!-- REMOVED: Make/Type dropdown - Type is now inherited from UPC -->
             
-            <TextBlock HorizontalAlignment="Left" Margin="570,175,0,0" TextWrapping="Wrap" Text="Status:" VerticalAlignment="Top"/>
-            <ComboBox x:Name="StatusComboBox" HorizontalAlignment="Left" Margin="620,172,0,0" VerticalAlignment="Top" Width="120" Height="24"/>
+            <TextBlock HorizontalAlignment="Left" Margin="340,175,0,0" TextWrapping="Wrap" Text="Status:" VerticalAlignment="Top"/>
+            <ComboBox x:Name="StatusComboBox" HorizontalAlignment="Left" Margin="340,172,0,0" VerticalAlignment="Top" Width="120" Height="24"/>
             
             <Button x:Name="AddSerialButton" Content="Add Serial" HorizontalAlignment="Left" Margin="150,205,0,0" VerticalAlignment="Top" Width="90" Height="28" Click="AddSerialButton_Click"/>
             
@@ -127,6 +127,8 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Serial Number:" FontWeight="Bold"/>
@@ -135,20 +137,26 @@
                                 <TextBlock Grid.Row="1" Grid.Column="0" Text="UPC:" FontWeight="Bold"/>
                                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding UPC[0]}"/>
                                 
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Status:" FontWeight="Bold"/>
-                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Status}"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Make:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Make}"/>
                                 
-                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Created By:" FontWeight="Bold"/>
-                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding CreatedBy}"/>
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Type:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Type}"/>
                                 
-                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Created At:" FontWeight="Bold"/>
-                                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding CreatedAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"/>
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Status:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Status}"/>
                                 
-                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Sold By:" FontWeight="Bold"/>
-                                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding SoldBy}"/>
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Created By:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding CreatedBy}"/>
                                 
-                                <TextBlock Grid.Row="6" Grid.Column="0" Text="Sold At:" FontWeight="Bold"/>
-                                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding SoldAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"/>
+                                <TextBlock Grid.Row="6" Grid.Column="0" Text="Created At:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding CreatedAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"/>
+                                
+                                <TextBlock Grid.Row="7" Grid.Column="0" Text="Sold By:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding SoldBy}"/>
+                                
+                                <TextBlock Grid.Row="8" Grid.Column="0" Text="Sold At:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding SoldAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"/>
                                 
                             </Grid>
                         </Border>

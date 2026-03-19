@@ -166,5 +166,54 @@ namespace Entertainment.Inventory
                 Save();
             }
         }
+
+        /// <summary>
+        /// Migrates Type values from UPCs to all serial numbers.
+        /// For each unique UPC, determines the canonical Type and applies it to all items with that UPC.
+        /// Uses the most common Type for each UPC, or the first one if there's a tie.
+        /// </summary>
+        public void MigrateTypesFromUPC()
+        {
+            // Group items by UPC
+            var upcGroups = InventoryItems
+                .Where(i => i.UPC != null && i.UPC.Count > 0)
+                .SelectMany(i => i.UPC.Select(u => new { Item = i, UPC = u }))
+                .GroupBy(x => x.UPC)
+                .ToList();
+
+            foreach (var upcGroup in upcGroups)
+            {
+                string upc = upcGroup.Key;
+                var itemsWithThisUPC = upcGroup.Select(x => x.Item).ToList();
+
+                // Get all non-null types for this UPC
+                var typesWithCount = itemsWithThisUPC
+                    .Where(i => !string.IsNullOrEmpty(i.Type))
+                    .GroupBy(i => i.Type)
+                    .Select(g => new { Type = g.Key, Count = g.Count() })
+                    .ToList();
+
+                if (typesWithCount.Count == 0)
+                    continue; // No Type information for this UPC
+
+                // Get the most common Type (if tie, first one wins)
+                string? canonicalType = typesWithCount
+                    .OrderByDescending(t => t.Count)
+                    .ThenBy(t => t.Type)
+                    .First()
+                    .Type;
+
+                // Update all items with this UPC to use the canonical Type
+                foreach (var item in itemsWithThisUPC)
+                {
+                    if (item.Type != canonicalType)
+                    {
+                        item.Type = canonicalType;
+                    }
+                }
+            }
+
+            Save();
+        }
     }
 }

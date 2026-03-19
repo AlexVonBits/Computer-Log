@@ -37,9 +37,6 @@ namespace Entertainment
             UpdateStatusComboBox.ItemsSource = Entertainment.Inventory.InventoryStatus.AllStatuses;
             UpdateStatusComboBox.SelectedIndex = 0;
 
-            // Populate Make/Type dropdown from existing inventory
-            PopulateMakeTypeComboBox();
-
             // Save on window open
             Loaded += ComputerLog_Loaded;
             // Save on window close
@@ -52,6 +49,11 @@ namespace Entertainment
         private void ComputerLog_Loaded(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Maximized;
+            
+            // Migrate existing serial numbers to inherit Type from their parent UPC
+            var store = InventoryStore.Load();
+            store.MigrateTypesFromUPC();
+            
             App.SaveAll();
         }
 
@@ -118,6 +120,23 @@ namespace Entertainment
             {
                 _selectedUPC = selectedUPC;
                 SelectedUPC.Text = selectedUPC;
+                
+                // Show the Make and Type info for the selected UPC
+                var store = InventoryStore.Load();
+                var make = GetMakeFromUPC(selectedUPC, store);
+                var type = GetTypeFromUPC(selectedUPC, store);
+                
+                if (!string.IsNullOrEmpty(make) || !string.IsNullOrEmpty(type))
+                {
+                    var parts = new List<string>();
+                    if (!string.IsNullOrEmpty(make)) parts.Add($"Make: {make}");
+                    if (!string.IsNullOrEmpty(type)) parts.Add($"Type: {type}");
+                    SelectedUPCInfo.Text = string.Join(" | ", parts);
+                }
+                else
+                {
+                    SelectedUPCInfo.Text = "No Make/Type info";
+                }
             }
         }
 
@@ -198,18 +217,6 @@ namespace Entertainment
                 return;
             }
 
-            // Get Make/Type from dropdown
-            string? selectedMakeType = MakeTypeComboBox.SelectedItem as string;
-            string? make = null;
-            string? type = null;
-            if (!string.IsNullOrEmpty(selectedMakeType))
-            {
-                // Parse the Make/Type string (format: "Make Type")
-                var parts = selectedMakeType.Split(' ', 2);
-                make = parts[0];
-                type = parts.Length > 1 ? parts[1] : null;
-            }
-
             // Get Status from dropdown
             string status = StatusComboBox.SelectedItem as string ?? "In Stock";
 
@@ -224,8 +231,8 @@ namespace Entertainment
                 {
                     SerialNumber = serialNumber.ToUpperInvariant(),
                     UPC = new List<string> { _selectedUPC },
-                    Make = make ?? GetMakeFromUPC(_selectedUPC, store),
-                    Type = type ?? GetTypeFromUPC(_selectedUPC, store),
+                    Make = GetMakeFromUPC(_selectedUPC, store),
+                    Type = GetTypeFromUPC(_selectedUPC, store),
                     CreatedBy = App.CurrentUser.Initials,
                     CreatedAt = DateTime.Now,
                     Status = status
@@ -277,6 +284,7 @@ namespace Entertainment
         {
             UPCSearchBox.Clear();
             SelectedUPC.Text = string.Empty;
+            SelectedUPCInfo.Text = string.Empty;
             _selectedUPC = null;
             _serialNumbersToLogIn.Clear();
             SerialNumbersListBox.ItemsSource = null;
@@ -478,23 +486,6 @@ namespace Entertainment
             NewUPCTypeBox.Clear();
             
             App.SaveAll();
-        }
-
-        private void PopulateMakeTypeComboBox()
-        {
-            var store = InventoryStore.Load();
-            var makeTypes = store.InventoryItems
-                .Where(i => !string.IsNullOrEmpty(i.Make) || !string.IsNullOrEmpty(i.Type))
-                .Select(i => $"{i.Make ?? ""} {i.Type ?? ""}".Trim())
-                .Where(s => !string.IsNullOrEmpty(s))
-                .Distinct()
-                .OrderBy(s => s)
-                .ToList();
-
-            // Add an empty option at the top
-            makeTypes.Insert(0, "");
-
-            MakeTypeComboBox.ItemsSource = makeTypes;
         }
 
         private void UpdateStatusButton_Click(object sender, RoutedEventArgs e)

@@ -1,0 +1,20 @@
+# Build outputs
+bin/
+obj/
+publish/
+*.user
+*.suo
+*.cache
+*.log
+
+# Visual Studio
+.vs/
+
+# NuGet
+*.nupkg
+packages/
+
+# IDE
+.idea/
+*.swp
+*.swo

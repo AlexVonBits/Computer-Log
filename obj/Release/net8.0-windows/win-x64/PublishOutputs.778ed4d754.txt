@@ -1,5 +1,0 @@
-/home/workspace/Computer-Log/publish-new/Entertainment.exe
-/home/workspace/Computer-Log/publish-new/Entertainment.dll
-/home/workspace/Computer-Log/publish-new/Entertainment.deps.json
-/home/workspace/Computer-Log/publish-new/Entertainment.runtimeconfig.json
-/home/workspace/Computer-Log/publish-new/Entertainment.pdb

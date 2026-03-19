@@ -38,6 +38,7 @@ namespace Entertainment
                 {
                     // TeamLead setup successful - show MainWindow
                     var mainWindow = new MainWindow();
+                    Application.Current.MainWindow = mainWindow;
                     mainWindow.Show();
                     return;
                 }
@@ -51,6 +52,7 @@ namespace Entertainment
             
             // Show login and keep it open until logged in
             var login = new LoginPage();
+            Application.Current.MainWindow = login;
             login.Show();
         }
     }

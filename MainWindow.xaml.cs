@@ -91,10 +91,15 @@ namespace Entertainment
 
         private void SignOut_Click(object sender, RoutedEventArgs e)
         {
+            // Close main window first
             this.Close();
             
+            // Clear current user
             App.CurrentUser = null;
+            
+            // Show login page
             var login = new LoginPage();
+            Application.Current.MainWindow = login;
             login.Show();
         }
 

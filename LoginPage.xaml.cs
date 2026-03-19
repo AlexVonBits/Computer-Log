@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using Entertainment.Security;
@@ -57,9 +58,23 @@ namespace Entertainment
 
         private void OpenMainWindow()
         {
-            var mainWindow = new MainWindow();
-            mainWindow.Show();
-            this.Close();
+            try
+            {
+                // Create and show main window first
+                var mainWindow = new MainWindow();
+                
+                // Use Application.Current.MainWindow to ensure WPF knows about the main window
+                Application.Current.MainWindow = mainWindow;
+                mainWindow.Show();
+                
+                // Close login page after main window is shown
+                // This prevents a race condition where the app might think there are no windows
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to open main window: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

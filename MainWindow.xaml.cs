@@ -19,6 +19,8 @@ namespace Entertainment
         private List<InventoryItem> _currentSerials = new();
         private InventoryItem? _selectedSerialItem;
 
+        public bool CanDelete { get; private set; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -59,7 +61,7 @@ namespace Entertainment
             ChangeStatusComboBox.SelectedIndex = 0;
 
             // Initialize Device Type dropdown for new serial
-            InitializeDeviceTypes();
+            // InitializeDeviceTypes();
 
             // Subscribe to serial grid selection
             SerialNumbersGrid.SelectionChanged += SerialNumbersGrid_SelectionChanged;
@@ -68,25 +70,6 @@ namespace Entertainment
             Loaded += MainWindow_Loaded;
             // Save on window close
             Closing += MainWindow_Closing;
-        }
-
-        private void InitializeDeviceTypes()
-        {
-            // Common device types - can be customized
-            var deviceTypes = new[]
-            {
-                "Laptop",
-                "Desktop",
-                "Monitor",
-                "Tablet",
-                "All-in-One",
-                "Server",
-                "Workstation",
-                "Gaming PC",
-                "Chromebook",
-                "Other"
-            };
-            NewSerialDeviceTypeBox.ItemsSource = deviceTypes;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -100,6 +83,9 @@ namespace Entertainment
                 
                 // Update created by text for new serial
                 NewSerialCreatedBy.Text = $"Created by: {App.CurrentUser.Initials} | {DateTime.Now:MM/dd/yyyy HH:mm}";
+                
+                // Set delete permission based on role
+                CanDelete = App.CurrentUser.IsAdmin || App.CurrentUser.IsTeamLead;
             }
             
             // Load all UPCs initially
@@ -349,28 +335,6 @@ namespace Entertainment
             string searchText = SerialSearchBox.Text?.Trim() ?? string.Empty;
             NewSerialBox.Text = string.IsNullOrEmpty(searchText) ? string.Empty : searchText;
             
-            // Auto-fill Device Type from the selected UPC
-            if (!string.IsNullOrEmpty(_selectedUPCType))
-            {
-                // Try to find a matching item in the dropdown
-                var typeSource = NewSerialDeviceTypeBox.ItemsSource as string[];
-                if (typeSource != null && typeSource.Contains(_selectedUPCType))
-                {
-                    NewSerialDeviceTypeBox.SelectedItem = _selectedUPCType;
-                }
-                else
-                {
-                    // If not in dropdown, use text
-                    NewSerialDeviceTypeBox.SelectedIndex = -1;
-                    NewSerialDeviceTypeBox.Text = _selectedUPCType;
-                }
-            }
-            else
-            {
-                NewSerialDeviceTypeBox.SelectedIndex = -1;
-                NewSerialDeviceTypeBox.Text = string.Empty;
-            }
-            
             NewSerialStatusBox.SelectedIndex = 0;
             
             // Update created by info
@@ -413,21 +377,8 @@ namespace Entertainment
                 return;
             }
 
-            // Get Device Type value - now inherited from UPC but can be overridden
-            string? deviceType = null;
-            if (NewSerialDeviceTypeBox.SelectedItem != null)
-            {
-                deviceType = NewSerialDeviceTypeBox.SelectedItem.ToString();
-            }
-            else if (!string.IsNullOrEmpty(NewSerialDeviceTypeBox.Text))
-            {
-                deviceType = NewSerialDeviceTypeBox.Text.Trim();
-            }
-            // If still null, inherit from UPC
-            if (string.IsNullOrEmpty(deviceType))
-            {
-                deviceType = _selectedUPCType;
-            }
+            // Device Type is inherited from the selected UPC's type
+            string? deviceType = _selectedUPCType;
 
             // Get Status value
             string? status = NewSerialStatusBox.SelectedItem as string;
@@ -473,8 +424,6 @@ namespace Entertainment
             // Hide the panel and clear fields
             NewSerialPanel.Visibility = Visibility.Collapsed;
             NewSerialBox.Text = string.Empty;
-            NewSerialDeviceTypeBox.SelectedIndex = -1;
-            NewSerialDeviceTypeBox.Text = string.Empty;
             NewSerialStatusBox.SelectedIndex = 0;
         }
 
@@ -709,6 +658,117 @@ namespace Entertainment
             ChangeStatusPanel.Visibility = Visibility.Collapsed;
             _selectedSerialItem = null;
             SerialNumbersGrid.SelectedItem = null;
+        }
+
+        private void DeleteUPCButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Check role permission
+            if (!CanDelete)
+            {
+                MessageBox.Show("You do not have permission to delete UPCs. Only admins and team leads can delete.", 
+                    "Permission Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Get the button that was clicked
+            var button = sender as System.Windows.Controls.Button;
+            if (button?.DataContext == null) return;
+
+            // Get the UPC from the button's data context
+            var selectedItem = button.DataContext;
+            var upcProperty = selectedItem.GetType().GetProperty("UPC");
+            string? upcToDelete = upcProperty?.GetValue(selectedItem) as string;
+
+            if (string.IsNullOrEmpty(upcToDelete)) return;
+
+            // Confirm deletion
+            var result = MessageBox.Show(
+                $"Are you sure you want to delete UPC '{upcToDelete}'? This will also delete all serial numbers associated with this UPC.",
+                "Confirm Delete",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes) return;
+
+            var store = InventoryStore.Load();
+
+            // Find all inventory items with this UPC and remove them
+            var itemsToRemove = store.InventoryItems
+                .Where(i => i.UPC?.Contains(upcToDelete) == true)
+                .ToList();
+
+            foreach (var item in itemsToRemove)
+            {
+                store.InventoryItems.Remove(item);
+            }
+
+            // Also remove from _newUPCs if it exists there
+            _newUPCs.Remove(upcToDelete);
+
+            store.Save();
+
+            // Refresh the list
+            LoadAllUPCs();
+
+            // Clear selection if the deleted UPC was selected
+            if (_selectedUPC == upcToDelete)
+            {
+                _selectedUPC = null;
+                _selectedUPCType = null;
+                SelectedUPC.Text = "";
+                SelectedUPCMake.Text = "";
+                SerialNumbersGrid.ItemsSource = null;
+            }
+
+            MessageBox.Show($"UPC '{upcToDelete}' and {itemsToRemove.Count} associated serial number(s) deleted.", 
+                "Deleted", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            App.SaveAll();
+        }
+
+        private void DeleteSerialButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Check role permission
+            if (!CanDelete)
+            {
+                MessageBox.Show("You do not have permission to delete serial numbers. Only admins and team leads can delete.", 
+                    "Permission Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Get the button that was clicked
+            var button = sender as System.Windows.Controls.Button;
+            if (button?.DataContext is not InventoryItem itemToDelete) return;
+
+            // Confirm deletion
+            var result = MessageBox.Show(
+                $"Are you sure you want to delete serial number '{itemToDelete.SerialNumber}'?",
+                "Confirm Delete",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes) return;
+
+            var store = InventoryStore.Load();
+
+            // Find and remove the item
+            var item = store.InventoryItems.FirstOrDefault(i => i.Id == itemToDelete.Id);
+            if (item != null)
+            {
+                store.InventoryItems.Remove(item);
+                store.Save();
+
+                // Refresh the list
+                if (_selectedUPC != null)
+                {
+                    LoadSerialsForUPC(_selectedUPC);
+                }
+
+                MessageBox.Show($"Serial number '{itemToDelete.SerialNumber}' deleted.", 
+                    "Deleted", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                App.SaveAll();
+            }
         }
     }
 

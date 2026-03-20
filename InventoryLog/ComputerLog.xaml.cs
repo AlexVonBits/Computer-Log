@@ -337,8 +337,8 @@ namespace Entertainment
 
             MessageBox.Show($"Serial number logged out successfully by {App.CurrentUser.Initials}.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             
-            // Refresh the results list to show SoldBy and SoldAt
-            ResultsListBox.Items.Refresh();
+            // Re-run the search to get fresh data from store - this ensures SoldBy and SoldAt are displayed for all items
+            Search_Click(sender, e);
             
             App.SaveAll();
         }
@@ -423,6 +423,7 @@ namespace Entertainment
                 UpdateStatusComboBox.SelectedItem = selectedItem.Status;
                 
                 // Always start with Online Pick unchecked - do not restore previous value
+                // Move this BEFORE ShowItem to ensure checkbox state updates before MessageBox blocks
                 OnlinePickCheckBox.IsChecked = false;
                 
                 ShowItem(selectedItem);
@@ -578,8 +579,8 @@ namespace Entertainment
 
             MessageBox.Show($"Status updated successfully for serial number {itemToUpdate.SerialNumber}.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            // Refresh the results list
-            ResultsListBox.Items.Refresh();
+            // Re-run the search to get fresh data from store - this ensures SoldBy and SoldAt are displayed for all items
+            Search_Click(sender, e);
             
             App.SaveAll();
         }

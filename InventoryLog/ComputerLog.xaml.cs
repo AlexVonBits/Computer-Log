@@ -314,7 +314,15 @@ namespace Entertainment
             }
 
             // Update the item with the current user's initials
-            selectedItem.SoldBy = App.CurrentUser.Initials;
+            // Check if this is an online pick
+            if (OGPCheck.IsChecked == true)
+            {
+                selectedItem.SoldBy = "OGP";
+            }
+            else
+            {
+                selectedItem.SoldBy = App.CurrentUser.Initials;
+            }
             selectedItem.SoldAt = DateTime.Now;
             selectedItem.Status = reason;
 
@@ -566,6 +574,27 @@ namespace Entertainment
             ResultsListBox.Items.Refresh();
             
             App.SaveAll();
+        }
+    }
+
+    /// <summary>
+    /// Converter for conditional visibility of Sold By/Sold At fields.
+    /// Only shows when SoldAt has a value (item has been sold).
+    /// </summary>
+    public class SoldInfoVisibilityConverter : System.Windows.Data.IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is DateTime soldAt)
+            {
+                return System.Windows.Visibility.Visible;
+            }
+            return System.Windows.Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

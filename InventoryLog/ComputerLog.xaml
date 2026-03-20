@@ -6,6 +6,9 @@
         xmlns:local="clr-namespace:Entertainment"
         mc:Ignorable="d"
         Title="ComputerLog" Height="700" Width="900">
+    <Window.Resources>
+        <local:SoldInfoVisibilityConverter x:Key="SoldInfoVisibilityConverter"/>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -152,11 +155,15 @@
                                 <TextBlock Grid.Row="6" Grid.Column="0" Text="Created At:" FontWeight="Bold"/>
                                 <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding CreatedAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"/>
                                 
-                                <TextBlock Grid.Row="7" Grid.Column="0" Text="Sold By:" FontWeight="Bold"/>
-                                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding SoldBy}"/>
+                                <TextBlock Grid.Row="7" Grid.Column="0" Text="Sold By:" FontWeight="Bold" 
+                                           Visibility="{Binding SoldAt, Converter={StaticResource SoldInfoVisibilityConverter}}"/>
+                                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding SoldBy}"
+                                           Visibility="{Binding SoldAt, Converter={StaticResource SoldInfoVisibilityConverter}}"/>
                                 
-                                <TextBlock Grid.Row="8" Grid.Column="0" Text="Sold At:" FontWeight="Bold"/>
-                                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding SoldAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"/>
+                                <TextBlock Grid.Row="8" Grid.Column="0" Text="Sold At:" FontWeight="Bold"
+                                           Visibility="{Binding SoldAt, Converter={StaticResource SoldInfoVisibilityConverter}}"/>
+                                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding SoldAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"
+                                           Visibility="{Binding SoldAt, Converter={StaticResource SoldInfoVisibilityConverter}}"/>
                                 
                             </Grid>
                         </Border>

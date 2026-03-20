@@ -34,18 +34,6 @@ namespace Entertainment
                 "CyberPower"
             };
 
-            // Initialize Edit Make dropdown
-            EditMakeComboBox.ItemsSource = new[]
-            {
-                "Lenovo",
-                "HP",
-                "Asus",
-                "Samsung",
-                "Apple",
-                "MSI",
-                "CyberPower"
-            };
-
             // Initialize Status dropdown for new serial
             NewSerialStatusBox.ItemsSource = InventoryStatus.AllStatuses;
             NewSerialStatusBox.SelectedIndex = 0;
@@ -207,8 +195,7 @@ namespace Entertainment
                 // Clear serial search when UPC changes
                 SerialSearchBox.Clear();
                 
-                // Hide edit panels when UPC changes
-                EditMakePanel.Visibility = Visibility.Collapsed;
+                // Hide panels when UPC changes
                 ChangeStatusPanel.Visibility = Visibility.Collapsed;
                 _selectedSerialItem = null;
             }
@@ -515,100 +502,6 @@ namespace Entertainment
                     ChangeStatusComboBox.SelectedItem = selectedItem.Status;
                 }
             }
-        }
-
-        private void EditMakeButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrEmpty(_selectedUPC))
-            {
-                MessageBox.Show("Please select a UPC first.", "No UPC Selected", 
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            // Show the edit make panel
-            EditMakePanel.Visibility = Visibility.Visible;
-            
-            // Pre-fill with current make
-            if (!string.IsNullOrEmpty(_selectedUPCMake))
-            {
-                EditMakeComboBox.SelectedItem = _selectedUPCMake;
-                EditMakeComboBox.Text = _selectedUPCMake;
-            }
-            else
-            {
-                EditMakeComboBox.SelectedIndex = -1;
-                EditMakeComboBox.Text = string.Empty;
-            }
-            
-            EditMakeComboBox.Focus();
-        }
-
-        private void SaveMakeButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrEmpty(_selectedUPC))
-            {
-                MessageBox.Show("Please select a UPC first.", "No UPC Selected", 
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            // Get new make value
-            string? newMake = null;
-            if (EditMakeComboBox.SelectedItem != null)
-            {
-                newMake = EditMakeComboBox.SelectedItem.ToString();
-            }
-            else if (!string.IsNullOrEmpty(EditMakeComboBox.Text))
-            {
-                newMake = EditMakeComboBox.Text.Trim();
-            }
-
-            var store = InventoryStore.Load();
-
-            // Update make for all inventory items with this UPC
-            var itemsToUpdate = store.InventoryItems
-                .Where(i => i.UPC?.Contains(_selectedUPC) == true)
-                .ToList();
-
-            if (itemsToUpdate.Count > 0)
-            {
-                foreach (var item in itemsToUpdate)
-                {
-                    item.Make = newMake;
-                }
-                store.Save();
-
-                MessageBox.Show($"Make updated for {itemsToUpdate.Count} item(s) with UPC '{_selectedUPC}'.", 
-                    "Make Updated", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                // Refresh the serial numbers list to show updated make
-                if (_selectedUPC != null)
-                {
-                    LoadSerialsForUPC(_selectedUPC);
-                }
-            }
-            else
-            {
-                // Update in memory for newly created UPCs
-                _newUPCs[_selectedUPC] = newMake;
-            }
-
-            // Update the display
-            _selectedUPCMake = newMake;
-            SelectedUPCMake.Text = string.IsNullOrEmpty(newMake) ? "" : $"({newMake})";
-
-            // Hide the panel
-            EditMakePanel.Visibility = Visibility.Collapsed;
-            
-            App.SaveAll();
-        }
-
-        private void CancelMakeButton_Click(object sender, RoutedEventArgs e)
-        {
-            EditMakePanel.Visibility = Visibility.Collapsed;
-            EditMakeComboBox.SelectedIndex = -1;
-            EditMakeComboBox.Text = string.Empty;
         }
 
         private void UpdateStatusButton_Click(object sender, RoutedEventArgs e)

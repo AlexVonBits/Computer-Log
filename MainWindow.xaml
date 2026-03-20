@@ -101,19 +101,6 @@
                             </StackPanel>
                         </Grid>
                     </Border>
-                    
-                    <!-- Edit Make Popup (initially hidden) -->
-                    <Border x:Name="EditMakePanel" Grid.Row="2" BorderBrush="Blue" BorderThickness="1" 
-                            Padding="15" Margin="0,10,0,0" Visibility="Collapsed" Background="#F0F8FF">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="New Make:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
-                            <ComboBox x:Name="EditMakeComboBox" Height="28" Width="200" IsEditable="True" Margin="0,0,10,0"/>
-                            <Button x:Name="SaveMakeButton" Content="Update" Width="80" Height="28" 
-                                    Click="SaveMakeButton_Click" Margin="0,0,5,0"/>
-                            <Button x:Name="CancelMakeButton" Content="Cancel" Width="70" Height="28" 
-                                    Click="CancelMakeButton_Click"/>
-                        </StackPanel>
-                    </Border>
                 </Grid>
             </GroupBox>
             
@@ -132,15 +119,11 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="Selected UPC: " FontWeight="Bold" VerticalAlignment="Center"/>
                         <TextBlock x:Name="SelectedUPC" Grid.Column="1" FontWeight="Bold" VerticalAlignment="Center" Foreground="Blue"/>
                         <TextBlock x:Name="SelectedUPCMake" Grid.Column="2" Margin="20,0,0,0" VerticalAlignment="Center" Foreground="Gray"/>
-                        <Button x:Name="EditMakeButton" Grid.Column="3" Content="Edit Make" Padding="10,5" Margin="15,0,0,0" 
-                                Click="EditMakeButton_Click"/>
                     </Grid>
                     
                     <!-- Search Bar -->

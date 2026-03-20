@@ -157,6 +157,8 @@
                             <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120"/>
                             <DataGridTextColumn Header="Created By" Binding="{Binding CreatedBy}" Width="100"/>
                             <DataGridTextColumn Header="Created On" Binding="{Binding CreatedAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}" Width="150"/>
+                            <DataGridTextColumn Header="Sold By" Binding="{Binding SoldBy}" Width="100"/>
+                            <DataGridTextColumn Header="Sold On" Binding="{Binding SoldAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}" Width="150"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     
@@ -206,6 +208,7 @@
                                     Click="UpdateStatusButton_Click" Margin="0,0,5,0"/>
                             <Button x:Name="CancelStatusButton" Content="Cancel" Width="70" Height="28" 
                                     Click="CancelStatusButton_Click"/>
+                            <CheckBox x:Name="OnlinePickBox" Content="This Is An Online Pick" Margin="20,0,0,0" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Border>
                 </Grid>

@@ -111,11 +111,38 @@ namespace Entertainment
                 .OrderBy(upc => upc)
                 .ToList();
 
-            UPCListBox.ItemsSource = allMatchingUPCs;
+            // Create objects with UPC, Make, Type for the DataTemplate
+            var upcItems = allMatchingUPCs.Select(upc => {
+                string? make = null;
+                string? type = null;
+                
+                // Check _newUPCs first
+                if (_newUPCs.TryGetValue(upc, out var newUpcInfo))
+                {
+                    make = newUpcInfo.Make;
+                    type = newUpcInfo.Type;
+                }
+                
+                // If not found, check inventory
+                if (make == null || type == null)
+                {
+                    var inventoryItem = store.InventoryItems.FirstOrDefault(i => i.UPC?.Contains(upc) == true);
+                    if (inventoryItem != null)
+                    {
+                        make ??= inventoryItem.Make;
+                        type ??= inventoryItem.Type;
+                    }
+                }
+                
+                return new { UPC = upc, Make = make ?? "", Type = type ?? "" };
+            }).ToList();
+
+            UPCListBox.ItemsSource = upcItems;
         }
 
         private void UPCListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // Handle both string (old format) and anonymous object (new format)
             if (UPCListBox.SelectedItem is string selectedUPC)
             {
                 _selectedUPC = selectedUPC;
@@ -136,6 +163,35 @@ namespace Entertainment
                 else
                 {
                     SelectedUPCInfo.Text = "No Make/Type info";
+                }
+            }
+            else if (UPCListBox.SelectedItem != null)
+            {
+                // New anonymous object format
+                var selected = UPCListBox.SelectedItem;
+                var upcProperty = selected.GetType().GetProperty("UPC");
+                var makeProperty = selected.GetType().GetProperty("Make");
+                var typeProperty = selected.GetType().GetProperty("Type");
+                
+                if (upcProperty != null)
+                {
+                    _selectedUPC = upcProperty.GetValue(selected) as string;
+                    SelectedUPC.Text = _selectedUPC ?? string.Empty;
+                    
+                    var make = makeProperty?.GetValue(selected) as string;
+                    var type = typeProperty?.GetValue(selected) as string;
+                    
+                    if (!string.IsNullOrEmpty(make) || !string.IsNullOrEmpty(type))
+                    {
+                        var parts = new List<string>();
+                        if (!string.IsNullOrEmpty(make)) parts.Add($"Make: {make}");
+                        if (!string.IsNullOrEmpty(type)) parts.Add($"Type: {type}");
+                        SelectedUPCInfo.Text = string.Join(" | ", parts);
+                    }
+                    else
+                    {
+                        SelectedUPCInfo.Text = "No Make/Type info";
+                    }
                 }
             }
         }
@@ -422,11 +478,12 @@ namespace Entertainment
                 // Set the current status in the dropdown
                 UpdateStatusComboBox.SelectedItem = selectedItem.Status;
                 
-                // Always start with Online Pick unchecked - do not restore previous value
-                // Move this BEFORE ShowItem to ensure checkbox state updates before MessageBox blocks
-                OnlinePickCheckBox.IsChecked = false;
-                
+                // FIX ISSUE 3: Show item details first, then uncheck the checkbox
+                // This ensures the checkbox resets when selecting a new item
                 ShowItem(selectedItem);
+                
+                // Always start with Online Pick unchecked when selecting a new item
+                OnlinePickCheckBox.IsChecked = false;
             }
         }
 
@@ -579,7 +636,13 @@ namespace Entertainment
 
             MessageBox.Show($"Status updated successfully for serial number {itemToUpdate.SerialNumber}.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            // Re-run the search to get fresh data from store - this ensures SoldBy and SoldAt are displayed for all items
+            // FIX ISSUE 1: Clear selection first, then refresh to ensure display updates
+            ResultsListBox.SelectedItem = null;
+            _selectedInventoryItem = null;
+            SelectedSerialDisplay.Text = string.Empty;
+            UpdateStatusComboBox.SelectedIndex = 0;
+            
+            // Re-run the search to get fresh data from store
             Search_Click(sender, e);
             
             App.SaveAll();

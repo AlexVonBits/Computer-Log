@@ -32,9 +32,52 @@
             <TextBlock HorizontalAlignment="Left" Margin="30,55,0,0" TextWrapping="Wrap" Text="Search UPC:*" VerticalAlignment="Top"/>
             <TextBox x:Name="UPCSearchBox" HorizontalAlignment="Left" Margin="150,52,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="24" TextChanged="UPCSearchBox_TextChanged"/>
             
-            <!-- UPC Results List -->
+            <!-- UPC Results List with Headers -->
             <TextBlock HorizontalAlignment="Left" Margin="30,85,0,0" TextWrapping="Wrap" Text="Matching UPCs:" VerticalAlignment="Top"/>
-            <ListBox x:Name="UPCListBox" SelectionChanged="UPCListBox_SelectionChanged" HorizontalAlignment="Left" Margin="150,82,0,0" VerticalAlignment="Top" Width="180" Height="80"/>
+            <Grid HorizontalAlignment="Left" Margin="150,82,0,0" VerticalAlignment="Top" Width="320">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <!-- Header row -->
+                <Border Grid.Row="0" Grid.Column="0" Background="#E0E0E0" Padding="5,3">
+                    <TextBlock Text="UPC" FontWeight="Bold"/>
+                </Border>
+                <Border Grid.Row="0" Grid.Column="1" Background="#E0E0E0" Padding="5,3" BorderBrush="Gray" BorderThickness="1,0,0,0">
+                    <TextBlock Text="Make" FontWeight="Bold"/>
+                </Border>
+                <Border Grid.Row="0" Grid.Column="2" Background="#E0E0E0" Padding="5,3" BorderBrush="Gray" BorderThickness="1,0,0,0">
+                    <TextBlock Text="Type" FontWeight="Bold"/>
+                </Border>
+                <!-- ListBox in row 1 -->
+                <ListBox x:Name="UPCListBox" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" 
+                         SelectionChanged="UPCListBox_SelectionChanged" 
+                         Height="80" BorderThickness="1">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="100"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding UPC}" Padding="5,2"/>
+                                <Border Grid.Column="1" BorderBrush="Gray" BorderThickness="1,0,0,0">
+                                    <TextBlock Text="{Binding Make}" Padding="5,2"/>
+                                </Border>
+                                <Border Grid.Column="2" BorderBrush="Gray" BorderThickness="1,0,0,0">
+                                    <TextBlock Text="{Binding Type}" Padding="5,2"/>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
             
             <!-- Add New UPC Button -->
             <Button x:Name="AddNewUPCButton" Content="+ Add New UPC" HorizontalAlignment="Left" Margin="340,82,0,0" VerticalAlignment="Top" Width="100" Height="24" Click="AddNewUPCButton_Click"/>
@@ -118,6 +161,8 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="100"/>
                                     <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -156,14 +201,14 @@
                                 <TextBlock Grid.Row="7" Grid.Column="0" Text="Created At:" FontWeight="Bold"/>
                                 <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding CreatedAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"/>
                                 
-                                <TextBlock Grid.Row="8" Grid.Column="0" Text="Sold By:" FontWeight="Bold" 
+                                <TextBlock Grid.Row="8" Grid.Column="2" Text="Sold By:" FontWeight="Bold" 
                                            Visibility="{Binding SoldAt, Converter={StaticResource SoldInfoVisibilityConverter}}"/>
-                                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding SoldBy}"
+                                <TextBlock Grid.Row="8" Grid.Column="3" Text="{Binding SoldBy}"
                                            Visibility="{Binding SoldAt, Converter={StaticResource SoldInfoVisibilityConverter}}"/>
                                 
-                                <TextBlock Grid.Row="9" Grid.Column="0" Text="Sold At:" FontWeight="Bold"
+                                <TextBlock Grid.Row="9" Grid.Column="2" Text="Sold At:" FontWeight="Bold"
                                            Visibility="{Binding SoldAt, Converter={StaticResource SoldInfoVisibilityConverter}}"/>
-                                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding SoldAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"
+                                <TextBlock Grid.Row="9" Grid.Column="3" Text="{Binding SoldAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"
                                            Visibility="{Binding SoldAt, Converter={StaticResource SoldInfoVisibilityConverter}}"/>
                                 
                             </Grid>

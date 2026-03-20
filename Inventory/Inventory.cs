@@ -18,6 +18,7 @@ namespace Entertainment.Inventory
         public string? SoldBy { get; set; }
         public DateTime? SoldAt { get; set; }
         public string Status { get; set; } = "In Stock";
+        public bool OnlinePick { get; set; } = false;
 
         // Verification tracking
         public DateTime? LastVerifiedAt { get; set; }

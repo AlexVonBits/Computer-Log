@@ -129,6 +129,7 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Serial Number:" FontWeight="Bold"/>
@@ -146,20 +147,23 @@
                                 <TextBlock Grid.Row="4" Grid.Column="0" Text="Status:" FontWeight="Bold"/>
                                 <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Status}"/>
                                 
-                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Created By:" FontWeight="Bold"/>
-                                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding CreatedBy}"/>
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Online Pick:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding OnlinePick}"/>
                                 
-                                <TextBlock Grid.Row="6" Grid.Column="0" Text="Created At:" FontWeight="Bold"/>
-                                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding CreatedAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"/>
+                                <TextBlock Grid.Row="6" Grid.Column="0" Text="Created By:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding CreatedBy}"/>
                                 
-                                <TextBlock Grid.Row="7" Grid.Column="0" Text="Sold By:" FontWeight="Bold" 
+                                <TextBlock Grid.Row="7" Grid.Column="0" Text="Created At:" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding CreatedAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"/>
+                                
+                                <TextBlock Grid.Row="8" Grid.Column="0" Text="Sold By:" FontWeight="Bold" 
                                            Visibility="{Binding SoldAt, Converter={StaticResource SoldInfoVisibilityConverter}}"/>
-                                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding SoldBy}"
+                                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding SoldBy}"
                                            Visibility="{Binding SoldAt, Converter={StaticResource SoldInfoVisibilityConverter}}"/>
                                 
-                                <TextBlock Grid.Row="8" Grid.Column="0" Text="Sold At:" FontWeight="Bold"
+                                <TextBlock Grid.Row="9" Grid.Column="0" Text="Sold At:" FontWeight="Bold"
                                            Visibility="{Binding SoldAt, Converter={StaticResource SoldInfoVisibilityConverter}}"/>
-                                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding SoldAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"
+                                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding SoldAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}"
                                            Visibility="{Binding SoldAt, Converter={StaticResource SoldInfoVisibilityConverter}}"/>
                                 
                             </Grid>

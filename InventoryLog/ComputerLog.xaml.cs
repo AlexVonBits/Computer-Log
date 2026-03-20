@@ -400,8 +400,10 @@ namespace Entertainment
             // Show additional details as a message when item is selected
             string createdAtStr = item.CreatedAt.HasValue ? item.CreatedAt.Value.ToString("g") : "N/A";
             string soldAtStr = item.SoldAt.HasValue ? item.SoldAt.Value.ToString("g") : "N/A";
+            string onlinePickStr = item.OnlinePick ? "Yes" : "No";
             
             string details = $"Make: {item.Make ?? "N/A"} | Type: {item.Type ?? "N/A"} | Status: {item.Status}\n" +
+                           $"Online Pick: {onlinePickStr}\n" +
                            $"CreatedBy: {item.CreatedBy ?? "N/A"} | CreatedAt: {createdAtStr}\n" +
                            $"SoldBy: {item.SoldBy ?? "N/A"} | SoldAt: {soldAtStr}";
             
@@ -419,6 +421,9 @@ namespace Entertainment
                 
                 // Set the current status in the dropdown
                 UpdateStatusComboBox.SelectedItem = selectedItem.Status;
+                
+                // Restore the Online Pick checkbox state from the selected item
+                OnlinePickCheckBox.IsChecked = selectedItem.OnlinePick;
                 
                 ShowItem(selectedItem);
             }
@@ -558,6 +563,9 @@ namespace Entertainment
                 }
                 itemToUpdate.SoldAt = DateTime.Now;
             }
+
+            // Update the OnlinePick property
+            itemToUpdate.OnlinePick = OnlinePickCheckBox.IsChecked == true;
 
             // Update the status
             itemToUpdate.Status = newStatus;

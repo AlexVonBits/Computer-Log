@@ -1,0 +1,49 @@
+<Window x:Class="Entertainment.CrossReferenceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Link Cross-References"
+        Height="450" Width="500"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+            <TextBlock Text="Link Cross-References" FontSize="18" FontWeight="Bold"/>
+            <TextBlock x:Name="SelectedUPCText" Foreground="Gray" Margin="0,5,0,0"/>
+        </StackPanel>
+        
+        <!-- Instructions -->
+        <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,0,0,10">
+            Select the UPCs you want to link as cross-references to this UPC.
+            Linked UPCs will share the same inventory items.
+        </TextBlock>
+        
+        <!-- Available UPCs ListBox with checkboxes -->
+        <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" Margin="0,0,0,15">
+            <ListBox x:Name="UPCsListBox" SelectionMode="Multiple" BorderThickness="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox Content="{Binding}" Tag="{Binding}" 
+                                  Checked="UPCCheckBox_Checked" 
+                                  Unchecked="UPCCheckBox_Unchecked"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+        
+        <!-- Buttons -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="SaveButton" Content="Link Selected" Width="100" Height="30" 
+                    Click="SaveButton_Click" Margin="0,0,10,0" IsDefault="True"/>
+            <Button Content="Cancel" Width="80" Height="30" 
+                    Click="CancelButton_Click" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

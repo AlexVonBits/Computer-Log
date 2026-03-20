@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 using Entertainment.Inventory;
 using Entertainment.Users;
 
@@ -670,14 +671,31 @@ namespace Entertainment
                 return;
             }
 
-            // Get the button that was clicked
-            var button = sender as System.Windows.Controls.Button;
-            if (button?.DataContext == null) return;
+            object? selectedItem = null;
+            string? upcToDelete = null;
 
-            // Get the UPC from the button's data context
-            var selectedItem = button.DataContext;
-            var upcProperty = selectedItem.GetType().GetProperty("UPC");
-            string? upcToDelete = upcProperty?.GetValue(selectedItem) as string;
+            // Check if triggered from context menu (MenuItem) or button
+            if (sender is System.Windows.Controls.MenuItem)
+            {
+                // Get from selected item in the grid
+                selectedItem = UPCListBox.SelectedItem;
+                if (selectedItem != null)
+                {
+                    var upcProperty = selectedItem.GetType().GetProperty("UPC");
+                    upcToDelete = upcProperty?.GetValue(selectedItem) as string;
+                }
+            }
+            else
+            {
+                // Get from button's data context
+                var button = sender as System.Windows.Controls.Button;
+                selectedItem = button?.DataContext;
+                if (selectedItem != null)
+                {
+                    var upcProperty = selectedItem.GetType().GetProperty("UPC");
+                    upcToDelete = upcProperty?.GetValue(selectedItem) as string;
+                }
+            }
 
             if (string.IsNullOrEmpty(upcToDelete)) return;
 
@@ -736,9 +754,20 @@ namespace Entertainment
                 return;
             }
 
-            // Get the button that was clicked
-            var button = sender as System.Windows.Controls.Button;
-            if (button?.DataContext is not InventoryItem itemToDelete) return;
+            InventoryItem? itemToDelete = null;
+
+            // Check if clicked from button or context menu
+            if (sender is System.Windows.Controls.Button button)
+            {
+                itemToDelete = button.DataContext as InventoryItem;
+            }
+            else if (sender is System.Windows.Controls.MenuItem)
+            {
+                // Context menu - get from selected item
+                itemToDelete = SerialNumbersGrid.SelectedItem as InventoryItem;
+            }
+
+            if (itemToDelete == null) return;
 
             // Confirm deletion
             var result = MessageBox.Show(
@@ -769,6 +798,171 @@ namespace Entertainment
 
                 App.SaveAll();
             }
+        }
+
+        private void DeleteUPCContextMenu_Click(object sender, RoutedEventArgs e)
+        {
+            // Check role permission
+            if (!CanDelete)
+            {
+                MessageBox.Show("You do not have permission to delete UPCs. Only admins and team leads can delete.", 
+                    "Permission Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Get UPC from selected item (context menu)
+            var selectedItem = UPCListBox.SelectedItem;
+            if (selectedItem == null) return;
+
+            var upcProperty = selectedItem.GetType().GetProperty("UPC");
+            string? upcToDelete = upcProperty?.GetValue(selectedItem) as string;
+
+            if (string.IsNullOrEmpty(upcToDelete)) return;
+
+            // Confirm deletion
+            var result = MessageBox.Show(
+                $"Are you sure you want to delete UPC '{upcToDelete}'? This will also delete all serial numbers associated with this UPC.",
+                "Confirm Delete",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes) return;
+
+            var store = InventoryStore.Load();
+
+            // Find all inventory items with this UPC and remove them
+            var itemsToRemove = store.InventoryItems
+                .Where(i => i.UPC?.Contains(upcToDelete) == true)
+                .ToList();
+
+            foreach (var item in itemsToRemove)
+            {
+                store.InventoryItems.Remove(item);
+            }
+
+            // Also remove from _newUPCs if it exists there
+            _newUPCs.Remove(upcToDelete);
+
+            store.Save();
+
+            // Refresh the list
+            LoadAllUPCs();
+
+            // Clear selection if the deleted UPC was selected
+            if (_selectedUPC == upcToDelete)
+            {
+                _selectedUPC = null;
+                _selectedUPCType = null;
+                SelectedUPC.Text = "";
+                SelectedUPCMake.Text = "";
+                SerialNumbersGrid.ItemsSource = null;
+            }
+
+            MessageBox.Show($"UPC '{upcToDelete}' and {itemsToRemove.Count} associated serial number(s) deleted.", 
+                "Deleted", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            App.SaveAll();
+        }
+
+        private void LinkCrossReferences_Click(object sender, RoutedEventArgs e)
+        {
+            // Check role permission
+            if (!CanDelete)
+            {
+                MessageBox.Show("You do not have permission to link cross-references. Only admins and team leads can perform this action.", 
+                    "Permission Denied", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Get selected UPC
+            var selectedItem = UPCListBox.SelectedItem;
+            if (selectedItem == null)
+            {
+                MessageBox.Show("Please select a UPC first.", "No UPC Selected", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var upcProperty = selectedItem.GetType().GetProperty("UPC");
+            string? selectedUPC = upcProperty?.GetValue(selectedItem) as string;
+
+            if (string.IsNullOrEmpty(selectedUPC)) return;
+
+            // Get all available UPCs for linking
+            var store = InventoryStore.Load();
+            var allUPCs = store.InventoryItems
+                .SelectMany(item => item.UPC ?? new List<string>())
+                .Where(upc => !string.IsNullOrWhiteSpace(upc))
+                .Distinct()
+                .OrderBy(upc => upc)
+                .ToList();
+
+            // Also include newly created UPCs
+            allUPCs = allUPCs
+                .Union(_newUPCs.Keys)
+                .Distinct()
+                .OrderBy(upc => upc)
+                .ToList();
+
+            // Remove the selected UPC from the list of available UPCs
+            var availableUPCs = allUPCs.Where(u => u != selectedUPC).ToList();
+
+            if (availableUPCs.Count == 0)
+            {
+                MessageBox.Show("No other UPCs available to link.", "No Options", 
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            // Show a simple input dialog for cross-reference linking
+            var crossRefWindow = new CrossReferenceWindow(selectedUPC, availableUPCs);
+            crossRefWindow.Owner = this;
+            
+            if (crossRefWindow.ShowDialog() == true)
+            {
+                var linkedUPCs = crossRefWindow.LinkedUPCs;
+                
+                if (linkedUPCs.Count > 0)
+                {
+                    // Get all inventory items with the selected UPC
+                    var itemsToUpdate = store.InventoryItems
+                        .Where(i => i.UPC?.Contains(selectedUPC) == true)
+                        .ToList();
+
+                    // Add cross-reference UPCs to each item
+                    foreach (var item in itemsToUpdate)
+                    {
+                        foreach (var linkedUpc in linkedUPCs)
+                        {
+                            if (item.UPC == null)
+                            {
+                                item.UPC = new List<string>();
+                            }
+                            if (!item.UPC.Contains(linkedUpc))
+                            {
+                                item.UPC.Add(linkedUpc);
+                            }
+                        }
+                    }
+
+                    store.Save();
+                    
+                    MessageBox.Show($"Successfully linked {linkedUPCs.Count} cross-reference(s) to UPC '{selectedUPC}'.", 
+                        "Cross-References Linked", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    App.SaveAll();
+                }
+            }
+        }
+
+        private List<string> GetLinkedUPCs(string upc)
+        {
+            var store = InventoryStore.Load();
+            if (store.CrossReferences.TryGetValue(upc, out var linked))
+            {
+                return linked.ToList();
+            }
+            return new List<string>();
         }
     }
 

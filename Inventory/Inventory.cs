@@ -49,6 +49,9 @@ namespace Entertainment.Inventory
         );
 
         public List<InventoryItem> InventoryItems { get; set; } = new();
+        
+        // Cross-references: maps a UPC to a list of related UPCs
+        public Dictionary<string, List<string>> CrossReferences { get; set; } = new();
 
         public static InventoryStore Load()
         {

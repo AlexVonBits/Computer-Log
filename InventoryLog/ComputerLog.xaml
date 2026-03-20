@@ -83,15 +83,15 @@
             <TextBlock HorizontalAlignment="Left" Margin="30,395,0,0" TextWrapping="Wrap" Text="Selected Serial:" VerticalAlignment="Top"/>
             <TextBlock x:Name="SelectedSerialDisplay" HorizontalAlignment="Left" Margin="150,395,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="280" FontWeight="Bold"/>
             
-            <!-- Status Dropdown -->
+            <!-- Status Dropdown and Online Pick Checkbox - Row 1 -->
             <TextBlock HorizontalAlignment="Left" Margin="30,430,0,0" TextWrapping="Wrap" Text="New Status:" VerticalAlignment="Top"/>
             <ComboBox x:Name="UpdateStatusComboBox" HorizontalAlignment="Left" Margin="150,427,0,0" VerticalAlignment="Top" Width="150" Height="24"/>
             
-            <!-- Online Pick Checkbox -->
-            <CheckBox x:Name="OnlinePickCheckBox" Content="This is an online pick" HorizontalAlignment="Left" Margin="310,430,0,0" VerticalAlignment="Top" Height="24" Width="180"/>
+            <!-- Online Pick Checkbox - clearly visible next to status dropdown -->
+            <CheckBox x:Name="OnlinePickCheckBox" Content="Online Pick (OGP)" HorizontalAlignment="Left" Margin="310,427,0,0" VerticalAlignment="Top" Height="24"/>
             
             <!-- Update Status Button -->
-            <Button x:Name="UpdateStatusButton" Content="Update Status" HorizontalAlignment="Left" Margin="500,426,0,0" VerticalAlignment="Top" Width="120" Height="28" Click="UpdateStatusButton_Click"/>
+            <Button x:Name="UpdateStatusButton" Content="Update Status" HorizontalAlignment="Left" Margin="500,425,0,0" VerticalAlignment="Top" Width="120" Height="28" Click="UpdateStatusButton_Click"/>
             
             <!-- Divider -->
             <Rectangle HorizontalAlignment="Left" Height="2" Margin="30,470,0,0" VerticalAlignment="Top" Width="820" Fill="Gray"/>
@@ -99,16 +99,13 @@
             <!-- Search Section -->
             <TextBlock HorizontalAlignment="Left" Margin="30,485,0,0" TextWrapping="Wrap" Text="SEARCH / LOG OUT" FontWeight="Bold" FontSize="14" VerticalAlignment="Top"/>
             
-            <TextBox x:Name="SerialGetInput" HorizontalAlignment="Left" Margin="150,415,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="24"/>
-            <TextBlock HorizontalAlignment="Left" Margin="30,418,0,0" TextWrapping="Wrap" Text="Serial #:" VerticalAlignment="Top"/>
+            <TextBox x:Name="SerialGetInput" HorizontalAlignment="Left" Margin="150,485,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="24"/>
+            <TextBlock HorizontalAlignment="Left" Margin="30,488,0,0" TextWrapping="Wrap" Text="Serial #:" VerticalAlignment="Top"/>
             
-            <TextBlock x:Name="UPCGetInput" HorizontalAlignment="Left" Margin="280,418,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="18" Width="120"/>
-            <TextBlock HorizontalAlignment="Left" Margin="310,380,0,0" TextWrapping="Wrap" Text="serial or UPC" VerticalAlignment="Top"/>
+            <TextBox x:Name="UPCSearchInput" HorizontalAlignment="Left" Margin="360,485,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="24"/>
+            <TextBlock HorizontalAlignment="Left" Margin="310,488,0,0" TextWrapping="Wrap" Text="UPC:" VerticalAlignment="Top"/>
             
-            <TextBox x:Name="UPCSearchInput" HorizontalAlignment="Left" Margin="360,415,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="24"/>
-            <TextBlock HorizontalAlignment="Left" Margin="310,418,0,0" TextWrapping="Wrap" Text="UPC:" VerticalAlignment="Top"/>
-            
-            <Button x:Name="Search" Content="Search" HorizontalAlignment="Left" Margin="500,413,0,0" VerticalAlignment="Top" Width="100" Height="28" Click="Search_Click"/>
+            <Button x:Name="Search" Content="Search" HorizontalAlignment="Left" Margin="500,483,0,0" VerticalAlignment="Top" Width="100" Height="28" Click="Search_Click"/>
             
             <TextBlock x:Name="UPCBox" HorizontalAlignment="Left" Margin="30,460,0,0" TextWrapping="Wrap" Text="UPC:" VerticalAlignment="Top" Height="18"/>
             <TextBlock x:Name="SerialTextBox" HorizontalAlignment="Left" Margin="30,485,0,0" TextWrapping="Wrap" Text="Serial #:" VerticalAlignment="Top"/>

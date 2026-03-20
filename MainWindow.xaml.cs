@@ -275,7 +275,9 @@ namespace Entertainment
 
             // Show the new serial panel
             NewSerialPanel.Visibility = Visibility.Visible;
-            NewSerialBox.Text = string.Empty;
+            // Only autofill Serial Number if something was typed in search box
+            string searchText = SerialSearchBox.Text?.Trim() ?? string.Empty;
+            NewSerialBox.Text = string.IsNullOrEmpty(searchText) ? string.Empty : searchText;
             NewSerialDeviceTypeBox.SelectedIndex = -1;
             NewSerialDeviceTypeBox.Text = string.Empty;
             NewSerialStatusBox.SelectedIndex = 0;
@@ -287,6 +289,7 @@ namespace Entertainment
             }
             
             NewSerialBox.Focus();
+            NewSerialBox.SelectAll();
         }
 
         private void SaveNewSerialButton_Click(object sender, RoutedEventArgs e)
@@ -342,11 +345,12 @@ namespace Entertainment
             DateTime createdOn = DateTime.Now;
 
             // Create new inventory item
+            // NOTE: Make is NOT autofilled - user must enter manually
             var newItem = new InventoryItem
             {
                 SerialNumber = serialNumber.ToUpperInvariant(),
                 UPC = new List<string> { _selectedUPC },
-                Make = _selectedUPCMake ?? GetMakeFromUPC(_selectedUPC, store),
+                Make = null,  // Don't autofill Make - user enters manually
                 Type = deviceType,
                 CreatedBy = createdBy,
                 CreatedAt = createdOn,
@@ -427,8 +431,9 @@ namespace Entertainment
                 makeValue = NewUPCMakeBox.Text.Trim();
             }
 
-            // Store the new UPC info (Make only - Type removed)
-            _newUPCs[newUPC] = makeValue;
+            // NOTE: Don't store Make in _newUPCs - Make should not autofill for serial numbers
+            // Store null so GetMakeFromUPC won't return a cached Make value
+            _newUPCs[newUPC] = null;
 
             // Hide the panel
             NewUPCPanel.Visibility = Visibility.Collapsed;

@@ -422,6 +422,19 @@ namespace Entertainment
             NewUPCPanel.Visibility = Visibility.Visible;
             NewUPCBox.Text = UPCSearchBox.Text; // Pre-fill with search text
             
+            // Auto-fill Make and Type from the currently selected UPC (if any)
+            if (!string.IsNullOrEmpty(_selectedUPC))
+            {
+                var store = InventoryStore.Load();
+                var make = GetMakeFromUPC(_selectedUPC, store);
+                var type = GetTypeFromUPC(_selectedUPC, store);
+                
+                if (!string.IsNullOrEmpty(make))
+                    NewUPCMakeBox.Text = make;
+                if (!string.IsNullOrEmpty(type))
+                    NewUPCTypeBox.Text = type;
+            }
+            
             // Force layout update to ensure the panel is rendered before focusing
             UpdateLayout();
             

@@ -573,6 +573,9 @@ namespace Entertainment
                     SelectedSerialText.Text = selectedItem.SerialNumber;
                     ChangeStatusComboBox.SelectedItem = selectedItem.Status;
                 }
+                
+                // Always start with Online Pick unchecked when selecting a new item
+                OnlinePickBox.IsChecked = false;
             }
         }
 
@@ -599,12 +602,35 @@ namespace Entertainment
             if (item != null)
             {
                 string oldStatus = item.Status;
+                
+                // FIX ISSUE 1: Set SoldBy and SoldAt when status is changed to Sold
+                if (newStatus == InventoryStatus.Sold)
+                {
+                    // Check if this is an online pick
+                    if (OnlinePickBox.IsChecked == true)
+                    {
+                        item.SoldBy = "OGP";
+                    }
+                    else
+                    {
+                        item.SoldBy = App.CurrentUser?.Initials ?? "UNK";
+                    }
+                    item.SoldAt = DateTime.Now;
+                }
+                
                 item.Status = newStatus;
                 store.Save();
+
+                // FIX ISSUE 2: Uncheck the OnlinePickBox after status update
+                OnlinePickBox.IsChecked = false;
 
                 MessageBox.Show($"Status for '{item.SerialNumber}' changed from '{oldStatus}' to '{newStatus}'.", 
                     "Status Updated", MessageBoxButton.OK, MessageBoxImage.Information);
 
+                // FIX ISSUE 1 (real-time update): Clear selection first, then refresh to ensure display updates
+                SerialNumbersGrid.SelectedItem = null;
+                _selectedSerialItem = null;
+                
                 // Refresh the list
                 if (_selectedUPC != null)
                 {
@@ -613,7 +639,6 @@ namespace Entertainment
 
                 // Hide the panel
                 ChangeStatusPanel.Visibility = Visibility.Collapsed;
-                _selectedSerialItem = null;
                 
                 App.SaveAll();
             }

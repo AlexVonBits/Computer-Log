@@ -14,6 +14,7 @@ namespace Entertainment
     {
         private string? _selectedUPC;
         private string? _selectedUPCMake;
+        private string? _selectedUPCType;
         private Dictionary<string, (string? Make, string? Type)> _newUPCs = new();
         private List<InventoryItem> _currentSerials = new();
         private InventoryItem? _selectedSerialItem;
@@ -32,6 +33,21 @@ namespace Entertainment
                 "Apple",
                 "MSI",
                 "CyberPower"
+            };
+
+            // Initialize Device Type dropdown for new UPC
+            NewUPCTypeBox.ItemsSource = new[]
+            {
+                "Laptop",
+                "Desktop",
+                "Monitor",
+                "Tablet",
+                "All-in-One",
+                "Server",
+                "Workstation",
+                "Gaming PC",
+                "Chromebook",
+                "Other"
             };
 
             // Initialize Status dropdown for new serial
@@ -239,17 +255,20 @@ namespace Entertainment
                 var selectedItem = UPCListBox.SelectedItem;
                 var upcProperty = selectedItem.GetType().GetProperty("UPC");
                 var makeProperty = selectedItem.GetType().GetProperty("Make");
+                var typeProperty = selectedItem.GetType().GetProperty("Type");
                 
                 string? selectedUPC = upcProperty?.GetValue(selectedItem) as string;
                 string? selectedMake = makeProperty?.GetValue(selectedItem) as string;
+                string? selectedType = typeProperty?.GetValue(selectedItem) as string;
                 
                 if (!string.IsNullOrEmpty(selectedUPC))
                 {
                     _selectedUPC = selectedUPC;
+                    _selectedUPCMake = selectedMake;
+                    _selectedUPCType = selectedType;
                     SelectedUPC.Text = selectedUPC;
                     
-                    // Get the make for this UPC
-                    _selectedUPCMake = GetMakeFromUPC(selectedUPC);
+                    // Display the make for this UPC
                     SelectedUPCMake.Text = string.IsNullOrEmpty(_selectedUPCMake) ? "" : $"({_selectedUPCMake})";
                     
                     // Load all serial numbers for the selected UPC
@@ -329,8 +348,29 @@ namespace Entertainment
             // Only autofill Serial Number if something was typed in search box
             string searchText = SerialSearchBox.Text?.Trim() ?? string.Empty;
             NewSerialBox.Text = string.IsNullOrEmpty(searchText) ? string.Empty : searchText;
-            NewSerialDeviceTypeBox.SelectedIndex = -1;
-            NewSerialDeviceTypeBox.Text = string.Empty;
+            
+            // Auto-fill Device Type from the selected UPC
+            if (!string.IsNullOrEmpty(_selectedUPCType))
+            {
+                // Try to find a matching item in the dropdown
+                var typeSource = NewSerialDeviceTypeBox.ItemsSource as string[];
+                if (typeSource != null && typeSource.Contains(_selectedUPCType))
+                {
+                    NewSerialDeviceTypeBox.SelectedItem = _selectedUPCType;
+                }
+                else
+                {
+                    // If not in dropdown, use text
+                    NewSerialDeviceTypeBox.SelectedIndex = -1;
+                    NewSerialDeviceTypeBox.Text = _selectedUPCType;
+                }
+            }
+            else
+            {
+                NewSerialDeviceTypeBox.SelectedIndex = -1;
+                NewSerialDeviceTypeBox.Text = string.Empty;
+            }
+            
             NewSerialStatusBox.SelectedIndex = 0;
             
             // Update created by info
@@ -373,7 +413,7 @@ namespace Entertainment
                 return;
             }
 
-            // Get Device Type value
+            // Get Device Type value - now inherited from UPC but can be overridden
             string? deviceType = null;
             if (NewSerialDeviceTypeBox.SelectedItem != null)
             {
@@ -382,6 +422,11 @@ namespace Entertainment
             else if (!string.IsNullOrEmpty(NewSerialDeviceTypeBox.Text))
             {
                 deviceType = NewSerialDeviceTypeBox.Text.Trim();
+            }
+            // If still null, inherit from UPC
+            if (string.IsNullOrEmpty(deviceType))
+            {
+                deviceType = _selectedUPCType;
             }
 
             // Get Status value
@@ -482,9 +527,19 @@ namespace Entertainment
                 makeValue = NewUPCMakeBox.Text.Trim();
             }
 
-            // NOTE: Don't store Make in _newUPCs - Make should not autofill for serial numbers
-            // Store null so GetMakeFromUPC won't return a cached Make value
-            _newUPCs[newUPC] = (makeValue, (string?)null);
+            // Get Device Type value
+            string? typeValue = null;
+            if (NewUPCTypeBox.SelectedItem != null)
+            {
+                typeValue = NewUPCTypeBox.SelectedItem.ToString();
+            }
+            else if (!string.IsNullOrEmpty(NewUPCTypeBox.Text))
+            {
+                typeValue = NewUPCTypeBox.Text.Trim();
+            }
+
+            // Store both Make and Type in _newUPCs
+            _newUPCs[newUPC] = (makeValue, typeValue);
 
             // Hide the panel
             NewUPCPanel.Visibility = Visibility.Collapsed;
@@ -493,10 +548,13 @@ namespace Entertainment
             NewUPCBox.Text = string.Empty;
             NewUPCMakeBox.SelectedIndex = -1;
             NewUPCMakeBox.Text = string.Empty;
+            NewUPCTypeBox.SelectedIndex = -1;
+            NewUPCTypeBox.Text = string.Empty;
 
             // Select the new UPC
             _selectedUPC = newUPC;
             _selectedUPCMake = makeValue;
+            _selectedUPCType = typeValue;
             SelectedUPC.Text = newUPC;
             SelectedUPCMake.Text = string.IsNullOrEmpty(makeValue) ? "" : $"({makeValue})";
 
@@ -526,6 +584,8 @@ namespace Entertainment
             NewUPCBox.Text = string.Empty;
             NewUPCMakeBox.SelectedIndex = -1;
             NewUPCMakeBox.Text = string.Empty;
+            NewUPCTypeBox.SelectedIndex = -1;
+            NewUPCTypeBox.Text = string.Empty;
         }
 
         private string? GetMakeFromUPC(string upc)

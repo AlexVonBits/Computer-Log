@@ -14,7 +14,7 @@ namespace Entertainment
     {
         private string? _selectedUPC;
         private string? _selectedUPCMake;
-        private Dictionary<string, string?> _newUPCs = new();
+        private Dictionary<string, (string? Make, string? Type)> _newUPCs = new();
         private List<InventoryItem> _currentSerials = new();
         private InventoryItem? _selectedSerialItem;
 
@@ -140,7 +140,33 @@ namespace Entertainment
                 .OrderBy(upc => upc)
                 .ToList();
 
-            UPCListBox.ItemsSource = allUPCs;
+            // Create objects with UPC, Make, Type for the DataGrid
+            var upcItems = allUPCs.Select(upc => {
+                string? make = null;
+                string? type = null;
+                
+                // Check _newUPCs first
+                if (_newUPCs.TryGetValue(upc, out var newUpcInfo))
+                {
+                    make = newUpcInfo.Make;
+                    type = newUpcInfo.Type;
+                }
+                
+                // If not found, check inventory
+                if (make == null || type == null)
+                {
+                    var inventoryItem = store.InventoryItems.FirstOrDefault(i => i.UPC?.Contains(upc) == true);
+                    if (inventoryItem != null)
+                    {
+                        make ??= inventoryItem.Make;
+                        type ??= inventoryItem.Type;
+                    }
+                }
+                
+                return new { UPC = upc, Make = make ?? "", Type = type ?? "" };
+            }).ToList();
+
+            UPCListBox.ItemsSource = upcItems;
         }
 
         private void UPCSearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -175,29 +201,67 @@ namespace Entertainment
                 .OrderBy(upc => upc)
                 .ToList();
 
-            UPCListBox.ItemsSource = allMatchingUPCs;
+            // Create objects with UPC, Make, Type for the DataGrid
+            var upcItems = allMatchingUPCs.Select(upc => {
+                string? make = null;
+                string? type = null;
+                
+                // Check _newUPCs first
+                if (_newUPCs.TryGetValue(upc, out var newUpcInfo))
+                {
+                    make = newUpcInfo.Make;
+                    type = newUpcInfo.Type;
+                }
+                
+                // If not found, check inventory
+                if (make == null || type == null)
+                {
+                    var inventoryItem = store.InventoryItems.FirstOrDefault(i => i.UPC?.Contains(upc) == true);
+                    if (inventoryItem != null)
+                    {
+                        make ??= inventoryItem.Make;
+                        type ??= inventoryItem.Type;
+                    }
+                }
+                
+                return new { UPC = upc, Make = make ?? "", Type = type ?? "" };
+            }).ToList();
+
+            UPCListBox.ItemsSource = upcItems;
         }
 
         private void UPCListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (UPCListBox.SelectedItem is string selectedUPC)
+            // Handle the anonymous object format with UPC, Make, Type properties
+            if (UPCListBox.SelectedItem != null)
             {
-                _selectedUPC = selectedUPC;
-                SelectedUPC.Text = selectedUPC;
+                // Use reflection to get the properties since it's an anonymous type
+                var selectedItem = UPCListBox.SelectedItem;
+                var upcProperty = selectedItem.GetType().GetProperty("UPC");
+                var makeProperty = selectedItem.GetType().GetProperty("Make");
                 
-                // Get the make for this UPC
-                _selectedUPCMake = GetMakeFromUPC(selectedUPC);
-                SelectedUPCMake.Text = string.IsNullOrEmpty(_selectedUPCMake) ? "" : $"({_selectedUPCMake})";
+                string? selectedUPC = upcProperty?.GetValue(selectedItem) as string;
+                string? selectedMake = makeProperty?.GetValue(selectedItem) as string;
                 
-                // Load all serial numbers for the selected UPC
-                LoadSerialsForUPC(selectedUPC);
-                
-                // Clear serial search when UPC changes
-                SerialSearchBox.Clear();
-                
-                // Hide panels when UPC changes
-                ChangeStatusPanel.Visibility = Visibility.Collapsed;
-                _selectedSerialItem = null;
+                if (!string.IsNullOrEmpty(selectedUPC))
+                {
+                    _selectedUPC = selectedUPC;
+                    SelectedUPC.Text = selectedUPC;
+                    
+                    // Get the make for this UPC
+                    _selectedUPCMake = GetMakeFromUPC(selectedUPC);
+                    SelectedUPCMake.Text = string.IsNullOrEmpty(_selectedUPCMake) ? "" : $"({_selectedUPCMake})";
+                    
+                    // Load all serial numbers for the selected UPC
+                    LoadSerialsForUPC(selectedUPC);
+                    
+                    // Clear serial search when UPC changes
+                    SerialSearchBox.Clear();
+                    
+                    // Hide panels when UPC changes
+                    ChangeStatusPanel.Visibility = Visibility.Collapsed;
+                    _selectedSerialItem = null;
+                }
             }
         }
 
@@ -420,7 +484,7 @@ namespace Entertainment
 
             // NOTE: Don't store Make in _newUPCs - Make should not autofill for serial numbers
             // Store null so GetMakeFromUPC won't return a cached Make value
-            _newUPCs[newUPC] = null;
+            _newUPCs[newUPC] = (makeValue, (string?)null);
 
             // Hide the panel
             NewUPCPanel.Visibility = Visibility.Collapsed;
@@ -439,8 +503,16 @@ namespace Entertainment
             // Refresh the UPC list
             UPCSearchBox_TextChanged(this, null);
 
-            // Select the new UPC in the list
-            UPCListBox.SelectedItem = newUPC;
+            // Select the new UPC in the list - find the matching anonymous object
+            foreach (var item in UPCListBox.ItemsSource)
+            {
+                var upcProp = item.GetType().GetProperty("UPC");
+                if (upcProp?.GetValue(item) as string == newUPC)
+                {
+                    UPCListBox.SelectedItem = item;
+                    break;
+                }
+            }
 
             MessageBox.Show($"New UPC '{newUPC}' created successfully. You can now add serial numbers.", 
                 "UPC Created", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -464,9 +536,9 @@ namespace Entertainment
         private string? GetMakeFromUPC(string upc, InventoryStore store)
         {
             // First check if it's a newly created UPC
-            if (_newUPCs.TryGetValue(upc, out var makeValue) && makeValue != null)
+            if (_newUPCs.TryGetValue(upc, out var upcInfo) && upcInfo.Make != null)
             {
-                return makeValue;
+                return upcInfo.Make;
             }
 
             // Otherwise check existing inventory

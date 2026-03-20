@@ -63,15 +63,21 @@
                     </Grid>
                     
                     <!-- UPCs ListBox -->
-                    <ListBox x:Name="UPCListBox" Grid.Row="1" 
-                             SelectionChanged="UPCListBox_SelectionChanged"
-                             MouseDoubleClick="UPCListBox_MouseDoubleClick">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding}" FontSize="14" Padding="5,2"/>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                    <DataGrid x:Name="UPCListBox" Grid.Row="1" 
+                              AutoGenerateColumns="False" IsReadOnly="True"
+                              SelectionMode="Single" SelectionUnit="FullRow"
+                              CanUserAddRows="False" CanUserDeleteRows="False"
+                              GridLinesVisibility="Horizontal"
+                              HeadersVisibility="Column"
+                              RowHeight="30"
+                              SelectionChanged="UPCListBox_SelectionChanged"
+                              MouseDoubleClick="UPCListBox_MouseDoubleClick">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="UPC" Binding="{Binding UPC}" Width="150"/>
+                            <DataGridTextColumn Header="Make" Binding="{Binding Make}" Width="150"/>
+                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="150"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
                     
                     <!-- New UPC Panel (initially hidden) -->
                     <Border x:Name="NewUPCPanel" Grid.Row="2" BorderBrush="Gray" BorderThickness="1" 

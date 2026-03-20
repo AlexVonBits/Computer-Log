@@ -593,7 +593,9 @@ namespace Entertainment
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (value is DateTime soldAt)
+            // Handle nullable DateTime (DateTime?) - cast and check HasValue
+            var nullableDateTime = value as DateTime?;
+            if (nullableDateTime.HasValue)
             {
                 return System.Windows.Visibility.Visible;
             }

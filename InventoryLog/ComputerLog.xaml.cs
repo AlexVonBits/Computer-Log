@@ -422,8 +422,8 @@ namespace Entertainment
                 // Set the current status in the dropdown
                 UpdateStatusComboBox.SelectedItem = selectedItem.Status;
                 
-                // Restore the Online Pick checkbox state from the selected item
-                OnlinePickCheckBox.IsChecked = selectedItem.OnlinePick;
+                // Always start with Online Pick unchecked - do not restore previous value
+                OnlinePickCheckBox.IsChecked = false;
                 
                 ShowItem(selectedItem);
             }

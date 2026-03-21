@@ -1,0 +1,7 @@
+.dotnet/
+Trash/
+*.zip
+*.exe
+*.dll
+publish*/
+bin/

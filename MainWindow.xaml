@@ -189,7 +189,23 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Serial Number" Binding="{Binding SerialNumber}" Width="180"/>
                             <DataGridTextColumn Header="Device Type" Binding="{Binding Type}" Width="150"/>
-                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120">
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Status}" Value="Deleted">
+                                                <Setter Property="Foreground" Value="Red"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Status}" Value="Clearance">
+                                                <Setter Property="Foreground" Value="Yellow"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Status}" Value="Sold">
+                                                <Setter Property="Foreground" Value="#228B22"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+                            </DataGridTextColumn>
                             <DataGridTextColumn Header="Created By" Binding="{Binding CreatedBy}" Width="100"/>
                             <DataGridTextColumn Header="Created On" Binding="{Binding CreatedAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}" Width="150"/>
                             <DataGridTextColumn Header="Sold By" Binding="{Binding SoldBy}" Width="100"/>

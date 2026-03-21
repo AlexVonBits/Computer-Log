@@ -1,0 +1,6 @@
+/home/workspace/Computer-Log/publish-v1.1.4/Entertainment.exe
+/home/workspace/Computer-Log/publish-v1.1.4/Entertainment.dll
+/home/workspace/Computer-Log/publish-v1.1.4/Entertainment.deps.json
+/home/workspace/Computer-Log/publish-v1.1.4/Entertainment.runtimeconfig.json
+/home/workspace/Computer-Log/publish-v1.1.4/Entertainment.pdb
+/home/workspace/Computer-Log/publish-v1.1.4/QRCoder.dll

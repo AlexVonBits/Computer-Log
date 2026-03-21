@@ -172,8 +172,13 @@ namespace Entertainment
                 bool isClearance = store.GetUPCClearance(upc);
                 bool isDeleted = store.GetUPCDeleted(upc);
                 
+                // Calculate OnHand count: count of serial numbers with status "Display", "In Stock", or "In Claims"
+                int onHandCount = store.InventoryItems
+                    .Count(i => i.UPC?.Contains(upc) == true && 
+                                InventoryStatus.OnHandStatuses.Contains(i.Status));
+                
                 return new UPCWithStatus { UPC = upc, Make = make ?? "", Type = type ?? "", 
-                    IsClearance = isClearance, IsDeleted = isDeleted };
+                    IsClearance = isClearance, IsDeleted = isDeleted, OnHand = onHandCount };
             }).ToList();
 
             UPCListBox.ItemsSource = upcItems;
@@ -238,8 +243,13 @@ namespace Entertainment
                 bool isClearance = store.GetUPCClearance(upc);
                 bool isDeleted = store.GetUPCDeleted(upc);
                 
+                // Calculate OnHand count: count of serial numbers with status "Display", "In Stock", or "In Claims"
+                int onHandCount = store.InventoryItems
+                    .Count(i => i.UPC?.Contains(upc) == true && 
+                                InventoryStatus.OnHandStatuses.Contains(i.Status));
+                
                 return new UPCWithStatus { UPC = upc, Make = make ?? "", Type = type ?? "", 
-                    IsClearance = isClearance, IsDeleted = isDeleted };
+                    IsClearance = isClearance, IsDeleted = isDeleted, OnHand = onHandCount };
             }).ToList();
 
             UPCListBox.ItemsSource = upcItems;
@@ -1205,6 +1215,7 @@ namespace Entertainment
         public string Type { get; set; } = "";
         public bool IsClearance { get; set; }
         public bool IsDeleted { get; set; }
+        public int OnHand { get; set; }
     }
 
     // Converter for inverse boolean to visibility

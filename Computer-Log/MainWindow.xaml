@@ -108,6 +108,7 @@
                             <DataGridTextColumn Header="UPC" Binding="{Binding UPC}" Width="150"/>
                             <DataGridTextColumn Header="Make" Binding="{Binding Make}" Width="150"/>
                             <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="150"/>
+                            <DataGridTextColumn Header="On Hand" Binding="{Binding OnHand}" Width="80"/>
                             <DataGridCheckBoxColumn Header="Clearance" Binding="{Binding IsClearance, Mode=OneWay}" Width="80"/>
                             <DataGridCheckBoxColumn Header="Deleted" Binding="{Binding IsDeleted, Mode=OneWay}" Width="80"/>
                         </DataGrid.Columns>

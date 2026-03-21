@@ -143,7 +143,7 @@ namespace Entertainment
                 .OrderBy(upc => upc)
                 .ToList();
 
-            // Create objects with UPC, Make, Type for the DataGrid
+            // Create objects with UPC, Make, Type, and Status for the DataGrid
             var upcItems = allUPCs.Select(upc => {
                 string? make = null;
                 string? type = null;
@@ -166,7 +166,10 @@ namespace Entertainment
                     }
                 }
                 
-                return new { UPC = upc, Make = make ?? "", Type = type ?? "" };
+                // Get UPC-level status (Normal, Clearance, or Deleted)
+                string status = store.GetUPCStatus(upc);
+                
+                return new { UPC = upc, Make = make ?? "", Type = type ?? "", Status = status };
             }).ToList();
 
             UPCListBox.ItemsSource = upcItems;
@@ -204,7 +207,7 @@ namespace Entertainment
                 .OrderBy(upc => upc)
                 .ToList();
 
-            // Create objects with UPC, Make, Type for the DataGrid
+            // Create objects with UPC, Make, Type, and Status for the DataGrid
             var upcItems = allMatchingUPCs.Select(upc => {
                 string? make = null;
                 string? type = null;
@@ -227,7 +230,10 @@ namespace Entertainment
                     }
                 }
                 
-                return new { UPC = upc, Make = make ?? "", Type = type ?? "" };
+                // Get UPC-level status (Normal, Clearance, or Deleted)
+                string status = store.GetUPCStatus(upc);
+                
+                return new { UPC = upc, Make = make ?? "", Type = type ?? "", Status = status };
             }).ToList();
 
             UPCListBox.ItemsSource = upcItems;
@@ -279,12 +285,16 @@ namespace Entertainment
         private void LoadSerialsForUPC(string upc)
         {
             var store = InventoryStore.Load();
+            var upcStatus = store.GetUPCStatus(upc);
+            
             _currentSerials = store.InventoryItems
                 .Where(i => i.UPC?.Contains(upc) == true)
                 .OrderBy(i => i.SerialNumber)
                 .ToList();
             
-            SerialNumbersGrid.ItemsSource = _currentSerials;
+            // Create wrapper items that include UPC status for coloring
+            var serialsWithUPCStatus = _currentSerials.Select(item => new SerialWithUPCStatus(item, upcStatus)).ToList();
+            SerialNumbersGrid.ItemsSource = serialsWithUPCStatus;
         }
 
         private void SerialSearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -572,7 +582,18 @@ namespace Entertainment
 
         private void SerialNumbersGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (SerialNumbersGrid.SelectedItem is InventoryItem selectedItem)
+            InventoryItem? selectedItem = null;
+            
+            if (SerialNumbersGrid.SelectedItem is SerialWithUPCStatus wrapper)
+            {
+                selectedItem = wrapper.Item;
+            }
+            else if (SerialNumbersGrid.SelectedItem is InventoryItem item)
+            {
+                selectedItem = item;
+            }
+            
+            if (selectedItem != null)
             {
                 _selectedSerialItem = selectedItem;
                 // Show the change status panel when a serial is selected
@@ -759,12 +780,18 @@ namespace Entertainment
             // Check if clicked from button or context menu
             if (sender is System.Windows.Controls.Button button)
             {
-                itemToDelete = button.DataContext as InventoryItem;
+                if (button.DataContext is SerialWithUPCStatus wrapper)
+                    itemToDelete = wrapper.Item;
+                else
+                    itemToDelete = button.DataContext as InventoryItem;
             }
             else if (sender is System.Windows.Controls.MenuItem)
             {
                 // Context menu - get from selected item
-                itemToDelete = SerialNumbersGrid.SelectedItem as InventoryItem;
+                if (SerialNumbersGrid.SelectedItem is SerialWithUPCStatus wrapper)
+                    itemToDelete = wrapper.Item;
+                else
+                    itemToDelete = SerialNumbersGrid.SelectedItem as InventoryItem;
             }
 
             if (itemToDelete == null) return;
@@ -795,6 +822,56 @@ namespace Entertainment
 
                 MessageBox.Show($"Serial number '{itemToDelete.SerialNumber}' deleted.", 
                     "Deleted", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                App.SaveAll();
+            }
+        }
+
+        private void MarkAsDeleted_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateSerialStatus("Deleted");
+        }
+
+        private void MarkAsClearance_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateSerialStatus("Clearance");
+        }
+
+        private void UpdateSerialStatus(string newStatus)
+        {
+            // Get selected item from the grid
+            InventoryItem? itemToUpdate = null;
+            
+            if (SerialNumbersGrid.SelectedItem is SerialWithUPCStatus wrapper)
+                itemToUpdate = wrapper.Item;
+            else
+                itemToUpdate = SerialNumbersGrid.SelectedItem as InventoryItem;
+
+            if (itemToUpdate == null)
+            {
+                MessageBox.Show("Please select a serial number first.", "No Selection", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var store = InventoryStore.Load();
+
+            // Find and update the item
+            var item = store.InventoryItems.FirstOrDefault(i => i.Id == itemToUpdate.Id);
+            if (item != null)
+            {
+                string oldStatus = item.Status;
+                item.Status = newStatus;
+                store.Save();
+
+                // Refresh the list
+                if (_selectedUPC != null)
+                {
+                    LoadSerialsForUPC(_selectedUPC);
+                }
+
+                MessageBox.Show($"Serial number '{item.SerialNumber}' status changed from '{oldStatus}' to '{newStatus}'.", 
+                    "Status Updated", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 App.SaveAll();
             }
@@ -955,6 +1032,43 @@ namespace Entertainment
             }
         }
 
+        private void ToggleUPCStatus_Click(object sender, RoutedEventArgs e)
+        {
+            // Get selected UPC
+            var selectedItem = UPCListBox.SelectedItem;
+            if (selectedItem == null)
+            {
+                MessageBox.Show("Please select a UPC first.", "No UPC Selected", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var upcProperty = selectedItem.GetType().GetProperty("UPC");
+            string? selectedUPC = upcProperty?.GetValue(selectedItem) as string;
+
+            if (string.IsNullOrEmpty(selectedUPC)) return;
+
+            var store = InventoryStore.Load();
+            
+            // Toggle the UPC status
+            var oldStatus = store.GetUPCStatus(selectedUPC);
+            var newStatus = store.ToggleUPCStatus(selectedUPC);
+            
+            // Refresh the UPC list to show new status
+            UPCSearchBox_TextChanged(this, null);
+            
+            // Refresh the serial numbers to show inherited colors
+            if (_selectedUPC == selectedUPC)
+            {
+                LoadSerialsForUPC(selectedUPC);
+            }
+
+            MessageBox.Show($"UPC '{selectedUPC}' status changed from '{oldStatus}' to '{newStatus}'.", 
+                "Status Updated", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            App.SaveAll();
+        }
+
         private List<string> GetLinkedUPCs(string upc)
         {
             var store = InventoryStore.Load();
@@ -964,6 +1078,29 @@ namespace Entertainment
             }
             return new List<string>();
         }
+    }
+
+    // Wrapper class to hold inventory item with its parent UPC status for inherited coloring
+    public class SerialWithUPCStatus
+    {
+        public InventoryItem Item { get; }
+        public string UPCStatus { get; }
+        
+        public SerialWithUPCStatus(InventoryItem item, string upcStatus)
+        {
+            Item = item;
+            UPCStatus = upcStatus;
+        }
+        
+        // Expose InventoryItem properties directly
+        public string SerialNumber => Item.SerialNumber;
+        public string? Type => Item.Type;
+        public string Status => Item.Status;  // Keep the serial's own status
+        public string? CreatedBy => Item.CreatedBy;
+        public DateTime? CreatedAt => Item.CreatedAt;
+        public string? SoldBy => Item.SoldBy;
+        public DateTime? SoldAt => Item.SoldAt;
+        public string Id => Item.Id;
     }
 
     // Converter for inverse boolean to visibility

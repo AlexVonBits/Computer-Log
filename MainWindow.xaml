@@ -72,8 +72,22 @@
                               RowHeight="30"
                               SelectionChanged="UPCListBox_SelectionChanged"
                               MouseDoubleClick="UPCListBox_MouseDoubleClick">
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Status}" Value="Clearance">
+                                        <Setter Property="Foreground" Value="Goldenrod"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Status}" Value="Deleted">
+                                        <Setter Property="Foreground" Value="Red"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
                         <DataGrid.ContextMenu>
                             <ContextMenu>
+                                <MenuItem x:Name="ToggleUPCStatusMenuItem" Header="Toggle Status (Normal → Clearance → Deleted)" Click="ToggleUPCStatus_Click"/>
+                                <Separator/>
                                 <MenuItem x:Name="DeleteUPCMenuItem" Header="Delete" Click="DeleteUPCContextMenu_Click"
                                           Visibility="{Binding DataContext.CanDelete, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisConverter}}"/>
                                 <MenuItem x:Name="LinkCrossRefsMenuItem" Header="Link Cross-References" Click="LinkCrossReferences_Click"/>
@@ -83,15 +97,22 @@
                             <DataGridTextColumn Header="UPC" Binding="{Binding UPC}" Width="150"/>
                             <DataGridTextColumn Header="Make" Binding="{Binding Make}" Width="150"/>
                             <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="150"/>
-                            <DataGridTemplateColumn Header="" Width="60">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button x:Name="DeleteUPCButton" Content="Del" Width="40" Height="20" 
-                                                FontSize="10" Click="DeleteUPCButton_Click" 
-                                                Visibility="{Binding DataContext.CanDelete, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisConverter}}"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100">
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Status}" Value="Clearance">
+                                                <Setter Property="Foreground" Value="Goldenrod"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Status}" Value="Deleted">
+                                                <Setter Property="Foreground" Value="Red"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+                            </DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                     
@@ -180,10 +201,34 @@
                               GridLinesVisibility="Horizontal"
                               HeadersVisibility="Column"
                               RowHeight="30">
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Style.Triggers>
+                                    <!-- Inherit color from parent UPC status -->
+                                    <DataTrigger Binding="{Binding UPCStatus}" Value="Clearance">
+                                        <Setter Property="Foreground" Value="Goldenrod"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding UPCStatus}" Value="Deleted">
+                                        <Setter Property="Foreground" Value="Red"/>
+                                    </DataTrigger>
+                                    <!-- Serial's own status colors (only if UPC is Normal) -->
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding UPCStatus}" Value="Normal"/>
+                                            <Condition Binding="{Binding Status}" Value="Sold"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Foreground" Value="#228B22"/>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
                         <DataGrid.ContextMenu>
                             <ContextMenu>
                                 <MenuItem x:Name="DeleteSerialMenuItem" Header="Delete" Click="DeleteSerialButton_Click"
                                           Visibility="{Binding DataContext.CanDelete, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisConverter}}"/>
+                                <Separator Visibility="{Binding DataContext.CanDelete, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisConverter}}"/>
+                                <MenuItem Header="Mark as Deleted" Click="MarkAsDeleted_Click"/>
+                                <MenuItem Header="Mark as Clearance" Click="MarkAsClearance_Click"/>
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                         <DataGrid.Columns>
@@ -210,15 +255,6 @@
                             <DataGridTextColumn Header="Created On" Binding="{Binding CreatedAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}" Width="150"/>
                             <DataGridTextColumn Header="Sold By" Binding="{Binding SoldBy}" Width="100"/>
                             <DataGridTextColumn Header="Sold On" Binding="{Binding SoldAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}" Width="150"/>
-                            <DataGridTemplateColumn Header="" Width="60">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button x:Name="DeleteSerialButton" Content="Del" Width="40" Height="20" 
-                                                FontSize="10" Click="DeleteSerialButton_Click"
-                                                Visibility="{Binding DataContext.CanDelete, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisConverter}}"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                     

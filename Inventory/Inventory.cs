@@ -35,9 +35,17 @@ namespace Entertainment.Inventory
         public const string ClaimedOut = "Claimed Out";
         public const string Sold = "Sold";
         public const string Missing = "Missing";
+        public const string Deleted = "Deleted";
+        public const string Clearance = "Clearance";
 
         public static readonly string[] OnHandStatuses = { InStock, Display, InClaims };
-        public static readonly string[] AllStatuses = { InStock, Display, InClaims, ClaimedOut, Sold, Missing };
+        public static readonly string[] AllStatuses = { InStock, Display, InClaims, ClaimedOut, Sold, Missing, Deleted, Clearance };
+
+        // UPC-level statuses (for toggling clearance/deleted on UPCs)
+        public const string UPCNormal = "Normal";
+        public const string UPCClearance = "Clearance";
+        public const string UPCDeleted = "Deleted";
+        public static readonly string[] UPCStatuses = { UPCNormal, UPCClearance, UPCDeleted };
     }
 
     public class InventoryStore
@@ -52,6 +60,47 @@ namespace Entertainment.Inventory
         
         // Cross-references: maps a UPC to a list of related UPCs
         public Dictionary<string, List<string>> CrossReferences { get; set; } = new();
+        
+        // UPC-level statuses: maps UPC to status (Normal, Clearance, Deleted)
+        public Dictionary<string, string> UPCStatuses { get; set; } = new();
+
+        // Get the status of a specific UPC
+        public string GetUPCStatus(string upc)
+        {
+            if (UPCStatuses.TryGetValue(upc, out var status))
+                return status;
+            return InventoryStatus.UPCNormal;
+        }
+
+        // Set the status of a specific UPC (returns the new status)
+        public string SetUPCStatus(string upc, string status)
+        {
+            if (status == InventoryStatus.UPCNormal)
+            {
+                // Remove from dictionary if setting to Normal
+                UPCStatuses.Remove(upc);
+            }
+            else
+            {
+                UPCStatuses[upc] = status;
+            }
+            Save();
+            return status;
+        }
+
+        // Toggle UPC status: cycles through Normal -> Clearance -> Deleted -> Normal
+        public string ToggleUPCStatus(string upc)
+        {
+            var currentStatus = GetUPCStatus(upc);
+            var newStatus = currentStatus switch
+            {
+                InventoryStatus.UPCNormal => InventoryStatus.UPCClearance,
+                InventoryStatus.UPCClearance => InventoryStatus.UPCDeleted,
+                InventoryStatus.UPCDeleted => InventoryStatus.UPCNormal,
+                _ => InventoryStatus.UPCNormal
+            };
+            return SetUPCStatus(upc, newStatus);
+        }
 
         public static InventoryStore Load()
         {

@@ -104,7 +104,7 @@ namespace Entertainment
         private void AddUserButton_Click(object sender, RoutedEventArgs e)
         {
             string username = NewUsernameBox.Text.Trim().ToUpperInvariant();
-            string password = NewPasswordBox.Password.ToUpperInvariant();
+            string password = NewUserPasswordBox.Password.ToUpperInvariant();
             string firstName = NewFirstNameBox.Text.Trim();
             string lastName = NewLastNameBox.Text.Trim();
             bool isAdmin = NewUserAdminCheckBox.IsChecked ?? false;
@@ -151,7 +151,7 @@ namespace Entertainment
             
             // Clear form
             NewUsernameBox.Text = "";
-            NewPasswordBox.Password = "";
+            NewUserPasswordBox.Password = "";
             NewFirstNameBox.Text = "";
             NewLastNameBox.Text = "";
             NewUserAdminCheckBox.IsChecked = false;

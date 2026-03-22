@@ -1059,6 +1059,42 @@ namespace Entertainment
             App.SaveAll();
         }
 
+        private void ViewQRCode_Click(object sender, RoutedEventArgs e)
+        {
+            // Get UPC from selected item (context menu)
+            var selectedItem = UPCListBox.SelectedItem;
+            if (selectedItem == null)
+            {
+                MessageBox.Show("Please select a UPC to view its QR code.", 
+                    "No Selection", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var upcProperty = selectedItem.GetType().GetProperty("UPC");
+            string? upc = upcProperty?.GetValue(selectedItem) as string;
+
+            if (string.IsNullOrEmpty(upc))
+            {
+                MessageBox.Show("Invalid UPC selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // Generate QR code
+            using var qrGenerator = new QRCoder.QRCodeGenerator();
+            using var qrCode = qrGenerator.CreateQrCode(upc, QRCoder.QRCodeGenerator.ECCLevel.M);
+            using var qrBitmap = new QRCoder.BitmapByteQRCode(qrCode);
+            byte[] qrCodeBytes = qrBitmap.GetGraphic(20);
+
+            // Convert to Bitmap and display in window
+            using var ms = new System.IO.MemoryStream(qrCodeBytes);
+            var bitmap = new System.Drawing.Bitmap(ms);
+
+            // Create and show popup window
+            var qrWindow = new QRCodeWindow(upc, bitmap);
+            qrWindow.Owner = this;
+            qrWindow.ShowDialog();
+        }
+
         private void LinkCrossReferences_Click(object sender, RoutedEventArgs e)
         {
             // Check role permission

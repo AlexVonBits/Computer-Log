@@ -104,16 +104,17 @@ namespace Entertainment
 
         private void SignOut_Click(object sender, RoutedEventArgs e)
         {
-            // Close main window first
-            this.Close();
-            
-            // Clear current user
+            // Clear current user first
             App.CurrentUser = null;
             
-            // Show login page
+            // Create and show login page BEFORE closing the main window
+            // This prevents the application from exiting when MainWindow is closed
             var login = new LoginPage();
             Application.Current.MainWindow = login;
             login.Show();
+            
+            // Now close the main window
+            this.Close();
         }
 
         private void ProfileButton_Click(object sender, RoutedEventArgs e)

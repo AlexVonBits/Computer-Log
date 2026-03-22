@@ -20,17 +20,19 @@
         </Grid.RowDefinitions>
         
         <!-- Header with User Info and Sign Out -->
-        <DockPanel Grid.Row="0" Margin="10">
+        <DockPanel Grid.Row="0" Margin="10" Background="#E0E0E0">
             <Button x:Name="ProfileButton" Content="Profile" Click="ProfileButton_Click" 
-                    DockPanel.Dock="Left" Padding="10,5" Margin="0,0,10,0"/>
+                    DockPanel.Dock="Left" Padding="10,5" Margin="0,0,10,0"
+                    Background="#0071CE" Foreground="White" BorderBrush="#0071CE"/>
             <Button x:Name="SignOut" Content="Sign Out" Click="SignOut_Click" 
-                    DockPanel.Dock="Right" Padding="10,5"/>
+                    DockPanel.Dock="Right" Padding="10,5"
+                    Background="#0071CE" Foreground="White" BorderBrush="#0071CE"/>
             <TextBlock x:Name="WelcomeText" FontSize="16" FontWeight="Bold" 
                        VerticalAlignment="Center" DockPanel.Dock="Left"/>
         </DockPanel>
         
         <!-- Main Content Area -->
-        <Grid Grid.Row="1" Margin="20">
+        <Grid Grid.Row="1" Margin="20" Background="#E0E0E0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
@@ -236,11 +238,20 @@
                                 <DataGridTextColumn.CellStyle>
                                     <Style TargetType="DataGridCell">
                                         <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Status}" Value="In Stock">
+                                                <Setter Property="Foreground" Value="Blue"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Status}" Value="Display">
+                                                <Setter Property="Foreground" Value="Teal"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Status}" Value="In Claims">
+                                                <Setter Property="Foreground" Value="Orange"/>
+                                            </DataTrigger>
                                             <DataTrigger Binding="{Binding Status}" Value="Deleted">
                                                 <Setter Property="Foreground" Value="Red"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Status}" Value="Clearance">
-                                                <Setter Property="Foreground" Value="Yellow"/>
+                                                <Setter Property="Foreground" Value="Goldenrod"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Status}" Value="Sold">
                                                 <Setter Property="Foreground" Value="#228B22"/>

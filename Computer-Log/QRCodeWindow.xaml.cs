@@ -6,14 +6,14 @@ namespace Entertainment
 {
     public partial class QRCodeWindow : Window
     {
-        public QRCodeWindow(string upc, Bitmap qrBitmap)
+        public QRCodeWindow(string upc, Bitmap barcodeBitmap)
         {
             InitializeComponent();
 
             UPCLabel.Text = $"UPC: {upc}";
             
             // Convert System.Drawing.Bitmap to BitmapImage for WPF
-            QRCodeImage.Source = ConvertBitmapToBitmapImage(qrBitmap);
+            BarcodeImage.Source = ConvertBitmapToBitmapImage(barcodeBitmap);
         }
 
         private static BitmapImage ConvertBitmapToBitmapImage(Bitmap bitmap)

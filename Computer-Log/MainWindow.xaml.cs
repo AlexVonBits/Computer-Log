@@ -216,7 +216,7 @@ namespace Entertainment
                 .OrderBy(upc => upc)
                 .ToList();
 
-            // Create objects with UPC, Make, Type, and clearance/deleted status for the DataGrid
+            // Create objects with UPC, Make, Type, IsClearance, IsDeleted properties for the DataGrid
             var upcItems = allMatchingUPCs.Select(upc => {
                 string? make = null;
                 string? type = null;
@@ -738,7 +738,7 @@ namespace Entertainment
             {
                 string oldStatus = item.Status;
                 
-                // FIX ISSUE 1: Set SoldBy and SoldAt when status is changed to Sold
+                // FIX ISSUE 3: Set SoldBy and SoldAt when status is changed to Sold
                 if (newStatus == InventoryStatus.Sold)
                 {
                     // Check if this is an online pick
@@ -753,6 +753,13 @@ namespace Entertainment
                     item.SoldAt = DateTime.Now;
                 }
                 
+                // FIX ISSUE 3: Clear SoldOn and SoldBy when changing from "Sold" to non-sold status
+                if (oldStatus == InventoryStatus.Sold && newStatus != InventoryStatus.Sold)
+                {
+                    item.SoldBy = null;
+                    item.SoldAt = null;
+                }
+                
                 item.Status = newStatus;
                 store.Save();
 
@@ -762,15 +769,18 @@ namespace Entertainment
                 MessageBox.Show($"Status for '{item.SerialNumber}' changed from '{oldStatus}' to '{newStatus}'.", 
                     "Status Updated", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                // FIX ISSUE 1 (real-time update): Clear selection first, then refresh to ensure display updates
+                // FIX ISSUE 2: Refresh serial list and UPC list (for On Hand real-time update)
                 SerialNumbersGrid.SelectedItem = null;
                 _selectedSerialItem = null;
                 
-                // Refresh the list
+                // Refresh the serial numbers list
                 if (_selectedUPC != null)
                 {
                     LoadSerialsForUPC(_selectedUPC);
                 }
+                
+                // FIX ISSUE 2: Refresh the UPC list to update On Hand counts in real-time
+                LoadAllUPCs();
 
                 // Hide the panel
                 ChangeStatusPanel.Visibility = Visibility.Collapsed;
@@ -968,11 +978,14 @@ namespace Entertainment
                 item.Status = newStatus;
                 store.Save();
 
-                // Refresh the list
+                // Refresh the serial list and UPC list (for On Hand real-time update)
                 if (_selectedUPC != null)
                 {
                     LoadSerialsForUPC(_selectedUPC);
                 }
+                
+                // FIX ISSUE 2: Refresh the UPC list to update On Hand counts in real-time
+                LoadAllUPCs();
 
                 MessageBox.Show($"Serial number '{item.SerialNumber}' status changed from '{oldStatus}' to '{newStatus}'.", 
                     "Status Updated", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -1216,6 +1229,17 @@ namespace Entertainment
         public bool IsClearance { get; set; }
         public bool IsDeleted { get; set; }
         public int OnHand { get; set; }
+        
+        // Computed Status property - returns "Clearance", "Deleted", or empty string
+        public string Status
+        {
+            get
+            {
+                if (IsDeleted) return "Deleted";
+                if (IsClearance) return "Clearance";
+                return "";
+            }
+        }
     }
 
     // Converter for inverse boolean to visibility

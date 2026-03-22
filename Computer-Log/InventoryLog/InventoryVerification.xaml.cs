@@ -762,11 +762,11 @@ namespace Entertainment
             string status = value as string ?? "";
             return status switch
             {
-                "In Stock" => new SolidColorBrush(Color.FromRgb(46, 125, 50)),
-                "Display" => new SolidColorBrush(Color.FromRgb(25, 118, 210)),
-                "In Claims" => new SolidColorBrush(Color.FromRgb(156, 39, 176)),
+                "In Stock" => new SolidColorBrush(Color.FromRgb(0, 113, 206)),  // Walmart Blue #0071CE
+                "Display" => new SolidColorBrush(Color.FromRgb(46, 125, 50)),   // Green (unchanged)
+                "In Claims" => new SolidColorBrush(Color.FromRgb(255, 152, 0)), // Orange
                 "Claimed Out" => new SolidColorBrush(Color.FromRgb(198, 40, 40)),
-                "Sold" => new SolidColorBrush(Color.FromRgb(117, 117, 117)),
+                "Sold" => new SolidColorBrush(Color.FromRgb(46, 125, 50)),      // Green (unchanged)
                 "Missing" => new SolidColorBrush(Color.FromRgb(183, 28, 28)),
                 _ => new SolidColorBrush(Color.FromRgb(97, 97, 97))
             };

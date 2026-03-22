@@ -59,7 +59,8 @@
                                    VerticalAlignment="Center" Margin="7,0,0,0"
                                    Visibility="{Binding Text.Length, ElementName=UPCSearchBox, Converter={StaticResource InverseBoolToVisConverter}}"/>
                         <Button x:Name="AddNewUPCButton" Grid.Column="1" Content="+ Add New UPC" 
-                                Margin="10,0,0,0" Click="AddNewUPCButton_Click" Padding="15,5"/>
+                                Margin="10,0,0,0" Click="AddNewUPCButton_Click" Padding="15,5"
+                                Background="#0071CE" Foreground="White" BorderBrush="#0071CE"/>
                     </Grid>
                     
                     <!-- UPCs ListBox -->
@@ -109,8 +110,7 @@
                             <DataGridTextColumn Header="Make" Binding="{Binding Make}" Width="150"/>
                             <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="150"/>
                             <DataGridTextColumn Header="On Hand" Binding="{Binding OnHand}" Width="80"/>
-                            <DataGridCheckBoxColumn Header="Clearance" Binding="{Binding IsClearance, Mode=OneWay}" Width="80"/>
-                            <DataGridCheckBoxColumn Header="Deleted" Binding="{Binding IsDeleted, Mode=OneWay}" Width="80"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     
@@ -143,7 +143,8 @@
                             
                             <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
                                 <Button x:Name="SaveNewUPCButton" Content="Save UPC" Width="80" Height="28" 
-                                        Click="SaveNewUPCButton_Click" Margin="0,0,5,0"/>
+                                        Click="SaveNewUPCButton_Click" Margin="0,0,5,0"
+                                        Background="#FFC220" Foreground="Black" BorderBrush="#FFC220"/>
                                 <Button x:Name="CancelNewUPCButton" Content="Cancel" Width="70" Height="28" 
                                         Click="CancelNewUPCButton_Click"/>
                             </StackPanel>
@@ -188,7 +189,8 @@
                                    VerticalAlignment="Center" Margin="7,0,0,0"
                                    Visibility="{Binding Text.Length, ElementName=SerialSearchBox, Converter={StaticResource InverseBoolToVisConverter}}"/>
                         <Button x:Name="AddNewSerialButton" Grid.Column="1" Content="+ Add New Serial" 
-                                Margin="10,0,0,0" Click="AddNewSerialButton_Click" Padding="15,5"/>
+                                Margin="10,0,0,0" Click="AddNewSerialButton_Click" Padding="15,5"
+                                Background="#0071CE" Foreground="White" BorderBrush="#0071CE"/>
                     </Grid>
                     
                     <!-- Serial Numbers DataGrid -->
@@ -276,7 +278,8 @@
                                 <ComboBox x:Name="NewSerialStatusBox" Height="28" Width="150"/>
                                 <TextBlock x:Name="NewSerialCreatedBy" VerticalAlignment="Center" Margin="20,0,0,0" Foreground="Gray"/>
                                 <Button x:Name="SaveNewSerialButton" Content="Save Serial" Width="80" Height="28" 
-                                        Click="SaveNewSerialButton_Click" Margin="15,0,5,0"/>
+                                        Click="SaveNewSerialButton_Click" Margin="15,0,5,0"
+                                        Background="#FFC220" Foreground="Black" BorderBrush="#FFC220"/>
                                 <Button x:Name="CancelNewSerialButton" Content="Cancel" Width="70" Height="28" 
                                         Click="CancelNewSerialButton_Click"/>
                             </StackPanel>
@@ -284,7 +287,7 @@
                     </Border>
                     
                     <!-- Change Status Panel (initially hidden) -->
-                    <Border x:Name="ChangeStatusPanel" Grid.Row="3" BorderBrush="Green" BorderThickness="1" 
+                    <Border x:Name="ChangeStatusPanel" Grid.Row="3" BorderBrush="#0071CE" BorderThickness="1" 
                             Padding="15" Margin="0,10,0,0" Visibility="Collapsed" Background="#F0FFF0">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Selected Serial:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
@@ -292,7 +295,8 @@
                             <TextBlock Text="New Status:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
                             <ComboBox x:Name="ChangeStatusComboBox" Height="28" Width="150" Margin="0,0,10,0"/>
                             <Button x:Name="UpdateStatusButton" Content="Update Status" Width="100" Height="28" 
-                                    Click="UpdateStatusButton_Click" Margin="0,0,5,0"/>
+                                    Click="UpdateStatusButton_Click" Margin="0,0,5,0"
+                                    Background="#0071CE" Foreground="White" BorderBrush="#0071CE"/>
                             <Button x:Name="CancelStatusButton" Content="Cancel" Width="70" Height="28" 
                                     Click="CancelStatusButton_Click"/>
                             <CheckBox x:Name="OnlinePickBox" Content="This Is An Online Pick" Margin="20,0,0,0" VerticalAlignment="Center"/>

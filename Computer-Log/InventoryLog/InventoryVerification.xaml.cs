@@ -763,7 +763,7 @@ namespace Entertainment
             return status switch
             {
                 "In Stock" => new SolidColorBrush(Color.FromRgb(0, 113, 206)),  // Walmart Blue #0071CE
-                "Display" => new SolidColorBrush(Color.FromRgb(46, 125, 50)),   // Green (unchanged)
+                "Display" => new SolidColorBrush(Color.FromRgb(0, 128, 128)),   // Teal
                 "In Claims" => new SolidColorBrush(Color.FromRgb(255, 152, 0)), // Orange
                 "Claimed Out" => new SolidColorBrush(Color.FromRgb(198, 40, 40)),
                 "Sold" => new SolidColorBrush(Color.FromRgb(46, 125, 50)),      // Green (unchanged)

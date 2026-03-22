@@ -5,14 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Entertainment"
         mc:Ignorable="d"
-        Title="Computer Log" Height="800" Width="1000">
+        Title="Computer Log" Height="800" Width="1000"
+        Background="#E0E0E0">
     
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
         <local:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
     </Window.Resources>
     
-    <Grid>
+    <Grid Background="#E0E0E0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -206,21 +207,32 @@
                         <DataGrid.RowStyle>
                             <Style TargetType="DataGridRow">
                                 <Style.Triggers>
-                                    <!-- Inherit color from parent UPC status -->
+                                    <!-- Serial's own status colors - applies to entire row -->
+                                    <DataTrigger Binding="{Binding Status}" Value="In Stock">
+                                        <Setter Property="Foreground" Value="Blue"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Status}" Value="Display">
+                                        <Setter Property="Foreground" Value="Teal"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Status}" Value="In Claims">
+                                        <Setter Property="Foreground" Value="Orange"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Status}" Value="Deleted">
+                                        <Setter Property="Foreground" Value="Red"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Status}" Value="Clearance">
+                                        <Setter Property="Foreground" Value="Goldenrod"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Status}" Value="Sold">
+                                        <Setter Property="Foreground" Value="#228B22"/>
+                                    </DataTrigger>
+                                    <!-- Inherit color from parent UPC status (fallback when serial has no specific status) -->
                                     <DataTrigger Binding="{Binding UPCStatus}" Value="Clearance">
                                         <Setter Property="Foreground" Value="Goldenrod"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding UPCStatus}" Value="Deleted">
                                         <Setter Property="Foreground" Value="Red"/>
                                     </DataTrigger>
-                                    <!-- Serial's own status colors (only if UPC is Normal) -->
-                                    <MultiDataTrigger>
-                                        <MultiDataTrigger.Conditions>
-                                            <Condition Binding="{Binding UPCStatus}" Value="Normal"/>
-                                            <Condition Binding="{Binding Status}" Value="Sold"/>
-                                        </MultiDataTrigger.Conditions>
-                                        <Setter Property="Foreground" Value="#228B22"/>
-                                    </MultiDataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </DataGrid.RowStyle>
@@ -234,32 +246,7 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Serial Number" Binding="{Binding SerialNumber}" Width="180"/>
                             <DataGridTextColumn Header="Device Type" Binding="{Binding Type}" Width="150"/>
-                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120">
-                                <DataGridTextColumn.CellStyle>
-                                    <Style TargetType="DataGridCell">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Status}" Value="In Stock">
-                                                <Setter Property="Foreground" Value="Blue"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Status}" Value="Display">
-                                                <Setter Property="Foreground" Value="Teal"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Status}" Value="In Claims">
-                                                <Setter Property="Foreground" Value="Orange"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Status}" Value="Deleted">
-                                                <Setter Property="Foreground" Value="Red"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Status}" Value="Clearance">
-                                                <Setter Property="Foreground" Value="Goldenrod"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding Status}" Value="Sold">
-                                                <Setter Property="Foreground" Value="#228B22"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </DataGridTextColumn.CellStyle>
-                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120"/>
                             <DataGridTextColumn Header="Created By" Binding="{Binding CreatedBy}" Width="100"/>
                             <DataGridTextColumn Header="Created On" Binding="{Binding CreatedAt, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}" Width="150"/>
                             <DataGridTextColumn Header="Sold By" Binding="{Binding SoldBy}" Width="100"/>

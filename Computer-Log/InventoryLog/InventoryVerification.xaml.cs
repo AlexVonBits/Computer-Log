@@ -10,7 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Entertainment.Inventory;
-using QRCoder;
+using BarcodeLib;
 
 namespace Entertainment
 {
@@ -182,30 +182,40 @@ namespace Entertainment
                 return;
             }
             
-            // QR code content is just the UPC(s) - comma separated if multiple
-            string qrContent = string.Join(",", allUPCs);
+            // Use the first UPC for the barcode
+            string upc = allUPCs[0];
             
-            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+            // Generate UPC-A barcode
+            try
             {
-                using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.M))
+                using (BarcodeLib.Barcode bar = new BarcodeLib.Barcode())
                 {
-                    using (QRCode qrCode = new QRCode(qrCodeData))
+                    bar.IncludeLabel = true;
+                    System.Drawing.Image barcodeImage = bar.Encode(BarcodeLib.TYPE.UPCA, upc, System.Drawing.Color.Black, System.Drawing.Color.White, 300, 100);
+                    
+                    // Convert Image to Bitmap
+                    var bitmap = new System.Drawing.Bitmap(barcodeImage);
+                    
+                    BitmapImage barcodeBitmap = new BitmapImage();
+                    using (var memory = new System.IO.MemoryStream())
                     {
-                        BitmapImage qrBitmap = new BitmapImage();
-                        var bitmap = qrCode.GetGraphic(20);
-                        using (var memory = new System.IO.MemoryStream())
-                        {
-                            bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
-                            memory.Position = 0;
-                            qrBitmap.BeginInit();
-                            qrBitmap.StreamSource = memory;
-                            qrBitmap.CacheOption = BitmapCacheOption.OnLoad;
-                            qrBitmap.EndInit();
-                            qrBitmap.Freeze();
-                            SessionQRCode.Source = qrBitmap;
-                        }
+                        bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                        memory.Position = 0;
+                        barcodeBitmap.BeginInit();
+                        barcodeBitmap.StreamSource = memory;
+                        barcodeBitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        barcodeBitmap.EndInit();
+                        barcodeBitmap.Freeze();
+                        SessionQRCode.Source = barcodeBitmap;
                     }
                 }
+            }
+            catch
+            {
+                // If encoding fails, show error
+                SessionQRCode.Source = null;
+                SessionInfoText.Text = $"Invalid UPC: {upc}";
+                return;
             }
             
             // Display the UPC(s) in the text
@@ -370,27 +380,37 @@ namespace Entertainment
                 return;
             }
             
-            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+            // Generate UPC-A barcode
+            try
             {
-                using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(upc, QRCodeGenerator.ECCLevel.M))
+                using (BarcodeLib.Barcode bar = new BarcodeLib.Barcode())
                 {
-                    using (QRCode qrCode = new QRCode(qrCodeData))
+                    bar.IncludeLabel = true;
+                    System.Drawing.Image barcodeImage = bar.Encode(BarcodeLib.TYPE.UPCA, upc, System.Drawing.Color.Black, System.Drawing.Color.White, 300, 100);
+                    
+                    // Convert Image to Bitmap
+                    var bitmap = new System.Drawing.Bitmap(barcodeImage);
+                    
+                    BitmapImage barcodeBitmap = new BitmapImage();
+                    using (var memory = new System.IO.MemoryStream())
                     {
-                        BitmapImage qrBitmap = new BitmapImage();
-                        var bitmap = qrCode.GetGraphic(20);
-                        using (var memory = new System.IO.MemoryStream())
-                        {
-                            bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
-                            memory.Position = 0;
-                            qrBitmap.BeginInit();
-                            qrBitmap.StreamSource = memory;
-                            qrBitmap.CacheOption = BitmapCacheOption.OnLoad;
-                            qrBitmap.EndInit();
-                            qrBitmap.Freeze();
-                            SessionQRCode.Source = qrBitmap;
-                        }
+                        bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                        memory.Position = 0;
+                        barcodeBitmap.BeginInit();
+                        barcodeBitmap.StreamSource = memory;
+                        barcodeBitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        barcodeBitmap.EndInit();
+                        barcodeBitmap.Freeze();
+                        SessionQRCode.Source = barcodeBitmap;
                     }
                 }
+            }
+            catch
+            {
+                // If encoding fails, show error
+                SessionQRCode.Source = null;
+                SessionInfoText.Text = $"Invalid UPC: {upc}";
+                return;
             }
             
             SessionInfoText.Text = upc;

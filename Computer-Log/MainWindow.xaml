@@ -107,7 +107,7 @@
                                           Visibility="{Binding DataContext.CanDelete, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisConverter}}"/>
                                 <MenuItem x:Name="LinkCrossRefsMenuItem" Header="Link Cross-References" Click="LinkCrossReferences_Click"/>
                                 <Separator/>
-                                <MenuItem x:Name="ViewQRCodeMenuItem" Header="View QR Code" Click="ViewQRCode_Click"/>
+                                <MenuItem x:Name="ViewQRCodeMenuItem" Header="View Barcode" Click="ViewQRCode_Click"/>
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                         <DataGrid.Columns>

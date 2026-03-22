@@ -139,7 +139,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
-        <!-- Header with Profile, Sign Out, and QR Slideshow -->
+        <!-- Header with Profile, Sign Out, and Barcode Slideshow -->
         <DockPanel Grid.Row="0" Margin="0,0,0,20">
             <Button x:Name="ProfileButton" Content="Profile" Click="ProfileButton_Click" 
                     DockPanel.Dock="Left" Padding="10,5" Margin="0,0,10,0"/>
@@ -148,7 +148,7 @@
             <TextBlock x:Name="UserDisplayText" FontSize="14" Foreground="#888" 
                        VerticalAlignment="Center" DockPanel.Dock="Left"/>
             
-            <!-- QR Code Slideshow Section -->
+            <!-- Barcode Slideshow Section -->
             <Border DockPanel.Dock="Right" Background="#252525" CornerRadius="6" 
                     Padding="15" Margin="20,0,0,0" VerticalAlignment="Center">
                 <Grid>
@@ -158,9 +158,9 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     
-                    <!-- QR Code Display -->
+                    <!-- Barcode Display -->
                     <Border Grid.Row="0" Background="White" CornerRadius="4" Padding="10" HorizontalAlignment="Center">
-                        <Image x:Name="SessionQRCode" Width="120" Height="120" 
+                        <Image x:Name="SessionQRCode" Width="300" Height="100" 
                                VerticalAlignment="Center"/>
                     </Border>
                     

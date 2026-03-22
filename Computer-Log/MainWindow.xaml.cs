@@ -8,6 +8,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using Entertainment.Inventory;
 using Entertainment.Users;
+using BarcodeLib;
 
 namespace Entertainment
 {
@@ -1065,7 +1066,7 @@ namespace Entertainment
             var selectedItem = UPCListBox.SelectedItem;
             if (selectedItem == null)
             {
-                MessageBox.Show("Please select a UPC to view its QR code.", 
+                MessageBox.Show("Please select a UPC to view its barcode.", 
                     "No Selection", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
@@ -1079,23 +1080,28 @@ namespace Entertainment
                 return;
             }
 
-            // Generate Walmart URL for QR code
-            string walmartUrl = $"https://www.walmart.com/ip/seort/{upc}?s=761&veh=st_qr_db&adid=1500000000000040439208&l=SE.K.5.400";
+            // Generate UPC-A barcode
+            try
+            {
+                using (BarcodeLib.Barcode bar = new BarcodeLib.Barcode())
+                {
+                    bar.IncludeLabel = true;
+                    System.Drawing.Image barcodeImage = bar.Encode(BarcodeLib.TYPE.UPCA, upc, System.Drawing.Color.Black, System.Drawing.Color.White, 300, 100);
+                    
+                    // Convert Image to Bitmap
+                    var bitmap = new System.Drawing.Bitmap(barcodeImage);
 
-            // Generate QR code
-            using var qrGenerator = new QRCoder.QRCodeGenerator();
-            using var qrCode = qrGenerator.CreateQrCode(walmartUrl, QRCoder.QRCodeGenerator.ECCLevel.M);
-            using var qrBitmap = new QRCoder.BitmapByteQRCode(qrCode);
-            byte[] qrCodeBytes = qrBitmap.GetGraphic(20);
-
-            // Convert to Bitmap and display in window
-            using var ms = new System.IO.MemoryStream(qrCodeBytes);
-            var bitmap = new System.Drawing.Bitmap(ms);
-
-            // Create and show popup window
-            var qrWindow = new QRCodeWindow(upc, bitmap);
-            qrWindow.Owner = this;
-            qrWindow.ShowDialog();
+                    // Create and show popup window
+                    var qrWindow = new QRCodeWindow(upc, bitmap);
+                    qrWindow.Owner = this;
+                    qrWindow.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to generate barcode for UPC '{upc}': {ex.Message}", 
+                    "Barcode Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void LinkCrossReferences_Click(object sender, RoutedEventArgs e)

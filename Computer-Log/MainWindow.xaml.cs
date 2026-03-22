@@ -16,7 +16,6 @@ namespace Entertainment
         private string? _selectedUPC;
         private string? _selectedUPCMake;
         private string? _selectedUPCType;
-        private Dictionary<string, (string? Make, string? Type)> _newUPCs = new();
         private List<InventoryItem> _currentSerials = new();
         private InventoryItem? _selectedSerialItem;
 
@@ -141,7 +140,7 @@ namespace Entertainment
 
             // Also include any newly created UPCs
             var allUPCs = existingUPCs
-                .Union(_newUPCs.Keys)
+                .Union(store.UPCMetadata.Keys)
                 .Distinct()
                 .OrderBy(upc => upc)
                 .ToList();
@@ -151,11 +150,11 @@ namespace Entertainment
                 string? make = null;
                 string? type = null;
                 
-                // Check _newUPCs first
-                if (_newUPCs.TryGetValue(upc, out var newUpcInfo))
+                // Check UPCMetadata first (for UPCs without serial numbers)
+                if (store.UPCMetadata.TryGetValue(upc, out var metadata))
                 {
-                    make = newUpcInfo.Make;
-                    type = newUpcInfo.Type;
+                    make = metadata.Make;
+                    type = metadata.Type;
                 }
                 
                 // If not found, check inventory
@@ -207,7 +206,7 @@ namespace Entertainment
                 .ToList();
 
             // Also include any newly created UPCs that match
-            var matchingNewUPCs = _newUPCs.Keys
+            var matchingNewUPCs = store.UPCMetadata.Keys
                 .Where(upc => Matches(searchText, upc))
                 .ToList();
 
@@ -222,11 +221,11 @@ namespace Entertainment
                 string? make = null;
                 string? type = null;
                 
-                // Check _newUPCs first
-                if (_newUPCs.TryGetValue(upc, out var newUpcInfo))
+                // Check UPCMetadata first (for UPCs without serial numbers)
+                if (store.UPCMetadata.TryGetValue(upc, out var metadata))
                 {
-                    make = newUpcInfo.Make;
-                    type = newUpcInfo.Type;
+                    make = metadata.Make;
+                    type = metadata.Type;
                 }
                 
                 // If not found, check inventory
@@ -603,8 +602,9 @@ namespace Entertainment
                 typeValue = NewUPCTypeBox.Text.Trim();
             }
 
-            // Store both Make and Type in _newUPCs
-            _newUPCs[newUPC] = (makeValue, typeValue);
+            // Store both Make and Type in store.UPCMetadata for persistence
+            store.UPCMetadata[newUPC] = new UPCMetadata { Make = makeValue, Type = typeValue };
+            store.Save();
 
             // Hide the panel
             NewUPCPanel.Visibility = Visibility.Collapsed;
@@ -660,10 +660,10 @@ namespace Entertainment
 
         private string? GetMakeFromUPC(string upc, InventoryStore store)
         {
-            // First check if it's a newly created UPC
-            if (_newUPCs.TryGetValue(upc, out var upcInfo) && upcInfo.Make != null)
+            // First check UPCMetadata (for UPCs without serial numbers)
+            if (store.UPCMetadata.TryGetValue(upc, out var metadata) && metadata.Make != null)
             {
-                return upcInfo.Make;
+                return metadata.Make;
             }
 
             // Otherwise check existing inventory
@@ -856,8 +856,8 @@ namespace Entertainment
                 store.InventoryItems.Remove(item);
             }
 
-            // Also remove from _newUPCs if it exists there
-            _newUPCs.Remove(upcToDelete);
+            // Also remove from UPCMetadata if it exists there
+            store.UPCMetadata.Remove(upcToDelete);
 
             store.Save();
 
@@ -1035,8 +1035,8 @@ namespace Entertainment
                 store.InventoryItems.Remove(item);
             }
 
-            // Also remove from _newUPCs if it exists there
-            _newUPCs.Remove(upcToDelete);
+            // Also remove from UPCMetadata if it exists there
+            store.UPCMetadata.Remove(upcToDelete);
 
             store.Save();
 
@@ -1079,9 +1079,12 @@ namespace Entertainment
                 return;
             }
 
+            // Generate Walmart URL for QR code
+            string walmartUrl = $"https://www.walmart.com/ip/seort/{upc}?s=761&veh=st_qr_db&adid=1500000000000040439208&l=SE.K.5.400";
+
             // Generate QR code
             using var qrGenerator = new QRCoder.QRCodeGenerator();
-            using var qrCode = qrGenerator.CreateQrCode(upc, QRCoder.QRCodeGenerator.ECCLevel.M);
+            using var qrCode = qrGenerator.CreateQrCode(walmartUrl, QRCoder.QRCodeGenerator.ECCLevel.M);
             using var qrBitmap = new QRCoder.BitmapByteQRCode(qrCode);
             byte[] qrCodeBytes = qrBitmap.GetGraphic(20);
 
@@ -1130,7 +1133,7 @@ namespace Entertainment
 
             // Also include newly created UPCs
             allUPCs = allUPCs
-                .Union(_newUPCs.Keys)
+                .Union(store.UPCMetadata.Keys)
                 .Distinct()
                 .OrderBy(upc => upc)
                 .ToList();

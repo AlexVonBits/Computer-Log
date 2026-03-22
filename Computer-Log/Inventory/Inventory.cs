@@ -48,6 +48,13 @@ namespace Entertainment.Inventory
         public static readonly string[] UPCStatuses = { UPCNormal, UPCClearance, UPCDeleted };
     }
 
+    // Metadata class for UPCs (stores Make and Type for UPCs without serial numbers)
+    public class UPCMetadata
+    {
+        public string? Make { get; set; }
+        public string? Type { get; set; }
+    }
+
     public class InventoryStore
     {
         private static readonly string DataFilePath = Path.Combine(
@@ -70,6 +77,9 @@ namespace Entertainment.Inventory
         // Legacy: keep for migration - maps UPC to combined status (Normal, Clearance, Deleted)
         [Obsolete("Use UPCClearance and UPCDeleted instead")]
         public Dictionary<string, string> UPCStatuses { get; set; } = new();
+
+        // UPC metadata: maps UPC to Make and Type info (for UPCs without serial numbers)
+        public Dictionary<string, UPCMetadata> UPCMetadata { get; set; } = new();
 
         // Get the combined status of a specific UPC for display
         public string GetUPCStatus(string upc)

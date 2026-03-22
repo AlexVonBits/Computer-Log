@@ -14,7 +14,6 @@ namespace Entertainment
     {
         private List<string> _serialNumbersToLogIn = new();
         private string? _selectedUPC;
-        private Dictionary<string, (string? Make, string? Type)> _newUPCs = new();
         private InventoryItem? _selectedInventoryItem;
 
         public ComputerLog()
@@ -101,7 +100,7 @@ namespace Entertainment
                 .ToList();
 
             // Also include any newly created UPCs that match
-            var matchingNewUPCs = _newUPCs.Keys
+            var matchingNewUPCs = store.UPCMetadata.Keys
                 .Where(upc => Matches(searchText, upc))
                 .ToList();
 
@@ -116,11 +115,11 @@ namespace Entertainment
                 string? make = null;
                 string? type = null;
                 
-                // Check _newUPCs first
-                if (_newUPCs.TryGetValue(upc, out var newUpcInfo))
+                // Check UPCMetadata first (for UPCs without serial numbers)
+                if (store.UPCMetadata.TryGetValue(upc, out var metadata))
                 {
-                    make = newUpcInfo.Make;
-                    type = newUpcInfo.Type;
+                    make = metadata.Make;
+                    type = metadata.Type;
                 }
                 
                 // If not found, check inventory
@@ -311,9 +310,9 @@ namespace Entertainment
         private string? GetMakeFromUPC(string upc, InventoryStore store)
         {
             // First check if it's a newly created UPC
-            if (_newUPCs.TryGetValue(upc, out var newUpcInfo) && newUpcInfo.Make != null)
+            if (store.UPCMetadata.TryGetValue(upc, out var metadata) && metadata.Make != null)
             {
-                return newUpcInfo.Make;
+                return metadata.Make;
             }
 
             // Otherwise check existing inventory
@@ -325,9 +324,9 @@ namespace Entertainment
         private string? GetTypeFromUPC(string upc, InventoryStore store)
         {
             // First check if it's a newly created UPC
-            if (_newUPCs.TryGetValue(upc, out var newUpcInfo) && newUpcInfo.Type != null)
+            if (store.UPCMetadata.TryGetValue(upc, out var metadata) && metadata.Type != null)
             {
-                return newUpcInfo.Type;
+                return metadata.Type;
             }
 
             // Otherwise check existing inventory
@@ -541,7 +540,12 @@ namespace Entertainment
             }
 
             // Store the new UPC info for later use when logging in serials
-            _newUPCs[newUPC] = (string.IsNullOrEmpty(NewUPCMakeBox.Text?.Trim()) ? null : NewUPCMakeBox.Text?.Trim(), string.IsNullOrEmpty(NewUPCTypeBox.Text?.Trim()) ? null : NewUPCTypeBox.Text?.Trim());
+            store.UPCMetadata[newUPC] = new UPCMetadata 
+            { 
+                Make = string.IsNullOrEmpty(NewUPCMakeBox.Text?.Trim()) ? null : NewUPCMakeBox.Text?.Trim(), 
+                Type = string.IsNullOrEmpty(NewUPCTypeBox.Text?.Trim()) ? null : NewUPCTypeBox.Text?.Trim() 
+            };
+            store.Save();
 
             // Hide the panel and clear fields
             NewUPCPanel.Visibility = Visibility.Collapsed;

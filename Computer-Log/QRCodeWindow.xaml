@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Barcode" Height="280" Width="360" 
+        Title="QR Code" Height="350" Width="350" 
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize">
     <Grid Margin="20">
@@ -20,7 +20,7 @@
         
         <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1" 
                 Padding="10" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Image x:Name="BarcodeImage" Width="300" Height="120"/>
+            <Image x:Name="QRCodeImage" Width="200" Height="200"/>
         </Border>
         
         <Button Grid.Row="2" Content="Close" Width="80" Height="28" 

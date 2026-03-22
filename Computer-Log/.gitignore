@@ -1,0 +1,17 @@
+# Build artifacts
+obj/
+bin/
+publish-*/
+*.user
+*.suo
+*.cache
+*.log
+
+# NuGet
+packages/
+*.nupkg
+
+# IDE
+.vs/
+.vscode/
+*.swp

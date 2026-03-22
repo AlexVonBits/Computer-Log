@@ -1079,12 +1079,21 @@ namespace Entertainment
                 return;
             }
 
-            // Generate UPC barcode using QRCoder
-            using var barcodeGenerator = new QRCoder.BarcodeGenerator();
-            using var barcodeBitmap = barcodeGenerator.GenerateBarcode(upc, QRCoder.BarcodeGenerator.TYPE.UPC_A);
+            // Generate Walmart URL for QR code
+            string walmartUrl = $"https://www.walmart.com/ip/seort/{upc}?s=761&veh=st_qr_db&adid=1500000000000040439208&l=SE.K.5.400";
+
+            // Generate QR code
+            using var qrGenerator = new QRCoder.QRCodeGenerator();
+            using var qrCode = qrGenerator.CreateQrCode(walmartUrl, QRCoder.QRCodeGenerator.ECCLevel.M);
+            using var qrBitmap = new QRCoder.BitmapByteQRCode(qrCode);
+            byte[] qrCodeBytes = qrBitmap.GetGraphic(20);
+
+            // Convert to Bitmap and display in window
+            using var ms = new System.IO.MemoryStream(qrCodeBytes);
+            var bitmap = new System.Drawing.Bitmap(ms);
 
             // Create and show popup window
-            var qrWindow = new QRCodeWindow(upc, barcodeBitmap);
+            var qrWindow = new QRCodeWindow(upc, bitmap);
             qrWindow.Owner = this;
             qrWindow.ShowDialog();
         }

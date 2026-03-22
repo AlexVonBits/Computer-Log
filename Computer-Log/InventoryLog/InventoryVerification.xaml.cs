@@ -765,9 +765,11 @@ namespace Entertainment
                 "In Stock" => new SolidColorBrush(Color.FromRgb(0, 113, 206)),  // Walmart Blue #0071CE
                 "Display" => new SolidColorBrush(Color.FromRgb(0, 128, 128)),   // Teal
                 "In Claims" => new SolidColorBrush(Color.FromRgb(255, 152, 0)), // Orange
-                "Claimed Out" => new SolidColorBrush(Color.FromRgb(198, 40, 40)),
-                "Sold" => new SolidColorBrush(Color.FromRgb(46, 125, 50)),      // Green (unchanged)
-                "Missing" => new SolidColorBrush(Color.FromRgb(183, 28, 28)),
+                "Claimed Out" => new SolidColorBrush(Color.FromRgb(121, 85, 72)), // Brown - distinct
+                "Sold" => new SolidColorBrush(Color.FromRgb(46, 125, 50)),      // Green
+                "Missing" => new SolidColorBrush(Color.FromRgb(156, 39, 176)),  // Purple - distinct
+                "Deleted" => new SolidColorBrush(Color.FromRgb(198, 40, 40)),   // Red
+                "Clearance" => new SolidColorBrush(Color.FromRgb(218, 165, 32)), // Goldenrod
                 _ => new SolidColorBrush(Color.FromRgb(97, 97, 97))
             };
         }

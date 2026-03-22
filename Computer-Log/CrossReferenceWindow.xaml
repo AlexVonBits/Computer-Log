@@ -29,25 +29,14 @@
         <!-- Search Box -->
         <Grid Grid.Row="2" Margin="0,0,0,10">
             <TextBox x:Name="SearchTextBox" Padding="8,6,8,6" 
-                     Background="#2C2C2C" Foreground="White" 
-                     BorderBrush="#555555" CaretBrush="White"
+                     Background="#E0E0E0" Foreground="Black" 
+                     BorderBrush="#888888" CaretBrush="Black"
                      TextChanged="SearchTextBox_TextChanged"/>
             <TextBlock Text="Search by full UPC or last 4 digits..." 
                        IsHitTestVisible="False" 
                        Foreground="Gray" 
                        Margin="10,0,0,0"
-                       VerticalAlignment="Center">
-                <TextBlock.Style>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Visibility" Value="Collapsed"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Text, ElementName=SearchTextBox}" Value="">
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBlock.Style>
-            </TextBlock>
+                       VerticalAlignment="Center"/>
         </Grid>
         
         <!-- Available UPCs ListBox with checkboxes -->

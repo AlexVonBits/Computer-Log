@@ -226,6 +226,12 @@
                                     <DataTrigger Binding="{Binding Status}" Value="Sold">
                                         <Setter Property="Foreground" Value="#228B22"/>
                                     </DataTrigger>
+                                    <DataTrigger Binding="{Binding Status}" Value="Missing">
+                                        <Setter Property="Foreground" Value="#9C27B0"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Status}" Value="Claimed Out">
+                                        <Setter Property="Foreground" Value="#795548"/>
+                                    </DataTrigger>
                                     <!-- Inherit color from parent UPC status (fallback when serial has no specific status) -->
                                     <DataTrigger Binding="{Binding UPCStatus}" Value="Clearance">
                                         <Setter Property="Foreground" Value="Goldenrod"/>

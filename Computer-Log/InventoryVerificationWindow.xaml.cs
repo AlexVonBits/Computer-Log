@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
 using System.Windows;
 using Entertainment.Inventory;
 
@@ -15,6 +20,13 @@ namespace Entertainment
 
         private void InventoryVerificationWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            // Check if current user is TeamLead or Admin
+            bool isTeamLeadOrAdmin = App.CurrentUser != null && 
+                (App.CurrentUser.IsTeamLead || App.CurrentUser.IsAdmin);
+            
+            // Show/hide the purge button based on user role
+            PurgeButtonContainer.Visibility = isTeamLeadOrAdmin ? Visibility.Visible : Visibility.Collapsed;
+            
             LoadVerificationData();
         }
 
@@ -46,6 +58,86 @@ namespace Entertainment
         {
             var verificationSession = new VerificationSessionWindow();
             verificationSession.Show();
+        }
+
+        private void PurgeButton_Click(object sender, RoutedEventArgs e)
+        {
+            var inventoryStore = InventoryStore.Load();
+            
+            // Find items with "Sold" or "Claimed Out" status
+            var itemsToDelete = inventoryStore.InventoryItems
+                .Where(i => i.Status == InventoryStatus.Sold || i.Status == InventoryStatus.ClaimedOut)
+                .ToList();
+            
+            if (itemsToDelete.Count == 0)
+            {
+                MessageBox.Show("No items with 'Sold' or 'Claimed Out' status to purge.", 
+                    "Nothing to Purge", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+            
+            // Show confirmation dialog
+            string message = $"This will permanently delete {itemsToDelete.Count} item(s) with status 'Sold' or 'Claimed Out'.\n\n" +
+                "A log file will be exported containing all deleted items.\n\n" +
+                "Are you sure you want to continue?";
+            
+            var result = MessageBox.Show(message, "Confirm Purge", 
+                MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            
+            if (result != MessageBoxResult.Yes)
+                return;
+            
+            // Export log file before deleting
+            string logFilePath = ExportPurgeLog(itemsToDelete);
+            
+            // Delete the items from inventory
+            foreach (var item in itemsToDelete)
+            {
+                inventoryStore.InventoryItems.Remove(item);
+            }
+            inventoryStore.Save();
+            
+            MessageBox.Show($"Successfully purged {itemsToDelete.Count} item(s).\n\nLog file saved to:\n{logFilePath}", 
+                "Purge Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private string ExportPurgeLog(List<InventoryItem> deletedItems)
+        {
+            // Create purge log directory
+            string logDirectory = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Entertainment",
+                "purge_logs"
+            );
+            Directory.CreateDirectory(logDirectory);
+            
+            // Generate unique filename with timestamp
+            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            string logFilePath = Path.Combine(logDirectory, $"purge_log_{timestamp}.json");
+            
+            // Create log entry objects
+            var logEntries = deletedItems.Select(item => new
+            {
+                item.UPC,
+                item.SerialNumber,
+                item.Status,
+                item.Make,
+                item.Type,
+                item.CreatedBy,
+                item.CreatedAt,
+                item.SoldBy,
+                item.SoldAt,
+                item.OnlinePick,
+                DeletedAt = DateTime.Now,
+                DeletedBy = App.CurrentUser?.Initials ?? "UNKNOWN"
+            }).ToList();
+            
+            // Serialize and save to JSON
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string json = JsonSerializer.Serialize(logEntries, options);
+            File.WriteAllText(logFilePath, json);
+            
+            return logFilePath;
         }
     }
 }

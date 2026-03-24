@@ -220,7 +220,7 @@ namespace Entertainment {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Entertainment;V1.2.8.0;component/inventorylog/inventoryverification.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Entertainment;V1.2.11.0;component/inventorylog/inventoryverification.xaml", System.UriKind.Relative);
             
             #line 1 "../../../../../InventoryLog/InventoryVerification.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

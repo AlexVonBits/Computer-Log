@@ -5,7 +5,7 @@
   },
   "projects": {
     "/home/workspace/Computer-Log/Entertainment.csproj": {
-      "version": "1.2.8",
+      "version": "1.2.11",
       "restore": {
         "projectUniqueName": "/home/workspace/Computer-Log/Entertainment.csproj",
         "projectName": "Entertainment",
@@ -93,7 +93,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/dotnet/sdk/8.0.419/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/home/workspace/.dotnet/sdk/8.0.419/PortableRuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {

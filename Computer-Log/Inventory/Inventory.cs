@@ -55,6 +55,115 @@ namespace Entertainment.Inventory
         public string? Type { get; set; }
     }
 
+    // Represents a single note from a verification session
+    public class VerificationNote
+    {
+        public string UPC { get; set; } = "";
+        public string Note { get; set; } = "";
+        public string UserInitials { get; set; } = "";
+        public DateTime Timestamp { get; set; } = DateTime.Now;
+    }
+
+    // Represents a completed verification session
+    public class VerificationSession
+    {
+        public string VerifierName { get; set; } = "";
+        public string VerifierInitials { get; set; } = "";
+        public DateTime CompletedAt { get; set; } = DateTime.Now;
+        public List<VerificationNote> Notes { get; set; } = new();
+    }
+
+    // Container for all verification sessions (persisted to JSON)
+    public class VerificationSessionStore
+    {
+        private static readonly string DataFilePath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Entertainment",
+            "verification_sessions.json"
+        );
+
+        public List<VerificationSession> Sessions { get; set; } = new();
+
+        // Get the last user who completed a verification session fully
+        public string? GetLastVerifier()
+        {
+            if (Sessions.Count == 0) return null;
+            return Sessions.OrderByDescending(s => s.CompletedAt).First().VerifierName;
+        }
+
+        // Get the date/time of the last completed verification session
+        public DateTime? GetLastVerificationDate()
+        {
+            if (Sessions.Count == 0) return null;
+            return Sessions.OrderByDescending(s => s.CompletedAt).First().CompletedAt;
+        }
+
+        // Get all notes from all verification sessions
+        public List<VerificationNote> GetAllNotes()
+        {
+            var allNotes = new List<VerificationNote>();
+            foreach (var session in Sessions.OrderByDescending(s => s.CompletedAt))
+            {
+                foreach (var note in session.Notes)
+                {
+                    allNotes.Add(new VerificationNote
+                    {
+                        UPC = note.UPC,
+                        Note = note.Note,
+                        UserInitials = note.UserInitials,
+                        Timestamp = note.Timestamp
+                    });
+                }
+            }
+            return allNotes.OrderByDescending(n => n.Timestamp).ToList();
+        }
+
+        // Add a new completed verification session
+        public void AddSession(VerificationSession session)
+        {
+            Sessions.Add(session);
+            Save();
+        }
+
+        public static VerificationSessionStore Load()
+        {
+            try
+            {
+                if (File.Exists(DataFilePath))
+                {
+                    var json = File.ReadAllText(DataFilePath);
+                    return JsonSerializer.Deserialize<VerificationSessionStore>(json) ?? new VerificationSessionStore();
+                }
+            }
+            catch
+            {
+                // Return empty store on error
+            }
+            return new VerificationSessionStore();
+        }
+
+        public void Save()
+        {
+            try
+            {
+                var directory = Path.GetDirectoryName(DataFilePath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                var json = JsonSerializer.Serialize(this, options);
+                File.WriteAllText(DataFilePath, json);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Error saving verification sessions: {ex.Message}", "Save Error",
+                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
+        }
+    }
+
     public class InventoryStore
     {
         private static readonly string DataFilePath = Path.Combine(

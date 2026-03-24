@@ -24,33 +24,47 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 
-                <!-- Last Date Verified -->
+                <!-- Last Person Who Verified -->
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                    <TextBlock Text="Last Date Verified:" FontWeight="Bold" FontSize="14" 
-                               Foreground="#333" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                    <TextBlock x:Name="LastDateVerifiedText" Text="N/A" FontSize="14" 
-                               Foreground="#0071CE" VerticalAlignment="Center"/>
-                </StackPanel>
-                
-                <!-- Who Verified Last -->
-                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
-                    <TextBlock Text="Who Verified Last:" FontWeight="Bold" FontSize="14" 
+                    <TextBlock Text="Last Person That Verified:" FontWeight="Bold" FontSize="14" 
                                Foreground="#333" VerticalAlignment="Center" Margin="0,0,10,0"/>
                     <TextBlock x:Name="WhoVerifiedLastText" Text="N/A" FontSize="14" 
                                Foreground="#0071CE" VerticalAlignment="Center"/>
                 </StackPanel>
                 
-                <!-- Notes from Previous Verifications -->
-                <StackPanel Grid.Row="2">
-                    <TextBlock Text="Notes from Previous Verifications:" FontWeight="Bold" FontSize="14" 
-                               Foreground="#333" Margin="0,0,0,5"/>
-                    <TextBox x:Name="NotesTextBox" IsReadOnly="True" TextWrapping="Wrap" 
-                             AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
-                             Height="80" FontSize="12" Background="#F5F5F5" 
-                             Foreground="#333" BorderBrush="#CCC"/>
+                <!-- Date/Time Verified -->
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="Date/Time Verified:" FontWeight="Bold" FontSize="14" 
+                               Foreground="#333" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock x:Name="LastDateVerifiedText" Text="N/A" FontSize="14" 
+                               Foreground="#0071CE" VerticalAlignment="Center"/>
                 </StackPanel>
+                
+                <!-- Notes from Previous Verifications Header -->
+                <StackPanel Grid.Row="2" Margin="0,10,0,5">
+                    <TextBlock Text="Notes from Previous Verifications:" FontWeight="Bold" FontSize="14" 
+                               Foreground="#333"/>
+                </StackPanel>
+                
+                <!-- Notes DataGrid -->
+                <DataGrid Grid.Row="3" x:Name="NotesDataGrid"
+                          AutoGenerateColumns="False" IsReadOnly="True"
+                          SelectionMode="Single" SelectionUnit="FullRow"
+                          CanUserAddRows="False" CanUserDeleteRows="False"
+                          GridLinesVisibility="Horizontal"
+                          HeadersVisibility="Column"
+                          RowHeight="30"
+                          MaxHeight="200">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="UPC" Binding="{Binding UPC}" Width="150"/>
+                        <DataGridTextColumn Header="Note" Binding="{Binding Note}" Width="*"/>
+                        <DataGridTextColumn Header="User Initials" Binding="{Binding UserInitials}" Width="100"/>
+                        <DataGridTextColumn Header="Date/Time" Binding="{Binding Timestamp, StringFormat='{}{0:MM/dd/yyyy HH:mm}'}" Width="150"/>
+                    </DataGrid.Columns>
+                </DataGrid>
             </Grid>
         </Border>
         

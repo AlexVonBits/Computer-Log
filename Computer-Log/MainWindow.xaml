@@ -16,6 +16,7 @@
     <Grid Background="#E0E0E0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -32,25 +33,26 @@
                        VerticalAlignment="Center" DockPanel.Dock="Left"/>
         </DockPanel>
         
+        <!-- Start Inventory Verification Button - MOVED TO TOP -->
+        <Button x:Name="StartInventoryVerificationButton" Grid.Row="1"
+                Content="Start Inventory Verification" 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center" 
+                Padding="30,15" 
+                FontSize="16" 
+                FontWeight="Bold"
+                Background="#0071CE" 
+                Foreground="White" 
+                BorderBrush="#0071CE"
+                Margin="0,10,0,20"
+                Click="StartInventoryVerificationButton_Click"/>
+        
         <!-- Main Content Area -->
-        <Grid Grid.Row="1" Margin="20" Background="#E0E0E0">
+        <Grid Grid.Row="2" Margin="20" Background="#E0E0E0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            
-            <!-- Centered Start Inventory Verification Button -->
-            <Button x:Name="StartInventoryVerificationButton" 
-                    Content="Start Inventory Verification" 
-                    HorizontalAlignment="Center" 
-                    VerticalAlignment="Center" 
-                    Padding="30,15" 
-                    FontSize="16" 
-                    FontWeight="Bold"
-                    Background="#0071CE" 
-                    Foreground="White" 
-                    BorderBrush="#0071CE"
-                    Click="StartInventoryVerificationButton_Click"/>
             
             <!-- TOP SECTION - UPC List -->
             <GroupBox Grid.Row="0" Header="UPC LIST" Margin="0,0,0,10">
@@ -326,7 +328,7 @@
         </Grid>
         
         <!-- Status Bar -->
-        <StatusBar Grid.Row="2">
+        <StatusBar Grid.Row="3">
             <StatusBarItem>
                 <TextBlock x:Name="StatusText" Text="Ready"/>
             </StatusBarItem>

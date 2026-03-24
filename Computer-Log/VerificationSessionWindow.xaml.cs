@@ -36,6 +36,23 @@ namespace Entertainment
             _currentIndex = 0;
             
             Loaded += VerificationSessionWindow_Loaded;
+            Closing += VerificationSessionWindow_Closing;
+        }
+
+        private void VerificationSessionWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Show "Are you sure?" confirmation when user tries to close via X button
+            var result = MessageBox.Show(
+                "Are you sure you want to close this verification session?\n\n" +
+                "Any unsaved progress will be lost.",
+                "Confirm Close",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            
+            if (result == MessageBoxResult.No)
+            {
+                e.Cancel = true; // Cancel the close
+            }
         }
 
         private void VerificationSessionWindow_Loaded(object sender, RoutedEventArgs e)
@@ -489,19 +506,73 @@ namespace Entertainment
             // Calculate summary
             int totalUPCs = _allUPCs.Count;
             int noIssues = _verificationStatuses.Count(s => s.Value == "No Issues");
-            int fixed = _verificationStatuses.Count(s => s.Value == "Found Issue-Fixed");
+            int fixedCount = _verificationStatuses.Count(s => s.Value == "Found Issue-Fixed");
             int notFixed = _verificationStatuses.Count(s => s.Value == "Found Issue-Not Fixed");
             
             string summary = $"Verification Session Complete!\n\n" +
                 $"Total UPCs Verified: {totalUPCs}\n" +
                 $"No Issues: {noIssues}\n" +
-                $"Issues Fixed: {fixed}\n" +
+                $"Issues Fixed: {fixedCount}\n" +
                 $"Issues Not Fixed: {notFixed}";
             
             MessageBox.Show(summary, "Verification Complete", 
                 MessageBoxButton.OK, MessageBoxImage.Information);
             
+            // Save the completed verification session to persistent store
+            SaveCompletedSession();
+            
             this.Close();
+        }
+
+        private void SaveCompletedSession()
+        {
+            try
+            {
+                var sessionStore = VerificationSessionStore.Load();
+                
+                // Get user initials from App.CurrentUser if available
+                string userInitials = "UNK";
+                if (App.CurrentUser != null)
+                {
+                    userInitials = App.CurrentUser.Initials ?? "UNK";
+                }
+                
+                var session = new VerificationSession
+                {
+                    VerifierName = _currentUser,
+                    VerifierInitials = userInitials,
+                    CompletedAt = DateTime.Now,
+                    Notes = new List<VerificationNote>()
+                };
+                
+                // Add all notes from the verification session
+                foreach (var kvp in _verificationNotes)
+                {
+                    string upc = kvp.Key;
+                    
+                    // Skip reason notes (they're combined with the main note)
+                    if (upc.EndsWith("_reason")) continue;
+                    
+                    string note = kvp.Value;
+                    if (!string.IsNullOrWhiteSpace(note))
+                    {
+                        session.Notes.Add(new VerificationNote
+                        {
+                            UPC = upc,
+                            Note = note,
+                            UserInitials = userInitials,
+                            Timestamp = DateTime.Now
+                        });
+                    }
+                }
+                
+                sessionStore.AddSession(session);
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't interrupt the user
+                System.Diagnostics.Debug.WriteLine($"Error saving verification session: {ex.Message}");
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)

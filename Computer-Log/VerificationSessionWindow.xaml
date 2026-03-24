@@ -1,0 +1,312 @@
+<Window x:Class="Entertainment.VerificationSessionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Entertainment"
+        mc:Ignorable="d"
+        Title="Inventory Verification Session" Height="800" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="#E0E0E0">
+    <Window.Resources>
+        <local:StatusToColorConverter x:Key="StatusToColorConverter"/>
+        <local:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
+        
+        <!-- Walmart Blue: #0071CE -->
+        <SolidColorBrush x:Key="WalmartBlueBrush" Color="#0071CE"/>
+        <SolidColorBrush x:Key="WalmartDarkBlueBrush" Color="#005A9E"/>
+        
+        <!-- Button Style -->
+        <Style x:Key="WalmartButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#0071CE"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#0071CE"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#005A9E"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#004080"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#CCCCCC"/>
+                                <Setter Property="Foreground" Value="#888888"/>
+                                <Setter Property="BorderBrush" Value="#CCCCCC"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- Secondary Button Style -->
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#666666"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#666666"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#555555"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- RadioButton Style -->
+        <Style x:Key="WalmartRadioButtonStyle" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,20,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        
+        <!-- TextBox Style -->
+        <Style x:Key="WalmartTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#999999"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        
+        <!-- ComboBox Style -->
+        <Style x:Key="WalmartComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#999999"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+    </Window.Resources>
+    
+    <Grid Background="#E0E0E0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#0071CE" Padding="20,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="SessionTitleText" Text="Inventory Verification Session" 
+                               FontSize="20" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock x:Name="ProgressText" Text="" 
+                               FontSize="14" Foreground="#CCFFFFFF" Margin="20,0,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+                
+                <Button x:Name="CancelButton" Grid.Column="2" Content="Cancel Session" 
+                        Style="{StaticResource SecondaryButtonStyle}" Click="CancelButton_Click"/>
+            </Grid>
+        </Border>
+        
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <!-- UPC Display Section -->
+                <Border Grid.Row="0" Background="White" CornerRadius="8" Padding="25" Margin="0,0,0,20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- Left: UPC Info -->
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Current UPC" FontSize="12" Foreground="#666666" Margin="0,0,0,5"/>
+                            <TextBlock x:Name="UPCDisplayText" Text="012345678901" 
+                                       FontSize="32" FontWeight="Bold" Foreground="#0071CE"/>
+                            
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                <StackPanel Margin="0,0,30,0">
+                                    <TextBlock Text="Make" FontSize="11" Foreground="#888888"/>
+                                    <TextBlock x:Name="MakeText" Text="" FontSize="16" FontWeight="SemiBold" Foreground="#333333"/>
+                                </StackPanel>
+                                <StackPanel Margin="0,0,30,0">
+                                    <TextBlock Text="Type" FontSize="11" Foreground="#888888"/>
+                                    <TextBlock x:Name="TypeText" Text="" FontSize="16" FontWeight="SemiBold" Foreground="#333333"/>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="On Hand" FontSize="11" Foreground="#888888"/>
+                                    <TextBlock x:Name="OnHandCountText" Text="0" FontSize="24" FontWeight="Bold" Foreground="#228B22"/>
+                                </StackPanel>
+                            </StackPanel>
+                            
+                            <!-- Cross-Reference Info -->
+                            <TextBlock x:Name="CrossRefText" Text="" FontSize="12" Foreground="#666666" 
+                                       Margin="0,10,0,0" Visibility="Collapsed"/>
+                        </StackPanel>
+                        
+                        <!-- Right: Barcode -->
+                        <Border Grid.Column="1" Background="White" BorderBrush="#CCCCCC" 
+                                BorderThickness="1" CornerRadius="4" Padding="15">
+                            <StackPanel HorizontalAlignment="Center">
+                                <Image x:Name="BarcodeImage" Width="300" Height="100" 
+                                       VerticalAlignment="Center"/>
+                                <TextBlock x:Name="BarcodeLabelText" Text="" 
+                                           HorizontalAlignment="Center" FontSize="12" Foreground="#666666"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+                
+                <!-- Notes Section -->
+                <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="25" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="Notes for this UPC" FontSize="14" FontWeight="SemiBold" 
+                                   Foreground="#333333" Margin="0,0,0,10"/>
+                        <TextBox x:Name="UPCNotesTextBox" Style="{StaticResource WalmartTextBoxStyle}"
+                                 Height="80" TextWrapping="Wrap" AcceptsReturn="True" 
+                                 VerticalScrollBarVisibility="Auto"
+                                 Text="" TextChanged="UPCNotesTextBox_TextChanged"/>
+                    </StackPanel>
+                </Border>
+                
+                <!-- Serial Numbers Section -->
+                <Border Grid.Row="2" Background="White" CornerRadius="8" Padding="25" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="Serial Numbers" FontSize="14" FontWeight="SemiBold" 
+                                   Foreground="#333333" Margin="0,0,0,15"/>
+                        
+                        <ItemsControl x:Name="SerialNumbersItemsControl">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#F5F5F5" CornerRadius="4" Padding="15" Margin="0,0,0,10">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="150"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="180"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="Serial Number" FontSize="11" Foreground="#888888"/>
+                                                <TextBlock Text="{Binding SerialNumber}" FontSize="14" 
+                                                           FontWeight="SemiBold" Foreground="#333333"/>
+                                            </StackPanel>
+                                            
+                                            <StackPanel Grid.Column="1" Margin="20,0">
+                                                <TextBlock Text="Status" FontSize="11" Foreground="#888888"/>
+                                                <TextBlock Text="{Binding Status}" FontSize="14" Foreground="#333333"/>
+                                            </StackPanel>
+                                            
+                                            <StackPanel Grid.Column="2">
+                                                <TextBlock Text="Change Status To" FontSize="11" Foreground="#888888"/>
+                                                <ComboBox ItemsSource="{Binding StatusOptions}" 
+                                                          SelectedItem="{Binding SelectedStatus, Mode=TwoWay}"
+                                                          Style="{StaticResource WalmartComboBoxStyle}"
+                                                          SelectionChanged="SerialStatusComboBox_SelectionChanged"
+                                                          Tag="{Binding ItemId}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        
+                        <TextBlock x:Name="NoSerialsMessage" Text="No serial numbers for this UPC"
+                                   FontSize="14" Foreground="#888888" Visibility="Collapsed"/>
+                    </StackPanel>
+                </Border>
+                
+                <!-- Verification Status Section -->
+                <Border Grid.Row="3" Background="White" CornerRadius="8" Padding="25">
+                    <StackPanel>
+                        <TextBlock Text="Verification Status" FontSize="14" FontWeight="SemiBold" 
+                                   Foreground="#333333" Margin="0,0,0,15"/>
+                        
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton x:Name="NoIssuesRadio" Content="No Issues" 
+                                         Style="{StaticResource WalmartRadioButtonStyle}"
+                                         Checked="VerificationRadio_Checked"/>
+                            <RadioButton x:Name="IssueFixedRadio" Content="Found Issue-Fixed" 
+                                         Style="{StaticResource WalmartRadioButtonStyle}"
+                                         Checked="VerificationRadio_Checked"/>
+                            <RadioButton x:Name="IssueNotFixedRadio" Content="Found Issue-Not Fixed" 
+                                         Style="{StaticResource WalmartRadioButtonStyle}"
+                                         Checked="VerificationRadio_Checked"/>
+                        </StackPanel>
+                        
+                        <!-- Reason TextBox (shown when "Found Issue-Not Fixed" is selected) -->
+                        <Border x:Name="ReasonPanel" Background="#FFF3CD" CornerRadius="4" 
+                                Padding="15" Margin="0,15,0,0" Visibility="Collapsed">
+                            <StackPanel>
+                                <TextBlock Text="Reason (required):" FontSize="13" FontWeight="SemiBold" 
+                                           Foreground="#856404" Margin="0,0,0,8"/>
+                                <TextBox x:Name="ReasonTextBox" Style="{StaticResource WalmartTextBoxStyle}"
+                                         Height="80" TextWrapping="Wrap" AcceptsReturn="True"
+                                         Text="" TextChanged="ReasonTextBox_TextChanged"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+        
+        <!-- Bottom Navigation -->
+        <Border Grid.Row="3" Background="White" BorderBrush="#CCCCCC" BorderThickness="0,1,0,0" Padding="20,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <Button x:Name="PreviousButton" Content="← Previous" 
+                            Style="{StaticResource SecondaryButtonStyle}" Click="PreviousButton_Click"
+                            IsEnabled="False" Margin="0,0,10,0"/>
+                </StackPanel>
+                
+                <Button x:Name="NextButton" Grid.Column="1" Content="Next →" 
+                        Style="{StaticResource WalmartButtonStyle}" Click="NextButton_Click"
+                        IsEnabled="False"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

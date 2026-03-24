@@ -127,6 +127,32 @@ namespace Entertainment
             }
         }
 
+        private void StartInventoryVerificationButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Ask user which verification mode they want
+            var result = MessageBox.Show(
+                "Which verification mode would you like to use?\n\n" +
+                "Click 'Yes' for Session Mode (walk through all UPCs one by one)\n" +
+                "Click 'No' for Quick Mode (scan barcodes as you go)",
+                "Choose Verification Mode",
+                MessageBoxButton.YesNoCancel,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                // Session Mode - new VerificationSessionWindow
+                var verificationWindow = new VerificationSessionWindow(
+                    App.CurrentUser?.FirstName ?? "Unknown");
+                verificationWindow.Show();
+            }
+            else if (result == MessageBoxResult.No)
+            {
+                // Quick Mode - existing InventoryVerificationWindow
+                var inventoryVerificationWindow = new InventoryVerificationWindow();
+                inventoryVerificationWindow.Show();
+            }
+        }
+
         private void LoadAllUPCs()
         {
             var store = InventoryStore.Load();

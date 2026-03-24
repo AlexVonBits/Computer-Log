@@ -39,6 +39,19 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             
+            <!-- Centered Start Inventory Verification Button -->
+            <Button x:Name="StartInventoryVerificationButton" 
+                    Content="Start Inventory Verification" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center" 
+                    Padding="30,15" 
+                    FontSize="16" 
+                    FontWeight="Bold"
+                    Background="#0071CE" 
+                    Foreground="White" 
+                    BorderBrush="#0071CE"
+                    Click="StartInventoryVerificationButton_Click"/>
+            
             <!-- TOP SECTION - UPC List -->
             <GroupBox Grid.Row="0" Header="UPC LIST" Margin="0,0,0,10">
                 <Grid Margin="10">

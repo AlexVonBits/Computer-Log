@@ -1,0 +1,98 @@
+<Window x:Class="Entertainment.InventoryVerificationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Inventory Verification" 
+        Height="800" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Background="#0071CE">
+    
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header Info Section -->
+        <Border Grid.Row="0" Background="White" CornerRadius="8" Padding="20" Margin="0,0,0,20">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <!-- Last Date Verified -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="Last Date Verified:" FontWeight="Bold" FontSize="14" 
+                               Foreground="#333" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock x:Name="LastDateVerifiedText" Text="N/A" FontSize="14" 
+                               Foreground="#0071CE" VerticalAlignment="Center"/>
+                </StackPanel>
+                
+                <!-- Who Verified Last -->
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="Who Verified Last:" FontWeight="Bold" FontSize="14" 
+                               Foreground="#333" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock x:Name="WhoVerifiedLastText" Text="N/A" FontSize="14" 
+                               Foreground="#0071CE" VerticalAlignment="Center"/>
+                </StackPanel>
+                
+                <!-- Notes from Previous Verifications -->
+                <StackPanel Grid.Row="2">
+                    <TextBlock Text="Notes from Previous Verifications:" FontWeight="Bold" FontSize="14" 
+                               Foreground="#333" Margin="0,0,0,5"/>
+                    <TextBox x:Name="NotesTextBox" IsReadOnly="True" TextWrapping="Wrap" 
+                             AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
+                             Height="80" FontSize="12" Background="#F5F5F5" 
+                             Foreground="#333" BorderBrush="#CCC"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <!-- Centered Start Button -->
+        <Border Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Button x:Name="StartVerificationButton" 
+                    Content="Start Inventory Verification" 
+                    Click="StartVerificationButton_Click"
+                    FontSize="24" FontWeight="Bold"
+                    Padding="40,20"
+                    Background="White" 
+                    Foreground="#0071CE"
+                    BorderBrush="White"
+                    BorderThickness="2"
+                    Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F0F0F0"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#E0E0E0"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Border>
+        
+        <!-- Bottom filler for alignment -->
+        <Border Grid.Row="2"/>
+    </Grid>
+</Window>

@@ -564,16 +564,32 @@ namespace Entertainment
                 {
                     string upc = kvp.Key;
                     
-                    // Skip reason notes (they're combined with the main note)
+                    // Skip reason notes - we'll handle them separately based on status
                     if (upc.EndsWith("_reason")) continue;
                     
                     string note = kvp.Value;
-                    if (!string.IsNullOrWhiteSpace(note))
+                    string status = _verificationStatuses.GetValueOrDefault(upc, "");
+                    string reason = _verificationNotes.GetValueOrDefault(upc + "_reason", "");
+                    
+                    // Combine note with reason if status is "Found Issue-Not Fixed"
+                    string finalNote = note;
+                    if (status == "Found Issue-Not Fixed" && !string.IsNullOrWhiteSpace(reason))
+                    {
+                        finalNote = string.IsNullOrEmpty(note) 
+                            ? $"Issue Not Fixed: {reason}" 
+                            : $"{note}\n\nIssue Not Fixed: {reason}";
+                    }
+                    else if (status == "Found Issue-Fixed" && !string.IsNullOrWhiteSpace(note))
+                    {
+                        finalNote = $"{note}\n\nIssue Found and Fixed";
+                    }
+                    
+                    if (!string.IsNullOrWhiteSpace(finalNote))
                     {
                         session.Notes.Add(new VerificationNote
                         {
                             UPC = upc,
-                            Note = note,
+                            Note = finalNote,
                             UserInitials = userInitials,
                             Timestamp = DateTime.Now
                         });

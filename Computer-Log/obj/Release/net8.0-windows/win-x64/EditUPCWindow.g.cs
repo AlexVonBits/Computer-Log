@@ -75,7 +75,7 @@ namespace Entertainment {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Entertainment;V1.1.4.0;component/editupcwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Entertainment;V1.2.8.0;component/editupcwindow.xaml", System.UriKind.Relative);
             
             #line 1 "../../../../EditUPCWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

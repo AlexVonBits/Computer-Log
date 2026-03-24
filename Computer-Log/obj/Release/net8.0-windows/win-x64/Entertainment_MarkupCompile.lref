@@ -1,4 +1,4 @@
-﻿/home/workspace/Computer-Log/obj/Release/net8.0-windows/win-x64/GeneratedInternalTypeHelper.g.cs
+﻿
 
 F/home/workspace/Computer-Log/InventoryLog/ComputerLog.xaml;;
 F/home/workspace/Computer-Log/InventoryLog/InventoryVerification.xaml;;
@@ -6,4 +6,5 @@ F/home/workspace/Computer-Log/LoginPage.xaml;;
 F/home/workspace/Computer-Log/MainWindow.xaml;;
 F/home/workspace/Computer-Log/ProfileWindow.xaml;;
 F/home/workspace/Computer-Log/TeamLeadSetupWindow.xaml;;
+F/home/workspace/Computer-Log/VerificationSessionWindow.xaml;;
 

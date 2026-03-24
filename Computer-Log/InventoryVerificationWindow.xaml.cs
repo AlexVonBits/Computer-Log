@@ -34,9 +34,32 @@ namespace Entertainment
         {
             var sessionStore = VerificationSessionStore.Load();
             
-            // Get last verifier name
-            string? lastVerifier = sessionStore.GetLastVerifier();
-            WhoVerifiedLastText.Text = lastVerifier ?? "N/A";
+            // Get last verifier name - show current user's full name if available
+            string displayName = "N/A";
+            if (App.CurrentUser != null)
+            {
+                // Combine FirstName and LastName for full name
+                string? fullName = null;
+                if (!string.IsNullOrEmpty(App.CurrentUser.FirstName) || !string.IsNullOrEmpty(App.CurrentUser.LastName))
+                {
+                    fullName = $"{App.CurrentUser.FirstName} {App.CurrentUser.LastName}".Trim();
+                }
+                
+                if (!string.IsNullOrEmpty(fullName))
+                {
+                    displayName = fullName;
+                }
+                else
+                {
+                    // Fall back to last verifier from session store
+                    var lastVerifier = sessionStore.GetLastVerifier();
+                    if (!string.IsNullOrEmpty(lastVerifier))
+                    {
+                        displayName = lastVerifier;
+                    }
+                }
+            }
+            WhoVerifiedLastText.Text = displayName;
             
             // Get last verification date/time
             var lastDate = sessionStore.GetLastVerificationDate();
@@ -57,6 +80,11 @@ namespace Entertainment
         private void StartVerificationButton_Click(object sender, RoutedEventArgs e)
         {
             var verificationSession = new VerificationSessionWindow();
+            verificationSession.Closed += (s, args) =>
+            {
+                // Auto-refresh when verification session completes
+                LoadVerificationData();
+            };
             verificationSession.Show();
         }
 
@@ -111,8 +139,8 @@ namespace Entertainment
             );
             Directory.CreateDirectory(logDirectory);
             
-            // Generate unique filename with timestamp
-            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            // Generate unique filename with timestamp (format: purge_log_2026-03-23_20-58-00.json)
+            string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
             string logFilePath = Path.Combine(logDirectory, $"purge_log_{timestamp}.json");
             
             // Create log entry objects

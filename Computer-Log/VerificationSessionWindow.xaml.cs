@@ -20,6 +20,7 @@ namespace Entertainment
         private string _currentUser;
         private Dictionary<string, string> _verificationNotes = new();
         private Dictionary<string, string> _verificationStatuses = new();
+        private bool _isClosing = false;
         
         // Serial status options
         private readonly string[] SerialStatuses = 
@@ -41,6 +42,9 @@ namespace Entertainment
 
         private void VerificationSessionWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
+            // Skip popup if we're already closing programmatically (e.g., after successful completion)
+            if (_isClosing) return;
+            
             // Show "Are you sure?" confirmation when user tries to close via X button
             var result = MessageBox.Show(
                 "Are you sure you want to close this verification session?\n\n" +
@@ -521,6 +525,8 @@ namespace Entertainment
             // Save the completed verification session to persistent store
             SaveCompletedSession();
             
+            // Mark as closing to prevent duplicate popup
+            _isClosing = true;
             this.Close();
         }
 

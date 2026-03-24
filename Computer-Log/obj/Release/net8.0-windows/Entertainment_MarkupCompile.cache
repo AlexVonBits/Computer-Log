@@ -1,5 +1,5 @@
 ﻿Entertainment
-1.1.3.0
+1.2.8.0
 
 winexe
 C#
@@ -10,11 +10,11 @@ none
 false
 TRACE;RELEASE;NET;NET8_0;NETCOREAPP
 /home/workspace/Computer-Log/App.xaml
-8-1068097281
+111414355654
 
-15-805550254
-2001425700321
-CrossReferenceWindow.xaml;EditUPCWindow.xaml;InventoryLog/ComputerLog.xaml;InventoryLog/InventoryVerification.xaml;LoginPage.xaml;MainWindow.xaml;ProfileWindow.xaml;TeamLeadSetupWindow.xaml;
+18425211490
+2001420855691
+CrossReferenceWindow.xaml;EditUPCWindow.xaml;InventoryLog/ComputerLog.xaml;InventoryLog/InventoryVerification.xaml;InventoryVerificationWindow.xaml;LoginPage.xaml;MainWindow.xaml;ProfileWindow.xaml;QRCodeWindow.xaml;TeamLeadSetupWindow.xaml;VerificationSessionWindow.xaml;
 
-False
+True
 

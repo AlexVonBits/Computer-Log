@@ -1,13 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "WAsWmt0OSqU=",
+  "dgSpecHash": "k5gv8+c+2wM=",
   "success": true,
   "projectFilePath": "/home/workspace/Computer-Log/Entertainment.csproj",
   "expectedPackageFiles": [
-    "/root/.nuget/packages/microsoft.win32.systemevents/6.0.0/microsoft.win32.systemevents.6.0.0.nupkg.sha512",
-    "/root/.nuget/packages/qrcoder/1.4.3/qrcoder.1.4.3.nupkg.sha512",
-    "/root/.nuget/packages/system.drawing.common/6.0.0/system.drawing.common.6.0.0.nupkg.sha512",
+    "/root/.nuget/packages/barcodelib/2.0.0/barcodelib.2.0.0.nupkg.sha512",
+    "/root/.nuget/packages/microsoft.win32.systemevents/8.0.0/microsoft.win32.systemevents.8.0.0.nupkg.sha512",
+    "/root/.nuget/packages/system.drawing.common/8.0.0/system.drawing.common.8.0.0.nupkg.sha512",
+    "/root/.nuget/packages/microsoft.netcore.app.runtime.win-x64/8.0.25/microsoft.netcore.app.runtime.win-x64.8.0.25.nupkg.sha512",
     "/root/.nuget/packages/microsoft.windowsdesktop.app.ref/8.0.25/microsoft.windowsdesktop.app.ref.8.0.25.nupkg.sha512",
+    "/root/.nuget/packages/microsoft.windowsdesktop.app.runtime.win-x64/8.0.25/microsoft.windowsdesktop.app.runtime.win-x64.8.0.25.nupkg.sha512",
+    "/root/.nuget/packages/microsoft.aspnetcore.app.runtime.win-x64/8.0.25/microsoft.aspnetcore.app.runtime.win-x64.8.0.25.nupkg.sha512",
     "/root/.nuget/packages/microsoft.netcore.app.host.win-x64/8.0.25/microsoft.netcore.app.host.win-x64.8.0.25.nupkg.sha512"
   ],
   "logs": []

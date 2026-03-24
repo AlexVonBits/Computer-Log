@@ -140,7 +140,7 @@ namespace Entertainment {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Entertainment;V1.1.3.0;component/teamleadsetupwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Entertainment;V1.2.8.0;component/teamleadsetupwindow.xaml", System.UriKind.Relative);
             
             #line 1 "../../../TeamLeadSetupWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

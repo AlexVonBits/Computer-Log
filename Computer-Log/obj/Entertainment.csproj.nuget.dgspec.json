@@ -5,7 +5,7 @@
   },
   "projects": {
     "/home/workspace/Computer-Log/Entertainment.csproj": {
-      "version": "1.1.4",
+      "version": "1.2.8",
       "restore": {
         "projectUniqueName": "/home/workspace/Computer-Log/Entertainment.csproj",
         "projectName": "Entertainment",
@@ -43,9 +43,13 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "dependencies": {
-            "QRCoder": {
+            "BarcodeLib": {
               "target": "Package",
-              "version": "[1.4.3, )"
+              "version": "[2.0.0, )"
+            },
+            "System.Drawing.Common": {
+              "target": "Package",
+              "version": "[8.0.0, )"
             }
           },
           "imports": [
@@ -61,11 +65,23 @@
           "warn": true,
           "downloadDependencies": [
             {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
               "name": "Microsoft.NETCore.App.Host.win-x64",
               "version": "[8.0.25, 8.0.25]"
             },
             {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
               "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
               "version": "[8.0.25, 8.0.25]"
             }
           ],

@@ -35,7 +35,7 @@
         
         <!-- Start Inventory Verification Button - MOVED TO TOP -->
         <Button x:Name="StartInventoryVerificationButton" Grid.Row="1"
-                Content="Start Inventory Verification" 
+                Content="Inventory Verification" 
                 HorizontalAlignment="Center" 
                 VerticalAlignment="Center" 
                 Padding="30,15" 

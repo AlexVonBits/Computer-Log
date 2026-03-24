@@ -83,7 +83,7 @@ namespace Entertainment {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Entertainment;V1.2.11.0;component/crossreferencewindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Entertainment;V1.2.12.0;component/crossreferencewindow.xaml", System.UriKind.Relative);
             
             #line 1 "../../../../CrossReferenceWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

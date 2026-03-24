@@ -543,12 +543,20 @@ namespace Entertainment
                     userInitials = App.CurrentUser.Initials ?? "UNK";
                 }
                 
+                // Calculate summary counts from the verification session
+                int issuesFixedCount = _verificationStatuses.Count(s => s.Value == "Found Issue-Fixed");
+                int issuesNotFixedCount = _verificationStatuses.Count(s => s.Value == "Found Issue-Not Fixed");
+                int noIssuesCount = _verificationStatuses.Count(s => s.Value == "No Issues");
+                
                 var session = new VerificationSession
                 {
                     VerifierName = _currentUser,
                     VerifierInitials = userInitials,
                     CompletedAt = DateTime.Now,
-                    Notes = new List<VerificationNote>()
+                    Notes = new List<VerificationNote>(),
+                    IssuesFixedCount = issuesFixedCount,
+                    IssuesNotFixedCount = issuesNotFixedCount,
+                    NoIssuesCount = noIssuesCount
                 };
                 
                 // Add all notes from the verification session

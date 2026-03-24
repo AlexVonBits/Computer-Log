@@ -72,6 +72,21 @@ namespace Entertainment
                 LastDateVerifiedText.Text = "N/A";
             }
             
+            // Load verification summary from last session
+            var lastSession = sessionStore.GetLastSession();
+            if (lastSession != null)
+            {
+                IssuesFixedCount.Text = lastSession.IssuesFixedCount.ToString();
+                IssuesNotFixedCount.Text = lastSession.IssuesNotFixedCount.ToString();
+                NoIssuesCount.Text = lastSession.NoIssuesCount.ToString();
+            }
+            else
+            {
+                IssuesFixedCount.Text = "0";
+                IssuesNotFixedCount.Text = "0";
+                NoIssuesCount.Text = "0";
+            }
+            
             // Load all notes from verification sessions
             var allNotes = sessionStore.GetAllNotes();
             NotesDataGrid.ItemsSource = allNotes;
@@ -166,6 +181,11 @@ namespace Entertainment
             File.WriteAllText(logFilePath, json);
             
             return logFilePath;
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

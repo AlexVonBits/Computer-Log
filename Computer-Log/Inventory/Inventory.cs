@@ -71,6 +71,11 @@ namespace Entertainment.Inventory
         public string VerifierInitials { get; set; } = "";
         public DateTime CompletedAt { get; set; } = DateTime.Now;
         public List<VerificationNote> Notes { get; set; } = new();
+        
+        // Summary counts from this verification session
+        public int IssuesFixedCount { get; set; } = 0;
+        public int IssuesNotFixedCount { get; set; } = 0;
+        public int NoIssuesCount { get; set; } = 0;
     }
 
     // Container for all verification sessions (persisted to JSON)
@@ -96,6 +101,13 @@ namespace Entertainment.Inventory
         {
             if (Sessions.Count == 0) return null;
             return Sessions.OrderByDescending(s => s.CompletedAt).First().CompletedAt;
+        }
+
+        // Get the last completed verification session (with summary counts)
+        public VerificationSession? GetLastSession()
+        {
+            if (Sessions.Count == 0) return null;
+            return Sessions.OrderByDescending(s => s.CompletedAt).First();
         }
 
         // Get all notes from all verification sessions

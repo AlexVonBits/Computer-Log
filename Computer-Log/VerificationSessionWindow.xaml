@@ -209,7 +209,7 @@
                             <TextBlock Text="Previous Notes" FontSize="12" FontWeight="SemiBold" 
                                        Foreground="#666666" Margin="0,0,0,8"/>
                             <TextBox x:Name="PreviousNotesTextBox" 
-                                     Height="60" TextWrapping="Wrap" IsReadOnly="True"
+                                     Height="120" TextWrapping="Wrap" IsReadOnly="True"
                                      VerticalScrollBarVisibility="Auto" Background="#F5F5F5"
                                      BorderBrush="#DDDDDD" BorderThickness="1" Padding="8"/>
                         </StackPanel>

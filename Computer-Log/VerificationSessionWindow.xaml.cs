@@ -628,6 +628,7 @@ namespace Entertainment
                 }
                 
                 sessionStore.AddSession(session);
+                sessionStore.Save();  // Persist to disk
             }
             catch (Exception ex)
             {
@@ -647,6 +648,7 @@ namespace Entertainment
             
             if (result == MessageBoxResult.Yes)
             {
+                _isClosing = true;  // Set BEFORE Close() to prevent Closing event popup
                 this.Close();
             }
         }

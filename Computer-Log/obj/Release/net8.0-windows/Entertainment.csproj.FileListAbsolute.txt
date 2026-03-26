@@ -3,7 +3,6 @@
 /home/workspace/Computer-Log/bin/Release/net8.0-windows/Entertainment.runtimeconfig.json
 /home/workspace/Computer-Log/bin/Release/net8.0-windows/Entertainment.dll
 /home/workspace/Computer-Log/bin/Release/net8.0-windows/Entertainment.pdb
-/home/workspace/Computer-Log/bin/Release/net8.0-windows/QRCoder.dll
 /home/workspace/Computer-Log/obj/Release/net8.0-windows/Entertainment.csproj.AssemblyReference.cache
 /home/workspace/Computer-Log/obj/Release/net8.0-windows/CrossReferenceWindow.baml
 /home/workspace/Computer-Log/obj/Release/net8.0-windows/EditUPCWindow.baml
@@ -43,3 +42,4 @@
 /home/workspace/Computer-Log/obj/Release/net8.0-windows/InventoryVerificationWindow.baml
 /home/workspace/Computer-Log/obj/Release/net8.0-windows/InventoryVerificationWindow.g.cs
 /home/workspace/Computer-Log/obj/Release/net8.0-windows/VerificationSessionWindow.g.cs
+/home/workspace/Computer-Log/obj/Release/net8.0-windows/VerificationSessionWindow.baml

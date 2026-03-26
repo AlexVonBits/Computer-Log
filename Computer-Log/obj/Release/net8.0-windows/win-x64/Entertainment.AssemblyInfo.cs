@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Entertainment Inventory Management System")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.3.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.3.0+a27d446bfd09e4c20a51cbdbda567be5b8e322c0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.3.0+e89a452c627fd9b1e4117fd36ab0d7c657eadda1")]
 [assembly: System.Reflection.AssemblyProductAttribute("Entertainment")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Entertainment")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.3.0.0")]

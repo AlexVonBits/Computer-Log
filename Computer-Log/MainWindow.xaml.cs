@@ -686,11 +686,13 @@ namespace Entertainment
             {
                 return false;
             }
+            // Case-insensitive comparison - uppercase both
             string field = fieldValue.Trim().ToUpperInvariant();
-            if (input.Length <= 4)
-                return field.EndsWith(input);
+            string search = input.ToUpperInvariant();
+            if (search.Length <= 4)
+                return field.EndsWith(search);
 
-            return field == input;
+            return field == search;
         }
 
         private void SerialNumbersGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -21,6 +21,7 @@ namespace Entertainment
         private Dictionary<string, string> _verificationNotes = new();
         private Dictionary<string, string> _verificationStatuses = new();
         private bool _isClosing = false;
+        private VerificationSessionStore? _sessionStore;
         
         // Serial status options
         private readonly string[] SerialStatuses = 
@@ -35,6 +36,7 @@ namespace Entertainment
             _inventoryStore = InventoryStore.Load();
             _allUPCs = new List<string>();
             _currentIndex = 0;
+            _sessionStore = VerificationSessionStore.Load();
             
             Loaded += VerificationSessionWindow_Loaded;
             Closing += VerificationSessionWindow_Closing;
@@ -210,6 +212,9 @@ namespace Entertainment
             {
                 UPCNotesTextBox.Text = "";
             }
+            
+            // Load previous notes for this UPC
+            LoadPreviousNotesForUPC(currentUPC);
             
             // Load serial numbers
             LoadSerialNumbers(upcsToCheck);
@@ -507,6 +512,9 @@ namespace Entertainment
 
         private void ShowCompletionMessage()
         {
+            // Mark as closing FIRST to prevent duplicate popup
+            _isClosing = true;
+            
             // Calculate summary
             int totalUPCs = _allUPCs.Count;
             int noIssues = _verificationStatuses.Count(s => s.Value == "No Issues");
@@ -525,9 +533,32 @@ namespace Entertainment
             // Save the completed verification session to persistent store
             SaveCompletedSession();
             
-            // Mark as closing to prevent duplicate popup
-            _isClosing = true;
             this.Close();
+        }
+
+        private void LoadPreviousNotesForUPC(string upc)
+        {
+            if (_sessionStore == null)
+            {
+                PreviousNotesTextBox.Text = "";
+                return;
+            }
+            
+            var notes = _sessionStore.Sessions
+                .SelectMany(s => s.Notes)
+                .Where(n => n.UPC == upc)
+                .OrderByDescending(n => n.Timestamp)
+                .ToList();
+            
+            if (notes.Count == 0)
+            {
+                PreviousNotesTextBox.Text = "";
+                return;
+            }
+            
+            var text = string.Join("\n\n---\n\n", notes.Select(n => 
+                $"[{n.Timestamp:MM/dd/yyyy HH:mm}] {n.UserInitials}:\n{n.Note}"));
+            PreviousNotesTextBox.Text = text;
         }
 
         private void SaveCompletedSession()

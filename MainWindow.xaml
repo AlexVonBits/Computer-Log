@@ -234,7 +234,7 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Serial Number" Binding="{Binding SerialNumber}" Width="180"/>
                             <DataGridTextColumn Header="Device Type" Binding="{Binding Type}" Width="150"/>
-                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120">
+                            <DataGridTextColumn Header="Status" Binding="{Binding DisplayStatus}" Width="120">
                                 <DataGridTextColumn.CellStyle>
                                     <Style TargetType="DataGridCell">
                                         <Style.Triggers>

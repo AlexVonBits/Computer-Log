@@ -1078,6 +1078,177 @@ namespace Entertainment
             }
             return new List<string>();
         }
+
+        private void EditUPC_Click(object sender, RoutedEventArgs e)
+        {
+            // Get selected UPC
+            var selectedItem = UPCListBox.SelectedItem;
+            if (selectedItem == null)
+            {
+                MessageBox.Show("Please select a UPC first.", "No UPC Selected", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var upcProperty = selectedItem.GetType().GetProperty("UPC");
+            string? selectedUPC = upcProperty?.GetValue(selectedItem) as string;
+
+            var makeProperty = selectedItem.GetType().GetProperty("Make");
+            string? currentMake = makeProperty?.GetValue(selectedItem) as string;
+
+            var typeProperty = selectedItem.GetType().GetProperty("Type");
+            string? currentType = typeProperty?.GetValue(selectedItem) as string;
+
+            if (string.IsNullOrEmpty(selectedUPC)) return;
+
+            // Open EditUPCWindow
+            var editWindow = new EditUPCWindow(selectedUPC, currentMake, currentType);
+            editWindow.Owner = this;
+
+            if (editWindow.ShowDialog() == true)
+            {
+                string? newUPC = editWindow.NewUPC;
+                string? newMake = editWindow.NewMake;
+                string? newType = editWindow.NewType;
+
+                var store = InventoryStore.Load();
+
+                // If UPC changed, handle the rename
+                if (!string.IsNullOrEmpty(newUPC) && newUPC != selectedUPC)
+                {
+                    // Check if new UPC already exists
+                    var existingUPC = store.InventoryItems
+                        .FirstOrDefault(i => i.UPC?.Contains(newUPC) == true);
+
+                    if (existingUPC != null)
+                    {
+                        MessageBox.Show($"UPC '{newUPC}' already exists. Cannot duplicate.", 
+                            "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    // Update all inventory items with the old UPC
+                    var itemsToUpdate = store.InventoryItems
+                        .Where(i => i.UPC?.Contains(selectedUPC) == true)
+                        .ToList();
+
+                    foreach (var item in itemsToUpdate)
+                    {
+                        item.UPC.Remove(selectedUPC);
+                        if (!item.UPC.Contains(newUPC))
+                        {
+                            item.UPC.Add(newUPC);
+                        }
+                    }
+
+                    // Update _newUPCs if exists
+                    if (_newUPCs.ContainsKey(selectedUPC))
+                    {
+                        var upcInfo = _newUPCs[selectedUPC];
+                        _newUPCs.Remove(selectedUPC);
+                        _newUPCs[newUPC] = upcInfo;
+                    }
+
+                    store.Save();
+                    _selectedUPC = newUPC;
+                }
+
+                // Update make and type in _newUPCs if exists
+                if (_newUPCs.ContainsKey(_selectedUPC ?? selectedUPC))
+                {
+                    var existingInfo = _newUPCs[_selectedUPC ?? selectedUPC];
+                    _newUPCs[_selectedUPC ?? selectedUPC] = (newMake, newType);
+                }
+
+                // Refresh the list
+                UPCSearchBox_TextChanged(this, null);
+
+                // Update selected display
+                SelectedUPC.Text = _selectedUPC ?? newUPC ?? selectedUPC;
+                SelectedUPCMake.Text = string.IsNullOrEmpty(newMake) ? "" : $"({newMake})";
+
+                MessageBox.Show($"UPC '{selectedUPC}' updated successfully.", "UPC Updated", 
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+
+                App.SaveAll();
+            }
+        }
+
+        private void EditSerial_Click(object sender, RoutedEventArgs e)
+        {
+            // Get selected serial
+            InventoryItem? selectedItem = null;
+
+            if (SerialNumbersGrid.SelectedItem is SerialWithUPCStatus wrapper)
+                selectedItem = wrapper.Item;
+            else
+                selectedItem = SerialNumbersGrid.SelectedItem as InventoryItem;
+
+            if (selectedItem == null)
+            {
+                MessageBox.Show("Please select a serial number first.", "No Serial Selected", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Get current UPC
+            string? currentUPC = selectedItem.UPC?.FirstOrDefault();
+            string? currentMake = GetMakeFromUPC(currentUPC ?? "");
+
+            // Open EditUPCWindow (reusing for serial editing)
+            var editWindow = new EditUPCWindow(selectedItem.SerialNumber, currentMake, selectedItem.Type);
+            editWindow.Owner = this;
+            editWindow.Title = "Edit Serial";
+
+            if (editWindow.ShowDialog() == true)
+            {
+                string? newSerial = editWindow.NewUPC;
+                string? newType = editWindow.NewType;
+
+                if (string.IsNullOrEmpty(newSerial))
+                {
+                    MessageBox.Show("Serial number cannot be empty.", "Validation Error", 
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var store = InventoryStore.Load();
+
+                // Check if new serial already exists
+                var existingSerial = store.InventoryItems
+                    .FirstOrDefault(i => i.SerialNumber == newSerial && i.Id != selectedItem.Id);
+
+                if (existingSerial != null)
+                {
+                    MessageBox.Show($"Serial number '{newSerial}' already exists.", 
+                        "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Update the item
+                var item = store.InventoryItems.FirstOrDefault(i => i.Id == selectedItem.Id);
+                if (item != null)
+                {
+                    item.SerialNumber = newSerial;
+                    if (!string.IsNullOrEmpty(newType))
+                    {
+                        item.Type = newType;
+                    }
+                    store.Save();
+
+                    // Refresh the list
+                    if (_selectedUPC != null)
+                    {
+                        LoadSerialsForUPC(_selectedUPC);
+                    }
+
+                    MessageBox.Show($"Serial number updated successfully.", "Serial Updated", 
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    App.SaveAll();
+                }
+            }
+        }
     }
 
     // Wrapper class to hold inventory item with its parent UPC status for inherited coloring

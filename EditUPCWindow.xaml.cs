@@ -4,6 +4,7 @@ namespace Entertainment
 {
     public partial class EditUPCWindow : Window
     {
+        public string? NewUPC { get; private set; }
         public string? NewMake { get; private set; }
         public string? NewType { get; private set; }
 
@@ -11,7 +12,7 @@ namespace Entertainment
         {
             InitializeComponent();
 
-            UPCDisplay.Text = upc;
+            UPCBox.Text = upc;
 
             // Initialize Make dropdown
             MakeBox.ItemsSource = new[]
@@ -58,6 +59,7 @@ namespace Entertainment
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
+            NewUPC = UPCBox.Text?.Trim();
             NewMake = MakeBox.Text?.Trim();
             NewType = TypeBox.Text?.Trim();
             DialogResult = true;

@@ -88,6 +88,7 @@
                             <ContextMenu>
                                 <MenuItem x:Name="ToggleUPCStatusMenuItem" Header="Toggle Status (Normal → Clearance → Deleted)" Click="ToggleUPCStatus_Click"/>
                                 <Separator/>
+                                <MenuItem x:Name="EditUPCMenuItem" Header="Edit UPC" Click="EditUPC_Click"/>
                                 <MenuItem x:Name="DeleteUPCMenuItem" Header="Delete" Click="DeleteUPCContextMenu_Click"
                                           Visibility="{Binding DataContext.CanDelete, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisConverter}}"/>
                                 <MenuItem x:Name="LinkCrossRefsMenuItem" Header="Link Cross-References" Click="LinkCrossReferences_Click"/>
@@ -224,6 +225,7 @@
                         </DataGrid.RowStyle>
                         <DataGrid.ContextMenu>
                             <ContextMenu>
+                                <MenuItem x:Name="EditSerialMenuItem" Header="Edit Serial" Click="EditSerial_Click"/>
                                 <MenuItem x:Name="DeleteSerialMenuItem" Header="Delete" Click="DeleteSerialButton_Click"
                                           Visibility="{Binding DataContext.CanDelete, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisConverter}}"/>
                                 <Separator Visibility="{Binding DataContext.CanDelete, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisConverter}}"/>

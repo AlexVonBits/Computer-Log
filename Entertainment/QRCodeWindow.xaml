@@ -1,0 +1,36 @@
+<Window x:Class="Entertainment.QRCodeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Barcode" Height="300" Width="400"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#0078D4" Padding="20,15" CornerRadius="8,8,0,0">
+            <TextBlock x:Name="UPCLabel" Text="UPC: " FontSize="18" FontWeight="Bold" Foreground="White"/>
+        </Border>
+        
+        <!-- Barcode Image -->
+        <Border Grid.Row="1" Background="White" BorderBrush="#DDD" BorderThickness="1,0,1,0">
+            <Grid Margin="20">
+                <Image x:Name="QRCodeImage" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+        
+        <!-- Close Button -->
+        <Border Grid.Row="2" Background="#F8F9FA" Padding="20,15" CornerRadius="0,0,8,8">
+            <Button Content="Close" Click="CloseButton_Click" Width="100" Height="32" 
+                    Background="#6C757D" Foreground="White" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Center"/>
+        </Border>
+    </Grid>
+</Window>

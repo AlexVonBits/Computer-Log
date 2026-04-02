@@ -1,0 +1,58 @@
+<Window x:Class="Entertainment.CrossReferenceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Link Cross-References" Height="500" Width="500"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#0078D4" Padding="20,15" CornerRadius="8,8,0,0">
+            <TextBlock x:Name="SelectedUPCText" Text="Selected UPC: " FontSize="18" FontWeight="Bold" Foreground="White"/>
+        </Border>
+        
+        <!-- Search -->
+        <Border Grid.Row="1" Background="White" BorderBrush="#DDD" BorderThickness="1,0,1,0" Padding="20,15">
+            <TextBox x:Name="SearchTextBox" Height="32" TextChanged="SearchTextBox_TextChanged"
+                     VerticalContentAlignment="Center" Padding="10,0"/>
+        </Border>
+        
+        <!-- UPC List -->
+        <Border Grid.Row="2" Background="White" BorderBrush="#DDD" BorderThickness="1,0,1,0">
+            <ListBox x:Name="UPCsListBox" SelectionMode="Multiple" Padding="10">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox Content="{Binding}" Tag="{Binding}">
+                            <CheckBox.Style>
+                                <Style TargetType="CheckBox">
+                                    <EventSetter Event="Checked" Handler="UPCCheckBox_Checked"/>
+                                    <EventSetter Event="Unchecked" Handler="UPCCheckBox_Unchecked"/>
+                                </Style>
+                            </CheckBox.Style>
+                        </CheckBox>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+        
+        <!-- Buttons -->
+        <Border Grid.Row="3" Background="#F8F9FA" Padding="20,15" CornerRadius="0,0,8,8">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Cancel" Click="CancelButton_Click" Width="100" Height="32" 
+                        Background="#6C757D" Foreground="White" BorderThickness="0" Cursor="Hand" Margin="0,0,10,0"/>
+                <Button x:Name="SaveButton" Content="Save" Click="SaveButton_Click" Width="100" Height="32" 
+                        Background="#28A745" Foreground="White" BorderThickness="0" Cursor="Hand"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

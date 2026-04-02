@@ -211,7 +211,7 @@ public partial class InventoryVerification : Window, IComponentConnector
 		{
 			using Barcode barcode = new Barcode();
 			barcode.IncludeLabel = true;
-			Bitmap bitmap = new Bitmap(barcode.Encode(BarcodeStandard.TYPE.UPCA, text, Color.Black, Color.White, 300, 100));
+			Bitmap bitmap = new Bitmap(barcode.Encode(TYPE.UPCA, text, Color.Black, Color.White, 300, 100));
 			BitmapImage bitmapImage = new BitmapImage();
 			using MemoryStream memoryStream = new MemoryStream();
 			bitmap.Save(memoryStream, ImageFormat.Png);
@@ -373,7 +373,7 @@ public partial class InventoryVerification : Window, IComponentConnector
 		{
 			using Barcode barcode = new Barcode();
 			barcode.IncludeLabel = true;
-			Bitmap bitmap = new Bitmap(barcode.Encode(BarcodeStandard.TYPE.UPCA, upc, Color.Black, Color.White, 300, 100));
+			Bitmap bitmap = new Bitmap(barcode.Encode(TYPE.UPCA, upc, Color.Black, Color.White, 300, 100));
 			BitmapImage bitmapImage = new BitmapImage();
 			using MemoryStream memoryStream = new MemoryStream();
 			bitmap.Save(memoryStream, ImageFormat.Png);
